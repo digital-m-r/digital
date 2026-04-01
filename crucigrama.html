@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beiersdorf Digital Crossword - Premium UX</title>
-    <script src="img/robot.png"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --beiersdorf-blue: #0032A0;
@@ -19,51 +18,28 @@
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: var(--bg-light);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            margin: 0;
-            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 20px; margin: 0; min-height: 100vh;
         }
 
         /* DIGITAL CROSSWORD Verde */
-        h1 {
-            color: var(--success);
-            margin-bottom: 10px;
-            font-size: 1.8rem;
-            text-align: center;
-        }
+        h1 { color: var(--success); margin-bottom: 10px; font-size: 1.8rem; text-align: center; }
 
         #clue-bar {
-            background: white;
-            padding: 15px 15px 15px 21px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 650px;
-            text-align: center;
-            margin-bottom: 35px;
-            min-height: 45px;
-            font-weight: 600;
-            color: #333;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: white; padding: 15px 15px 15px 21px; border-radius: 12px;
+            width: 90%; max-width: 650px; text-align: center;
+            margin-bottom: 35px; min-height: 45px;
+            font-weight: 600; color: #333; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         /* Clases para colorear oraciones */
-        .clue-horizontal {
-            color: #000;
-        }
-
-        .clue-vertical {
-            color: var(--beiersdorf-blue);
-        }
+        .clue-horizontal { color: #000; }
+        .clue-vertical { color: var(--beiersdorf-blue); }
 
         .grid-container {
-            width: 100%;
-            overflow-x: auto;
-            display: flex;
-            justify-content: center;
-            padding: 30px;
+            width: 100%; overflow-x: auto;
+            display: flex; justify-content: center; 
+            padding: 30px; 
         }
 
         .grid {
@@ -73,68 +49,35 @@
             gap: 5px;
         }
 
-        .cell-wrapper {
-            position: relative;
-            width: var(--cell-size);
-            height: var(--cell-size);
-        }
+        .cell-wrapper { position: relative; width: var(--cell-size); height: var(--cell-size); }
 
         .cell-number {
-            position: absolute;
-            font-size: 14px;
-            color: #000;
-            font-weight: bold;
-            z-index: 10;
+            position: absolute; font-size: 14px; color: #000; font-weight: bold; z-index: 10;
         }
 
-        .num-v {
-            top: -20px;
-            left: 2px;
-        }
-
-        .num-h {
-            top: 8px;
-            left: -18px;
-        }
+        .num-v { top: -20px; left: 2px; }
+        .num-h { top: 8px; left: -18px; }
 
         .cell {
-            width: 100%;
-            height: 100%;
-            background: white;
-            border: none;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-            outline: none;
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow);
-            caret-color: var(--beiersdorf-blue);
+            width: 100%; height: 100%;
+            background: white; border: none; border-radius: 5px;
+            text-align: center; font-size: 18px; font-weight: bold;
+            text-transform: uppercase; outline: none; transition: all 0.2s ease;
+            box-shadow: var(--shadow); caret-color: var(--beiersdorf-blue);
             color: #333;
         }
 
-        .null {
-            visibility: hidden;
-            pointer-events: none;
-        }
+        .null { visibility: hidden; pointer-events: none; }
 
-        /* ILUMINACIÓN DE RUTA AZUL BAJITO RESTAURADA */
-        .cell-highlight {
-            background-color: #dbeafe !important;
-        }
+        .cell-highlight { background-color: #dbeafe !important; }
 
-        .cell:focus {
+        .cell:focus { 
             border: 2px solid var(--success);
-            background-color: #d1fae5 !important;
-            /* Verde suave para foco */
-            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #d1fae5 !important; 
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Letras parciales correctas en verde */
-        .text-success {
-            color: var(--success) !important;
-        }
+        .text-success { color: var(--success) !important; }
 
         .flip-correct {
             animation: flipInCascada 0.6s ease-in-out forwards;
@@ -142,129 +85,41 @@
         }
 
         @keyframes flipInCascada {
-            0% {
-                transform: scale(1) rotateY(0deg);
-                background-color: white;
-                color: #333;
-            }
-
-            50% {
-                transform: scale(1.1) rotateY(90deg);
-                background-color: var(--success);
-                color: white;
-            }
-
-            100% {
-                transform: scale(1) rotateY(0deg);
-                background-color: var(--success);
-                color: white;
-            }
+            0% { transform: scale(1) rotateY(0deg); background-color: white; color: #333; }
+            50% { transform: scale(1.1) rotateY(90deg); background-color: var(--success); color: white; }
+            100% { transform: scale(1) rotateY(0deg); background-color: var(--success); color: white; }
         }
 
         .shake-error {
-            animation: shake 0.5s both;
-            border: 2px solid var(--error) !important;
-            color: var(--error) !important;
+            animation: shake 0.5s both; border: 2px solid var(--error) !important; color: var(--error) !important;
         }
 
-        @keyframes shake {
-
-            10%,
-            90% {
-                transform: translate3d(-1px, 0, 0);
-            }
-
-            20%,
-            80% {
-                transform: translate3d(2px, 0, 0);
-            }
-
-            30%,
-            50%,
-            70% {
-                transform: translate3d(-4px, 0, 0);
-            }
-
-            40%,
-            60% {
-                transform: translate3d(4px, 0, 0);
-            }
-        }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
 
         /* MODAL */
         #modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;
         }
 
         .modal {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            background: white; padding: 30px; border-radius: 20px; width: 300px;
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
-        .modal img {
-            width: 90px;
-            margin: 15px 0;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
+        .modal img { width: 90px; margin: 15px 0; }
+        .modal input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
 
         .btn-send {
-            background: var(--beiersdorf-blue);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            width: 100%;
-            font-weight: bold;
-            cursor: pointer;
+            background: var(--beiersdorf-blue); color: white; border: none;
+            padding: 14px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer;
         }
 
-        .btn-send:disabled {
-            background: #ccc;
-        }
+        .btn-send:disabled { background: #ccc; }
 
-        @media (max-width: 768px) {
-            :root {
-                --cell-size: 28px;
-            }
-
-            .cell {
-                font-size: 15px;
-            }
-
-            .num-h {
-                left: -14px;
-                top: 4px;
-                font-size: 12px;
-            }
-
-            .num-v {
-                top: -16px;
-                font-size: 12px;
-            }
-        }
+        @media (max-width: 768px) { :root { --cell-size: 28px; } .cell { font-size: 15px; } .num-h { left: -14px; top: 4px; font-size: 12px;} .num-v { top: -16px; font-size: 12px;} }
     </style>
 </head>
-
 <body>
 
     <h1>DIGITAL CROSSWORD</h1>
@@ -277,7 +132,7 @@
     <div id="modal-overlay">
         <div class="modal">
             <h2 style="color: var(--success); margin:0;">¡Felicidades!</h2>
-            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Robot">
+            <img src="img/robot.png" alt="Robot" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
             <p>Completaste el reto correctamente.</p>
             <input type="text" id="userName" placeholder="Nombre completo">
             <input type="number" id="userNomina" placeholder="Nómina">
@@ -285,253 +140,263 @@
         </div>
     </div>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyexYn0jDgjD24ce6M66lN3n5XPyHLEXGLSzVwPaCzWrfcZZ0Nj2IwLVN1afrcrQgwTQ/exec";
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyexYn0jDgjD24ce6M66lN3n5XPyHLEXGLSzVwPaCzWrfcZZ0Nj2IwLVN1afrcrQgwTQ/exec";
 
-        const wordsData = [
-            { n: 1, r: 3, c: 2, ans: "MANUFACTURING", dir: "h", clue: "1 Horizontal: El logo del departamento lleva por nombre Digital..." },
-            { n: 2, r: 5, c: 9, ans: "EBR", dir: "h", clue: "2 Horizontal: Acrónimo de Electronic Batch Record" },
-            { n: 3, r: 7, c: 9, ans: "DASHBOARD", dir: "h", clue: "3 Horizontal: Herramienta visual que muestra información clave" },
-            { n: 4, r: 10, c: 0, ans: "POWERBI", dir: "h", clue: "4 Horizontal: Herramienta de Microsoft para visualizar datos" },
-            { n: 5, r: 10, c: 11, ans: "ILSE", dir: "h", clue: "5 Horizontal: Nombre de nuestra Digitization Analyst" },
+    const wordsData = [
+        { n: 1, r: 3, c: 2, ans: "MANUFACTURING", dir: "h", clue: "1 Horizontal: El logo del departamento lleva por nombre Digital..." },
+        { n: 2, r: 5, c: 9, ans: "EBR", dir: "h", clue: "2 Horizontal: Acrónimo de Electronic Batch Record" },
+        { n: 3, r: 7, c: 9, ans: "DASHBOARD", dir: "h", clue: "3 Horizontal: Herramienta visual que muestra información clave" },
+        { n: 4, r: 10, c: 0, ans: "POWERBI", dir: "h", clue: "4 Horizontal: Herramienta de Microsoft para visualizar datos" },
+        { n: 5, r: 10, c: 11, ans: "ILSE", dir: "h", clue: "5 Horizontal: Nombre de nuestra Digitization Analyst" },
+        
+        { n: 6, r: 1, c: 2, ans: "BDMINDS", dir: "v", clue: "6 Vertical: Nuestra revista lleva por nombre..." },
+        { n: 7, r: 2, c: 3, ans: "FACILITIES", dir: "v", clue: "7 Vertical: App donde registras incidencias y ves su estado" },
+        { n: 8, r: 3, c: 7, ans: "APPS", dir: "v", clue: "8 Vertical: En Power ______ puedes diseñar aplicaciones" },
+        { n: 9, r: 3, c: 9, ans: "TIENDITA", dir: "v", clue: "9 Vertical: 'Mi _______ BMM' para productos a super precio" },
+        { n: 10, r: 7, c: 13, ans: "BMOS", dir: "v", clue: "10 Vertical: Beiersdorf Manufacturing Operation System" },
+        { n: 11, r: 6, c: 15, ans: "ZAZU", dir: "v", clue: "11 Vertical: Apodo de nuestra Digital Intern" }
+    ];
 
-            { n: 6, r: 1, c: 2, ans: "BDMINDS", dir: "v", clue: "6 Vertical: Nuestra revista lleva por nombre..." },
-            { n: 7, r: 2, c: 3, ans: "FACILITIES", dir: "v", clue: "7 Vertical: App donde registras incidencias y ves su estado" },
-            { n: 8, r: 3, c: 7, ans: "APPS", dir: "v", clue: "8 Vertical: En Power ______ puedes diseñar aplicaciones" },
-            { n: 9, r: 3, c: 9, ans: "TIENDITA", dir: "v", clue: "9 Vertical: 'Mi _______ BMM' para productos a super precio" },
-            { n: 10, r: 7, c: 13, ans: "BMOS", dir: "v", clue: "10 Vertical: Beiersdorf Manufacturing Operation System" },
-            { n: 11, r: 6, c: 15, ans: "ZAZU", dir: "v", clue: "11 Vertical: Apodo de nuestra Digital Intern" }
-        ];
+    const gridEl = document.getElementById('grid');
+    const clueBar = document.getElementById('clue-bar');
+    
+    let activeDirection = 'h'; 
+    let lastClickedCell = null; 
+    let gameWon = false; // Control para evitar que el modal se dispare múltiples veces
 
-        const gridEl = document.getElementById('grid');
-        const clueBar = document.getElementById('clue-bar');
+    for (let r = 0; r < 13; r++) {
+        for (let c = 0; c < 18; c++) {
+            const wrap = document.createElement('div');
+            wrap.className = 'cell-wrapper';
+            const inp = document.createElement('input');
+            inp.type = 'text'; inp.maxLength = 1; inp.id = `c-${r}-${c}`;
+            inp.className = 'cell null';
+            wrap.appendChild(inp);
+            gridEl.appendChild(wrap);
+        }
+    }
 
-        let activeDirection = 'h';
-        let lastClickedCell = null;
+    wordsData.forEach(w => {
+        for (let i = 0; i < w.ans.length; i++) {
+            let currR = w.dir === 'v' ? w.r + i : w.r;
+            let currC = w.dir === 'h' ? w.c + i : w.c;
+            let el = document.getElementById(`c-${currR}-${currC}`);
+            
+            if(el) {
+                el.classList.remove('null');
+                el.classList.add(`is-${w.dir}`); 
 
-        for (let r = 0; r < 13; r++) {
-            for (let c = 0; c < 18; c++) {
-                const wrap = document.createElement('div');
-                wrap.className = 'cell-wrapper';
-                const inp = document.createElement('input');
-                inp.type = 'text'; inp.maxLength = 1; inp.id = `c-${r}-${c}`;
-                inp.className = 'cell null';
-                wrap.appendChild(inp);
-                gridEl.appendChild(wrap);
+                let clues = JSON.parse(el.dataset.clues || "[]");
+                clues.push(w.clue);
+                el.dataset.clues = JSON.stringify(clues);
+                el.dataset.target = w.ans[i];
+
+                if (i === 0) { 
+                    const num = document.createElement('span');
+                    num.className = `cell-number num-${w.dir}`;
+                    num.innerText = w.n;
+                    el.parentElement.appendChild(num);
+                }
             }
         }
+    });
+
+    function highlightActiveWord(activeCell) {
+        document.querySelectorAll('.cell').forEach(c => c.classList.remove('cell-highlight'));
+        if(!activeCell || activeCell.disabled) return;
+
+        let [r, c] = activeCell.id.split('-').slice(1).map(Number);
+        let toHighlight = [activeCell];
+
+        let tr = r, tc = c;
+        while(true) {
+            tr = activeDirection === 'v' ? tr - 1 : tr;
+            tc = activeDirection === 'h' ? tc - 1 : tc;
+            let prev = document.getElementById(`c-${tr}-${tc}`);
+            if (prev && !prev.classList.contains('null') && prev.classList.contains(`is-${activeDirection}`)) toHighlight.push(prev);
+            else break;
+        }
+
+        tr = r; tc = c;
+        while(true) {
+            tr = activeDirection === 'v' ? tr + 1 : tr;
+            tc = activeDirection === 'h' ? tc + 1 : tc;
+            let next = document.getElementById(`c-${tr}-${tc}`);
+            if (next && !next.classList.contains('null') && next.classList.contains(`is-${activeDirection}`)) toHighlight.push(next);
+            else break;
+        }
+
+        toHighlight.forEach(cell => cell.classList.add('cell-highlight'));
+    }
+
+    document.querySelectorAll('.cell:not(.null)').forEach(cell => {
+        
+        cell.addEventListener('click', (e) => {
+            const el = e.target;
+            const isH = el.classList.contains('is-h');
+            const isV = el.classList.contains('is-v');
+
+            if (isH && isV) {
+                if (lastClickedCell === el) {
+                    activeDirection = activeDirection === 'h' ? 'v' : 'h';
+                } else {
+                    if (activeDirection === 'h' && !isH) activeDirection = 'v';
+                    if (activeDirection === 'v' && !isV) activeDirection = 'h';
+                }
+            } else if (isV) activeDirection = 'v';
+            else if (isH) activeDirection = 'h';
+
+            lastClickedCell = el;
+            
+            const pistas = JSON.parse(el.dataset.clues);
+            const pistasHTML = pistas.map(pista => {
+                const esHorizontal = pista.includes('Horizontal');
+                const claseClave = esHorizontal ? 'clue-horizontal' : 'clue-vertical';
+                return `<span class="${claseClave}">${pista}</span>`;
+            });
+            clueBar.innerHTML = pistasHTML.join(' <br> • ');
+            
+            highlightActiveWord(el);
+        });
+
+        cell.addEventListener('keydown', (e) => {
+            let [r, c] = e.target.id.split('-').slice(1).map(Number);
+            
+            if (e.key === 'Backspace' && e.target.value === '') {
+                let prevId = activeDirection === 'h' ? `c-${r}-${c-1}` : `c-${r-1}-${c}`;
+                let prevCell = document.getElementById(prevId);
+                if (prevCell && !prevCell.classList.contains('null') && !prevCell.disabled) {
+                    prevCell.focus();
+                    highlightActiveWord(prevCell);
+                }
+            } else if (e.key === 'ArrowRight' && cell.classList.contains('is-h')) {
+                activeDirection = 'h'; 
+                highlightActiveWord(cell); 
+            } else if (e.key === 'ArrowDown' && cell.classList.contains('is-v')) {
+                activeDirection = 'v'; 
+                highlightActiveWord(cell); 
+            }
+        });
+
+        cell.addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase();
+            e.target.classList.remove('text-success'); 
+
+            if(e.target.value !== '') {
+                let [r, c] = e.target.id.split('-').slice(1).map(Number);
+                let nextId = activeDirection === 'h' ? `c-${r}-${c+1}` : `c-${r+1}-${c}`;
+                let nextCell = document.getElementById(nextId);
+                
+                if (nextCell && !nextCell.classList.contains('null') && !nextCell.disabled) {
+                    nextCell.focus();
+                    highlightActiveWord(nextCell);
+                }
+                validateAll();
+            }
+        });
+    });
+
+    function validateAll() {
+        if (gameWon) return; // Si ya se disparó la victoria, evitamos validaciones extra
 
         wordsData.forEach(w => {
+            let isFull = true;
+            let currentWord = [];
+            let wordCells = [];
+
             for (let i = 0; i < w.ans.length; i++) {
-                let currR = w.dir === 'v' ? w.r + i : w.r;
-                let currC = w.dir === 'h' ? w.c + i : w.c;
-                let el = document.getElementById(`c-${currR}-${currC}`);
+                let r = w.dir === 'v' ? w.r + i : w.r;
+                let c = w.dir === 'h' ? w.c + i : w.c;
+                let el = document.getElementById(`c-${r}-${c}`);
+                wordCells.push(el);
+                currentWord.push(el.value);
+                if (el.value === '') isFull = false;
+            }
 
-                if (el) {
-                    el.classList.remove('null');
-                    el.classList.add(`is-${w.dir}`);
+            if (isFull) {
+                let typedAnswer = currentWord.join('');
+                if (typedAnswer === w.ans) {
+                    wordCells.forEach((c, idx) => {
+                        setTimeout(() => {
+                            c.classList.remove('shake-error', 'text-success', 'cell-highlight');
+                            c.classList.add('flip-correct');
+                            c.disabled = true; 
+                        }, idx * 50);
+                    });
+                } else if (!currentWord.includes("")) {
+                    let firstFail = -1;
+                    for (let j = 0; j < w.ans.length; j++) {
+                        if (currentWord[j] !== w.ans[j] && firstFail === -1) firstFail = j;
+                    }
 
-                    let clues = JSON.parse(el.dataset.clues || "[]");
-                    clues.push(w.clue);
-                    el.dataset.clues = JSON.stringify(clues);
-
-                    if (i === 0) {
-                        const num = document.createElement('span');
-                        num.className = `cell-number num-${w.dir}`;
-                        num.innerText = w.n;
-                        el.parentElement.appendChild(num);
+                    wordCells.forEach((c, j) => {
+                        if (c.disabled) return; 
+                        
+                        c.classList.remove('shake-error');
+                        void c.offsetWidth; 
+                        c.classList.add('shake-error');
+                        
+                        if (j >= firstFail) {
+                            c.value = ""; 
+                            c.classList.remove('text-success');
+                        } else {
+                            c.classList.add('text-success');
+                        }
+                    });
+                    
+                    if (firstFail !== -1) {
+                        let target = wordCells[firstFail];
+                        if(!target.disabled) {
+                            target.focus();
+                            activeDirection = w.dir;
+                            highlightActiveWord(target);
+                        }
                     }
                 }
             }
         });
 
-        // FUNCIÓN RESTAURADA PARA ILUMINAR LA RUTA
-        function highlightActiveWord(activeCell) {
-            document.querySelectorAll('.cell').forEach(c => c.classList.remove('cell-highlight'));
-            if (!activeCell || activeCell.disabled) return;
+        // NUEVA REVISIÓN DE VICTORIA EXACTA
+        let allCells = document.querySelectorAll('.cell:not(.null)');
+        let isComplete = true;
 
-            let [r, c] = activeCell.id.split('-').slice(1).map(Number);
-            let toHighlight = [activeCell];
-
-            let tr = r, tc = c;
-            while (true) {
-                tr = activeDirection === 'v' ? tr - 1 : tr;
-                tc = activeDirection === 'h' ? tc - 1 : tc;
-                let prev = document.getElementById(`c-${tr}-${tc}`);
-                if (prev && !prev.classList.contains('null') && prev.classList.contains(`is-${activeDirection}`)) toHighlight.push(prev);
-                else break;
+        allCells.forEach(cell => {
+            if (cell.value !== cell.dataset.target) {
+                isComplete = false;
             }
-
-            tr = r; tc = c;
-            while (true) {
-                tr = activeDirection === 'v' ? tr + 1 : tr;
-                tc = activeDirection === 'h' ? tc + 1 : tc;
-                let next = document.getElementById(`c-${tr}-${tc}`);
-                if (next && !next.classList.contains('null') && next.classList.contains(`is-${activeDirection}`)) toHighlight.push(next);
-                else break;
-            }
-
-            toHighlight.forEach(cell => cell.classList.add('cell-highlight'));
-        }
-
-        document.querySelectorAll('.cell:not(.null)').forEach(cell => {
-
-            cell.addEventListener('click', (e) => {
-                const el = e.target;
-                const isH = el.classList.contains('is-h');
-                const isV = el.classList.contains('is-v');
-
-                if (isH && isV) {
-                    if (lastClickedCell === el) {
-                        activeDirection = activeDirection === 'h' ? 'v' : 'h';
-                    } else {
-                        if (activeDirection === 'h' && !isH) activeDirection = 'v';
-                        if (activeDirection === 'v' && !isV) activeDirection = 'h';
-                    }
-                } else if (isV) activeDirection = 'v';
-                else if (isH) activeDirection = 'h';
-
-                lastClickedCell = el;
-
-                const pistas = JSON.parse(el.dataset.clues);
-                const pistasHTML = pistas.map(pista => {
-                    const esHorizontal = pista.includes('Horizontal');
-                    const claseClave = esHorizontal ? 'clue-horizontal' : 'clue-vertical';
-                    return `<span class="${claseClave}">${pista}</span>`;
-                });
-                clueBar.innerHTML = pistasHTML.join(' <br> • ');
-
-                // LLAMADA RESTAURADA
-                highlightActiveWord(el);
-            });
-
-            cell.addEventListener('keydown', (e) => {
-                let [r, c] = e.target.id.split('-').slice(1).map(Number);
-
-                if (e.key === 'Backspace' && e.target.value === '') {
-                    let prevId = activeDirection === 'h' ? `c-${r}-${c - 1}` : `c-${r - 1}-${c}`;
-                    let prevCell = document.getElementById(prevId);
-                    if (prevCell && !prevCell.classList.contains('null') && !prevCell.disabled) {
-                        prevCell.focus();
-                        // LLAMADA RESTAURADA
-                        highlightActiveWord(prevCell);
-                    }
-                } else if (e.key === 'ArrowRight' && cell.classList.contains('is-h')) {
-                    activeDirection = 'h';
-                    highlightActiveWord(cell); // LLAMADA RESTAURADA
-                } else if (e.key === 'ArrowDown' && cell.classList.contains('is-v')) {
-                    activeDirection = 'v';
-                    highlightActiveWord(cell); // LLAMADA RESTAURADA
-                }
-            });
-
-            cell.addEventListener('input', (e) => {
-                e.target.value = e.target.value.toUpperCase();
-                e.target.classList.remove('text-success');
-
-                if (e.target.value !== '') {
-                    let [r, c] = e.target.id.split('-').slice(1).map(Number);
-                    let nextId = activeDirection === 'h' ? `c-${r}-${c + 1}` : `c-${r + 1}-${c}`;
-                    let nextCell = document.getElementById(nextId);
-
-                    if (nextCell && !nextCell.classList.contains('null') && !nextCell.disabled) {
-                        nextCell.focus();
-                        // LLAMADA RESTAURADA
-                        highlightActiveWord(nextCell);
-                    }
-                    validateAll();
-                }
-            });
         });
 
-        function validateAll() {
-            wordsData.forEach(w => {
-                let isFull = true;
-                let currentWord = [];
-                let wordCells = [];
-
-                for (let i = 0; i < w.ans.length; i++) {
-                    let r = w.dir === 'v' ? w.r + i : w.r;
-                    let c = w.dir === 'h' ? w.c + i : w.c;
-                    let el = document.getElementById(`c-${r}-${c}`);
-                    wordCells.push(el);
-                    currentWord.push(el.value);
-                    if (el.value === '') isFull = false;
-                }
-
-                if (isFull) {
-                    let typedAnswer = currentWord.join('');
-                    if (typedAnswer === w.ans) {
-                        wordCells.forEach((c, idx) => {
-                            setTimeout(() => {
-                                c.classList.remove('shake-error', 'text-success', 'cell-highlight');
-                                c.classList.add('flip-correct');
-                                c.disabled = true;
-                            }, idx * 50);
-                        });
-                    } else if (!currentWord.includes("")) {
-                        let firstFail = -1;
-                        for (let j = 0; j < w.ans.length; j++) {
-                            if (currentWord[j] !== w.ans[j] && firstFail === -1) firstFail = j;
-                        }
-
-                        wordCells.forEach((c, j) => {
-                            if (c.disabled) return;
-
-                            c.classList.remove('shake-error');
-                            void c.offsetWidth;
-                            c.classList.add('shake-error');
-
-                            if (j >= firstFail) {
-                                c.value = "";
-                                c.classList.remove('text-success');
-                            } else {
-                                c.classList.add('text-success');
-                            }
-                        });
-
-                        if (firstFail !== -1) {
-                            let target = wordCells[firstFail];
-                            if (!target.disabled) {
-                                target.focus();
-                                activeDirection = w.dir;
-                                // LLAMADA RESTAURADA
-                                highlightActiveWord(target);
-                            }
-                        }
-                    }
-                }
-            });
-
-            const total = document.querySelectorAll('.cell:not(.null)');
-            const corrects = document.querySelectorAll('.flip-correct');
-            if (total.length === corrects.length && total.length > 0) {
+        if (isComplete && !gameWon) {
+            gameWon = true;
+            // Damos 800ms de retraso para que terminen las animaciones verdes en pantalla
+            setTimeout(() => {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 setTimeout(() => document.getElementById('modal-overlay').style.display = 'flex', 1000);
-            }
+            }, 800);
         }
+    }
 
-        const nameInp = document.getElementById('userName');
-        const nominaInp = document.getElementById('userNomina');
-        const btnSend = document.getElementById('btnSend');
+    const nameInp = document.getElementById('userName');
+    const nominaInp = document.getElementById('userNomina');
+    const btnSend = document.getElementById('btnSend');
 
-        [nameInp, nominaInp].forEach(inp => {
-            inp.addEventListener('input', () => {
-                btnSend.disabled = !(nameInp.value.trim() && nominaInp.value.trim());
-            });
+    [nameInp, nominaInp].forEach(inp => {
+        inp.addEventListener('input', () => {
+            btnSend.disabled = !(nameInp.value.trim() && nominaInp.value.trim());
         });
+    });
 
-        function handleSend() {
-            btnSend.disabled = true; btnSend.innerText = "Enviando...";
-            fetch(SCRIPT_URL, {
-                method: 'POST', mode: 'no-cors',
-                body: JSON.stringify({ nombre: nameInp.value, nomina: nominaInp.value })
-            }).then(() => {
-                alert("¡Datos guardados con éxito!");
-                location.reload();
-            });
-        }
-    </script>
+    function handleSend() {
+        btnSend.disabled = true; btnSend.innerText = "Enviando...";
+        fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            body: JSON.stringify({ nombre: nameInp.value, nomina: nominaInp.value })
+        }).then(() => {
+            alert("¡Datos guardados con éxito!");
+            location.reload();
+        });
+    }
+</script>
 </body>
-
 </html>
