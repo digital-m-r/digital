@@ -176,7 +176,10 @@
         <p style="color: #666; font-weight: bold;">¡Gracias por participar!</p>
     </div>
 
-    <script>
+<script>
+    let database = null;
+
+    try {
         const firebaseConfig = {
             apiKey: "AIzaSyCB7M0dAF-p6hLQPDDZLQTzQJ_AljsWFvQ",
             authDomain: "kahoot-81efe.firebaseapp.com",
@@ -186,8 +189,14 @@
             appId: "1:74688156082:web:ea4adad29099743d7294ab",
             databaseURL: "https://kahoot-81efe-default-rtdb.firebaseio.com"
         };
+
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        database = firebase.database();
+    } catch (error) {
+        console.error("Error al iniciar Firebase:", error);
+        alert("No se pudo cargar la conexión del juego. Revisa tu red e inténtalo de nuevo.");
+    }
+
 
         let miNomina = "";
         let miAvatar = "nivea";
