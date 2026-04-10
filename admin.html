@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BMM Trivia - Admin Control V4</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        :root {
+            --beiersdorf-blue: #0032A0;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial;
+            background: #f4f7f6;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .control-panel {
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-blue {
+            background: var(--beiersdorf-blue);
+        }
+
+        .btn-yellow {
+            background: var(--warning);
+            color: black;
+        }
+
+        .btn-green {
+            background: var(--success);
+        }
+
+        .btn-purple {
+            background: #6f42c1;
+            font-size: 18px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4);
+        }
+
+        .btn-red {
+            background: var(--danger);
+        }
+
+        .btn-reset-all {
+            background: #333;
+            margin-top: 30px;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .info-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 style="color: var(--beiersdorf-blue)">Control BMM</h2>
+    <div id="status" style="margin-bottom: 20px; color: #666;">Conectando...</div>
+
+    <div class="control-panel">
+        <div class="flex-row">
+            <button class="btn-blue" onclick="cambiarDiapositiva(-1)">⏮️ Anterior Slide</button>
+            <button class="btn-blue" onclick="cambiarDiapositiva(1)">Siguiente Slide ⏭️</button>
+        </div>
+
+        <button class="btn-yellow" onclick="lanzarPregunta()" style="padding: 25px; font-size: 18px;">
+            ❓ LANZAR PREGUNTA <span id="lbl-preg">1</span>
+        </button>
+
+        <button class="btn-green" onclick="setEstado('carrera')">🏁 VER CARRERA</button>
+
+        <button class="btn-purple" onclick="setEstado('podio')">🏆 VER PODIO FINAL</button>
+
+        <button class="btn-red" onclick="setEstado('espera')">🔄 Sala de Espera</button>
+        <button class="btn-reset-all" onclick="reiniciarTriviaCompleta()">⚠️ RESETEAR TRIVIA COMPLETA</button>
+    </div>
+
+    <div class="info-box">
+        <b>Diapositiva Actual:</b> <span id="current-slide">1</span><br>
+        <b>Estado Pantalla:</b> <span id="current-state"
+            style="color: var(--beiersdorf-blue); font-weight: bold;">Cargando...</span>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCB7M0dAF-p6hLQPDDZLQTzQJ_AljsWFvQ",
+            authDomain: "kahoot-81efe.firebaseapp.com",
+            projectId: "kahoot-81efe",
+            storageBucket: "kahoot-81efe.firebasestorage.app",
+            messagingSenderId: "74688156082",
+            appId: "1:74688156082:web:ea4adad29099743d7294ab",
+            databaseURL: "https://kahoot-81efe-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const TOTAL_PREGUNTAS = 4;
+        let slideAct = 1;
+        let pregSiguiente = 1;
+
+        database.ref('juego').on('value', (snap) => {
+            const data = snap.val() || {};
+            document.getElementById('status').innerHTML = "🟢 Conectado";
+            document.getElementById('current-state').innerText = data.estado_actual || "espera";
+            document.getElementById('current-slide').innerText = data.diapositiva_actual || 1;
+
+            slideAct = data.diapositiva_actual || 1;
+            pregSiguiente = data.siguiente_pregunta || 1;
+
+            if (pregSiguiente <= TOTAL_PREGUNTAS) {
+                document.getElementById('lbl-preg').innerText = pregSiguiente;
+            } else {
+                document.getElementById('lbl-preg').innerText = "(FINALIZADAS)";
+            }
+        });
+
+        function setEstado(estado) { database.ref('juego/estado_actual').set(estado); }
+
+        function cambiarDiapositiva(direccion) {
+            let nueva = slideAct + direccion;
+            if (nueva < 1) nueva = 1;
+            database.ref('juego').update({ estado_actual: 'diapositiva', diapositiva_actual: nueva });
+        }
+
+        function lanzarPregunta() {
+            if (pregSiguiente > TOTAL_PREGUNTAS) {
+                alert("¡Ya lanzaste las 4 preguntas! Presiona VER PODIO FINAL o resetea la trivia.");
+                return;
+            }
+            database.ref('juego').update({
+                estado_actual: 'pregunta',
+                pregunta_actual: pregSiguiente,
+                siguiente_pregunta: pregSiguiente + 1
+            });
+        }
+
+        function reiniciarTriviaCompleta() {
+            if (confirm("🚨 ATENCIÓN 🚨\n\nEsto borrará todos los usuarios y puntajes.\n\n¿Reiniciar?")) {
+                database.ref('juego').set({ estado_actual: 'espera', diapositiva_actual: 1, pregunta_actual: 1, siguiente_pregunta: 1 });
+                database.ref('usuarios').remove();
+                database.ref('respuestas').remove();
+                alert("¡Trivia limpia!");
+            }
+        }
+    </script>
+</body>
+
+</html>

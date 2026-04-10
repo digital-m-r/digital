@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BMM Play - Trivia</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial;
+            background: #e9ecef;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+        }
+
+        .view {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .caja-blanca {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .avatar-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .avatar-opt {
+            width: 60px;
+            height: 60px;
+            border: 3px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 5px;
+            background: #f8f9fa;
+        }
+
+        .avatar-opt.selected {
+            border-color: #0032A0;
+            background: #dbeafe;
+        }
+
+        .avatar-opt img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        button.btn-unirse {
+            background: #0032A0;
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            height: 60vh;
+            margin-top: 20px;
+        }
+
+        .btn-color {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-color:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        .bg-rojo {
+            background-color: #e21b3c;
+        }
+
+        .bg-azul {
+            background-color: #1368ce;
+        }
+
+        .bg-amar {
+            background-color: #d89e00;
+        }
+
+        .bg-verde {
+            background-color: #26890c;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="view-login" class="view active">
+        <div class="caja-blanca">
+            <h2 style="color: #0032A0;">¡Únete a la Trivia BMM!</h2>
+            <input type="text" id="in-nombre" placeholder="Tu Nombre">
+            <input type="text" id="in-nomina" placeholder="Tu Nómina">
+            <p>Elige tu Avatar:</p>
+            <div class="avatar-grid">
+                <div class="avatar-opt selected" onclick="selectAvatar('nivea', this)"><img src="img/nivea.png"
+                        alt="Nivea"></div>
+                <div class="avatar-opt" onclick="selectAvatar('eucerin', this)"><img src="img/eucerin.png"
+                        alt="Eucerin"></div>
+                <div class="avatar-opt" onclick="selectAvatar('atrix', this)"><img src="img/atrix.png" alt="Atrix">
+                </div>
+                <div class="avatar-opt" onclick="selectAvatar('aquaphor', this)"><img src="img/aquaphor.png"
+                        alt="Aquaphor"></div>
+            </div>
+            <button class="btn-unirse" onclick="registrarUsuario()">Entrar</button>
+        </div>
+    </div>
+
+
+    <div id="view-espera" class="view">
+        <h2 id="msg-espera" style="color: #666;">¡Estás dentro!</h2>
+        <p id="sub-msg-espera">Mira la pantalla principal...</p>
+    </div>
+
+    <div id="view-juego" class="view">
+        <div id="reloj-visual" style="font-size: 2rem; font-weight: bold; color: #dc3545;">20</div>
+        <div class="color-grid">
+            <button class="btn-color bg-rojo" onclick="enviarRespuesta('A')"></button>
+            <button class="btn-color bg-azul" onclick="enviarRespuesta('B')"></button>
+            <button class="btn-color bg-amar" onclick="enviarRespuesta('C')"></button>
+            <button class="btn-color bg-verde" onclick="enviarRespuesta('D')"></button>
+        </div>
+    </div>
+
+    <div id="view-fin" class="view">
+        <h2 style="color: #0032A0; font-size: 2rem;">¡Juego Terminado!</h2>
+        <div class="caja-blanca">
+            <p style="font-size: 1.2rem; color: #666; margin-top: 0;">Tu puntaje final:</p>
+            <div id="mi-puntaje-final" style="font-size: 3.5rem; font-weight: bold; color: #28a745;">0</div>
+            <p id="mi-posicion-final" style="font-size: 1.2rem; margin-top: 15px; color: #333;"></p>
+        </div>
+        <p style="color: #666; font-weight: bold;">¡Gracias por participar!</p>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCB7M0dAF-p6hLQPDDZLQTzQJ_AljsWFvQ",
+            authDomain: "kahoot-81efe.firebaseapp.com",
+            projectId: "kahoot-81efe",
+            storageBucket: "kahoot-81efe.firebasestorage.app",
+            messagingSenderId: "74688156082",
+            appId: "1:74688156082:web:ea4adad29099743d7294ab",
+            databaseURL: "https://kahoot-81efe-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let miNomina = "";
+        let miAvatar = "nivea";
+        let pregActual = 1;
+        let tiempoRestante = 20;
+        let timerInterval;
+
+        // LLAVE MAESTRA
+        const respuestasCorrectas = { 1: 'B', 2: 'A', 3: 'C', 4: 'A' };
+
+        function selectAvatar(id, el) {
+            miAvatar = id;
+            document.querySelectorAll('.avatar-opt').forEach(opt => opt.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function registrarUsuario() {
+            const nombre = document.getElementById('in-nombre').value;
+            miNomina = document.getElementById('in-nomina').value;
+            if (nombre && miNomina) {
+                database.ref('usuarios/' + miNomina).set({
+                    nombre: nombre, avatar: miAvatar, puntaje_total: 0
+                }).then(() => {
+                    iniciarEscuchaJuego();
+                });
+            } else {
+                alert("Completa tus datos");
+            }
+        }
+
+        function iniciarEscuchaJuego() {
+            database.ref('juego').on('value', (snap) => {
+                const data = snap.val();
+                if (!data) return;
+
+                // MEJORA: Asegurar que la pregunta siempre se lea como un número entero
+                pregActual = parseInt(data.pregunta_actual) || 1;
+
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+                if (data.estado_actual === 'pregunta') {
+                    document.getElementById('view-juego').classList.add('active');
+                    iniciarTimerLocal();
+                }
+                else if (data.estado_actual === 'podio') {
+                    document.getElementById('view-fin').classList.add('active');
+                    obtenerResultadosFinales();
+                }
+                else {
+                    clearInterval(timerInterval);
+                    document.getElementById('view-espera').classList.add('active');
+
+                    // Solo resetear el mensaje si no venimos de contestar una pregunta
+                    if (!document.getElementById('msg-espera').innerText.includes("CORRECTO")) {
+                        document.getElementById('msg-espera').innerText = "¡Atento!";
+                        document.getElementById('sub-msg-espera').innerText = "Mira la pantalla principal...";
+                    }
+                }
+            });
+        }
+
+        function iniciarTimerLocal() {
+            tiempoRestante = 20;
+            document.getElementById('reloj-visual').innerText = tiempoRestante;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                tiempoRestante--;
+                document.getElementById('reloj-visual').innerText = tiempoRestante;
+                if (tiempoRestante <= 0) clearInterval(timerInterval);
+            }, 1000);
+        }
+
+        function enviarRespuesta(opcion) {
+            clearInterval(timerInterval);
+            let puntosEsteTurno = 0;
+
+            // VALIDACIÓN MATEMÁTICA
+            if (opcion === respuestasCorrectas[pregActual]) {
+                puntosEsteTurno = Math.round(500 + ((tiempoRestante / 20) * 500));
+            }
+
+            database.ref('respuestas/pregunta_' + pregActual + '/' + miNomina).set({
+                opcion: opcion, puntos: puntosEsteTurno
+            });
+
+            const userRef = database.ref('usuarios/' + miNomina + '/puntaje_total');
+            userRef.transaction((current) => (current || 0) + puntosEsteTurno);
+
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-espera').classList.add('active');
+
+            // MEJORA VISUAL: Explicarle al usuario exactamente por qué ganó o no ganó puntos
+            if (puntosEsteTurno > 0) {
+                document.getElementById('msg-espera').innerHTML = "¡CORRECTO! 🎯";
+                document.getElementById('sub-msg-espera').innerHTML = `<span style="color: #28a745; font-size: 1.5rem; font-weight: bold;">+${puntosEsteTurno} pts</span><br><br>Continuamos con la presentación proyectada al frente...`;
+            } else {
+                document.getElementById('msg-espera').innerHTML = "INCORRECTO ❌";
+                document.getElementById('sub-msg-espera').innerHTML = `<span style="color: #dc3545; font-size: 1.5rem; font-weight: bold;">0 pts</span><br><br>Continuamos con la presentación proyectada al frente...`;
+            }
+        }
+
+        function obtenerResultadosFinales() {
+            database.ref('usuarios').once('value').then((snap) => {
+                const usuariosObj = snap.val() || {};
+
+                const arrayUsuarios = Object.keys(usuariosObj).map(key => ({
+                    nomina: key,
+                    puntaje: usuariosObj[key].puntaje_total || 0
+                }));
+
+                arrayUsuarios.sort((a, b) => b.puntaje - a.puntaje);
+
+                const miIndex = arrayUsuarios.findIndex(u => u.nomina === miNomina);
+
+                if (miIndex !== -1) {
+                    const misDatos = arrayUsuarios[miIndex];
+                    document.getElementById('mi-puntaje-final').innerText = misDatos.puntaje;
+                    document.getElementById('mi-posicion-final').innerHTML = `Quedaste en el lugar <br><b>#${miIndex + 1} de ${arrayUsuarios.length}</b>`;
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

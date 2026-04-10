@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMM Trivia - Proyector V5 (Top 10 & Meta Real)</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        :root {
+            --beiersdorf-blue: #0032A0;
+            --bg-light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            overflow: hidden;
+            color: #333;
+        }
+
+        .pantalla {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .activa {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* 1. ESPERA */
+        #pantalla-espera {
+            background: white;
+            text-align: center;
+        }
+
+        #pantalla-espera h1 {
+            color: var(--beiersdorf-blue);
+            font-size: 5rem;
+            margin-bottom: 10px;
+        }
+
+        .contador-usuarios {
+            font-size: 2rem;
+            color: #666;
+            background: #e9ecef;
+            padding: 15px 30px;
+            border-radius: 50px;
+            margin-top: 20px;
+        }
+
+        /* 2. DIAPOSITIVA */
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* 3. PREGUNTA */
+        #pantalla-pregunta {
+            background: #f4f7f6;
+        }
+
+        .header-pregunta {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .timer {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #dc3545;
+            background: white;
+            padding: 10px 40px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .respuestas-count {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--beiersdorf-blue);
+        }
+
+        .pregunta-texto {
+            font-size: 3.5rem;
+            text-align: center;
+            width: 90%;
+            margin-bottom: 40px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .opciones-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 90%;
+        }
+
+        .opcion {
+            padding: 40px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .op-rojo {
+            background-color: #e21b3c;
+        }
+
+        .op-azul {
+            background-color: #1368ce;
+        }
+
+        .op-amarillo {
+            background-color: #d89e00;
+        }
+
+        .op-verde {
+            background-color: #26890c;
+        }
+
+        /* 4. CARRERA (AHORA TOP 10) */
+        #pantalla-carrera {
+            background: #e0e5ec;
+            padding-top: 20px;
+            justify-content: flex-start;
+        }
+
+        .carrera-titulo {
+            font-size: 2.5rem;
+            color: var(--beiersdorf-blue);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .pista-container {
+            width: 95%;
+            height: 82vh;
+            background: #333;
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #555;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .banda-transportadora {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255, 255, 255, 0.05) 60px, rgba(255, 255, 255, 0.05) 120px);
+            animation: moverBanda 2s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes moverBanda {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-120px);
+            }
+        }
+
+        .meta {
+            position: absolute;
+            right: 40px;
+            top: 0;
+            height: 100%;
+            width: 30px;
+            background: repeating-linear-gradient(45deg, #000, #000 15px, #fff 15px, #fff 30px);
+            z-index: 0;
+        }
+
+        /* Ajuste de tamaño para que quepan 10 carriles */
+        .carril {
+            height: 6vh;
+            border-bottom: 1px dashed #666;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+        }
+
+        .producto {
+            height: 5.5vh;
+            position: absolute;
+            left: 0;
+            transition: left 1.5s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prod-img {
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.5));
+        }
+
+        .prod-nombre {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            white-space: nowrap;
+        }
+
+        /* 5. PODIO FINAL */
+        #pantalla-podio {
+            background: #0f172a;
+            color: white;
+            justify-content: flex-end;
+            padding-bottom: 5vh;
+        }
+
+        .podio-titulo {
+            font-size: 5rem;
+            color: #facc15;
+            margin-bottom: auto;
+            margin-top: 5vh;
+            text-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+            text-transform: uppercase;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .podio-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 20px;
+            height: 60vh;
+            width: 100%;
+        }
+
+        .escalon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: inset 0 10px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .escalon-1 {
+            height: 45vh;
+            background: linear-gradient(to top, #856100, #facc15);
+            z-index: 3;
+            box-shadow: 0 0 40px rgba(250, 204, 21, 0.6);
+        }
+
+        .escalon-2 {
+            height: 32vh;
+            background: linear-gradient(to top, #475569, #cbd5e1);
+            z-index: 2;
+        }
+
+        .escalon-3 {
+            height: 22vh;
+            background: linear-gradient(to top, #78350f, #f59e0b);
+            z-index: 1;
+        }
+
+        .ganador-img {
+            width: 130px;
+            object-fit: contain;
+            filter: drop-shadow(0 15px 15px rgba(0, 0, 0, 0.6));
+            margin-bottom: -15px;
+            z-index: 10;
+        }
+
+        .ganador-nombre {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 25px;
+            text-align: center;
+            color: #111;
+            line-height: 1.1;
+        }
+
+        .ganador-pts {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .escalon h1 {
+            font-size: 6rem;
+            margin: 0;
+            margin-top: 10px;
+            color: rgba(0, 0, 0, 0.2);
+        }
+
+        .cargando-texto {
+            position: absolute;
+            width: 100%;
+            top: 40%;
+            text-align: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            z-index: 10;
+            text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.8);
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="pantalla-espera" class="pantalla activa">
+        <h1>Digital BMM Trivial</h1>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=URL_DE_TU_JUEGO" alt="QR"
+            style="border-radius: 20px; border: 10px solid #0032A0;">
+        <div class="contador-usuarios">Usuarios Conectados: <strong id="lbl-total-users">0</strong></div>
+    </div>
+
+    <div id="pantalla-diapositiva" class="pantalla">
+        <div class="slide-container"><img id="slide-img" src=""></div>
+    </div>
+
+    <div id="pantalla-pregunta" class="pantalla">
+        <div class="header-pregunta">
+            <div class="timer" id="timer-display">20</div>
+            <div class="respuestas-count">Respuestas: <span id="lbl-respuestas">0</span> / <span
+                    id="lbl-meta-respuestas">0</span></div>
+        </div>
+        <div class="pregunta-texto" id="txt-pregunta">...</div>
+        <div class="opciones-grid">
+            <div class="opcion op-rojo" id="op-a">A</div>
+            <div class="opcion op-azul" id="op-b">B</div>
+            <div class="opcion op-amarillo" id="op-c">C</div>
+            <div class="opcion op-verde" id="op-d">D</div>
+        </div>
+    </div>
+
+    <div id="pantalla-carrera" class="pantalla">
+        <div class="carrera-titulo">🏆 TOP 10 - LÍNEA DE PRODUCCIÓN</div>
+        <div class="pista-container" id="pista-carreras">
+        </div>
+    </div>
+
+    <div id="pantalla-podio" class="pantalla">
+        <div class="podio-titulo">🎖️ PODIO DIGITAL BMM 🎖️</div>
+        <div class="podio-container" id="podio-dinamico">
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCB7M0dAF-p6hLQPDDZLQTzQJ_AljsWFvQ", authDomain: "kahoot-81efe.firebaseapp.com",
+            projectId: "kahoot-81efe", storageBucket: "kahoot-81efe.firebasestorage.app",
+            messagingSenderId: "74688156082", appId: "1:74688156082:web:ea4adad29099743d7294ab",
+            databaseURL: "https://kahoot-81efe-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let totalUsuarios = 0; let timerInterval; let estadoAnterior = ""; let slideAnterior = 0; let preguntaActualNum = 1;
+        let confettiInterval;
+
+        const avatares = { 'nivea': 'img/nivea.png', 'eucerin': 'img/eucerin.png', 'atrix': 'img/atrix.png', 'aquaphor': 'img/aquaphor.png' };
+        const bancoPreguntas = [
+            { texto: "¿De qué tamaño es la presentación del Ungüento Aquaphor Baby Reparador?", opciones: ["A. 40 GMS", "B. 85 GMS", "C. 198 GMS", "D. 250 GMS"] },
+            { texto: "¿De qué tamaño es la presentación del desodorante Nivea Men Deep Carbon?", opciones: ["A. 50 ML", "B. 75 ML", "C. 150 ML", "D. 200 ML"] },
+            { texto: "¿Cuántas piezas incluye la caja de Crema Nivea Lata 60ml (Item 14)?", opciones: ["A. 12 PZAS", "B. 24 PZAS", "C. 36 PZAS", "D. 60 PZAS"] },
+            { texto: "¿Cuál es el Factor de Protección Solar (FPS) de la Crema Nivea Protección Solar (Item 23)?", opciones: ["A. FPS 15", "B. FPS 30", "C. FPS 50", "D. FPS 50+"] }
+        ];
+
+        database.ref('usuarios').on('value', (snap) => {
+            totalUsuarios = snap.numChildren();
+            document.getElementById('lbl-total-users').innerText = totalUsuarios;
+            document.getElementById('lbl-meta-respuestas').innerText = totalUsuarios;
+        });
+
+        database.ref('juego').on('value', (snap) => {
+            const data = snap.val() || {}; const nuevoEstado = data.estado_actual;
+            if (nuevoEstado === estadoAnterior && nuevoEstado !== 'pregunta' && data.diapositiva_actual === slideAnterior) return;
+            cambiarPantalla(nuevoEstado, data);
+            estadoAnterior = nuevoEstado; slideAnterior = data.diapositiva_actual;
+        });
+
+        function cambiarPantalla(estado, data) {
+            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+            clearInterval(timerInterval); clearInterval(confettiInterval);
+
+            const pantallaDestino = document.getElementById('pantalla-' + estado);
+            if (!pantallaDestino) return;
+            pantallaDestino.classList.add('activa');
+
+            if (estado === 'diapositiva') document.getElementById('slide-img').src = `img/d_${data.diapositiva_actual}.PNG`;
+            else if (estado === 'pregunta') { preguntaActualNum = data.pregunta_actual; iniciarPregunta(); }
+            else if (estado === 'carrera') generarCarrera();
+            else if (estado === 'podio') generarPodio();
+        }
+
+        function iniciarPregunta() {
+            document.getElementById('lbl-respuestas').innerText = "0";
+            const qData = bancoPreguntas[(preguntaActualNum - 1) % bancoPreguntas.length];
+            document.getElementById('txt-pregunta').innerText = qData.texto;
+            document.getElementById('op-a').innerText = qData.opciones[0]; document.getElementById('op-b').innerText = qData.opciones[1];
+            document.getElementById('op-c').innerText = qData.opciones[2]; document.getElementById('op-d').innerText = qData.opciones[3];
+
+            let contestaron = 0;
+            database.ref('respuestas/pregunta_' + preguntaActualNum).on('value', (snap) => {
+                contestaron = snap.numChildren(); document.getElementById('lbl-respuestas').innerText = contestaron;
+                if (contestaron >= totalUsuarios && totalUsuarios > 0) forzarFinDePregunta();
+            });
+
+            let tiempo = 20; document.getElementById('timer-display').innerText = tiempo;
+            timerInterval = setInterval(() => {
+                tiempo--; document.getElementById('timer-display').innerText = tiempo;
+                if (tiempo <= 0) forzarFinDePregunta();
+            }, 1000);
+        }
+
+        function forzarFinDePregunta() {
+            clearInterval(timerInterval); database.ref('juego/estado_actual').set('carrera'); database.ref('respuestas/pregunta_' + preguntaActualNum).off();
+        }
+
+        function generarCarrera() {
+            const pista = document.getElementById('pista-carreras');
+
+            pista.innerHTML = '<div class="banda-transportadora"></div><div class="meta"></div><div class="cargando-texto">Calculando posiciones...</div>';
+
+            setTimeout(() => {
+                database.ref('usuarios').once('value').then((snap) => {
+                    pista.innerHTML = '<div class="banda-transportadora"></div><div class="meta"></div>';
+
+                    const arr = Object.values(snap.val() || {}).sort((a, b) => b.puntaje_total - a.puntaje_total);
+                    // CAMBIO A TOP 10
+                    const top10 = arr.slice(0, 10);
+
+                    // CAMBIO: La meta ahora siempre representa la suma total de TODO el juego (4000 puntos)
+                    const MAX_PUNTOS_JUEGO = bancoPreguntas.length * 1000;
+
+                    top10.forEach((user, index) => {
+                        const imgSrc = avatares[user.avatar] || avatares['nivea'];
+
+                        // El porcentaje se calcula sobre los 4000 puntos posibles totales. 
+                        // Así en la pregunta 2, el máximo avance visual será alrededor de la mitad de la pantalla.
+                        let avance = (user.puntaje_total / MAX_PUNTOS_JUEGO) * 85;
+                        if (avance < 3) avance = 3;
+
+                        pista.innerHTML += `<div class="carril"><div class="producto" style="left: 0;" id="prod-anim-${index}"><img src="${imgSrc}" class="prod-img"><span class="prod-nombre">${user.nombre} (${user.puntaje_total || 0} pts)</span></div></div>`;
+                        setTimeout(() => { const el = document.getElementById(`prod-anim-${index}`); if (el) el.style.left = avance + '%'; }, 50);
+                    });
+                });
+            }, 1500);
+        }
+
+        function generarPodio() {
+            const container = document.getElementById('podio-dinamico');
+            container.innerHTML = '';
+
+            database.ref('usuarios').once('value').then((snap) => {
+                const arr = Object.values(snap.val() || {}).sort((a, b) => b.puntaje_total - a.puntaje_total);
+                const top3 = arr.slice(0, 3);
+                if (top3.length === 0) return;
+
+                const ordenVisual = [1, 0, 2];
+
+                ordenVisual.forEach(i => {
+                    if (!top3[i]) return;
+                    const user = top3[i];
+                    const imgSrc = avatares[user.avatar] || avatares['nivea'];
+                    const numeroLugar = i + 1;
+
+                    container.innerHTML += `
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
+                            <img src="${imgSrc}" class="ganador-img">
+                            <div class="escalon escalon-${numeroLugar}">
+                                <div class="ganador-nombre">${user.nombre.split(' ')[0]}</div>
+                                <div class="ganador-pts">${user.puntaje_total} pts</div>
+                                <h1>${numeroLugar}</h1>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                const duration = 15 * 1000;
+                const animationEnd = Date.now() + duration;
+                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+                function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+                confettiInterval = setInterval(function () {
+                    const timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(confettiInterval);
+                    const particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                }, 250);
+            });
+        }
+    </script>
+</body>
+
+</html>
