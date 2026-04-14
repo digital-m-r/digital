@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMM Trivia - Proyector V5 (Top 10 & Meta Real)</title>
+    <title>BMM Trivia - Proyector</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -404,6 +404,20 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // -----------------------------------------------------------
+        // ESCUCHA DE REINICIO GLOBAL (HARD RESET)
+        // -----------------------------------------------------------
+        let ultimoReinicio = null;
+        database.ref('juego/reinicio_global').on('value', (snap) => {
+            const timestamp = snap.val();
+            if (timestamp) {
+                if (ultimoReinicio !== null && timestamp !== ultimoReinicio) {
+                    window.location.reload(); 
+                }
+                ultimoReinicio = timestamp;
+            }
+        });
+
         let totalUsuarios = 0; let timerInterval; let estadoAnterior = ""; let slideAnterior = 0; let preguntaActualNum = 1;
         let confettiInterval;
 
@@ -476,7 +490,7 @@
                     pista.innerHTML = '<div class="banda-transportadora"></div><div class="meta"></div>';
 
                     const arr = Object.values(snap.val() || {}).sort((a, b) => b.puntaje_total - a.puntaje_total);
-                    // CAMBIO A TOP 10
+                    
                     const top10 = arr.slice(0, 10);
 
                     // CAMBIO: La meta ahora siempre representa la suma total de TODO el juego (4000 puntos)
