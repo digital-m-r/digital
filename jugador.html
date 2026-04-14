@@ -39,7 +39,6 @@
             margin: 20px 0;
         }
 
-        /* ENCABEZADO DE LOGOS */
         .header-logos {
             display: flex;
             justify-content: space-between;
@@ -48,14 +47,13 @@
             width: 100%;
         }
 
-        /* CONTROL DE TAMAÑO INDEPENDIENTE PARA CADA LOGO */
         .logo-izq {
             height: 25px;
             object-fit: contain;
         }
 
         .logo-der {
-            height: 85px; 
+            height: 85px;
             object-fit: contain;
         }
 
@@ -221,8 +219,10 @@
         let pregActual = 1;
         let tiempoRestante = 20;
         let timerInterval;
+        
+        // NUEVA BANDERA DE SEGURIDAD
+        let respondioEstaPregunta = false;
 
-        // LLAVE MAESTRA
         const respuestasCorrectas = { 1: 'B', 2: 'A', 3: 'C', 4: 'A' };
 
         function selectAvatar(id, el) {
@@ -255,6 +255,7 @@
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
                 if (data.estado_actual === 'pregunta') {
+                    respondioEstaPregunta = false; // Se resetea al iniciar nueva pregunta
                     document.getElementById('view-juego').classList.add('active');
                     iniciarTimerLocal();
                 }
@@ -266,7 +267,13 @@
                     clearInterval(timerInterval);
                     document.getElementById('view-espera').classList.add('active');
 
-                    if (!document.getElementById('msg-espera').innerText.includes("CORRECTO")) {
+                    // Si pasamos a la carrera y el usuario NUNCA contestó, le marcamos tiempo agotado
+                    if (!respondioEstaPregunta && data.estado_actual === 'carrera') {
+                        document.getElementById('msg-espera').innerHTML = "¡TIEMPO AGOTADO! ⏳";
+                        document.getElementById('sub-msg-espera').innerHTML = `<span style="color: #dc3545; font-size: 1.5rem; font-weight: bold;">0 pts</span><br><br>Continuamos con la presentación proyectada al frente...`;
+                    } 
+                    // Si es cualquier otra pantalla y no ha contestado, solo le pedimos atención
+                    else if (!respondioEstaPregunta && data.estado_actual !== 'carrera') {
                         document.getElementById('msg-espera').innerText = "¡Atento!";
                         document.getElementById('sub-msg-espera').innerText = "Mira la pantalla principal...";
                     }
@@ -278,14 +285,26 @@
             tiempoRestante = 20;
             document.getElementById('reloj-visual').innerText = tiempoRestante;
             clearInterval(timerInterval);
+            
             timerInterval = setInterval(() => {
                 tiempoRestante--;
                 document.getElementById('reloj-visual').innerText = tiempoRestante;
-                if (tiempoRestante <= 0) clearInterval(timerInterval);
+                
+                // Si el reloj llega a cero y no ha tocado un botón, forzamos un envío de TIMEOUT
+                if (tiempoRestante <= 0) {
+                    clearInterval(timerInterval);
+                    if (!respondioEstaPregunta) {
+                        enviarRespuesta('TIMEOUT');
+                    }
+                }
             }, 1000);
         }
 
         function enviarRespuesta(opcion) {
+            // Evitar que el usuario le pique dos veces muy rápido
+            if (respondioEstaPregunta) return; 
+            respondioEstaPregunta = true;
+            
             clearInterval(timerInterval);
             let puntosEsteTurno = 0;
 
@@ -306,6 +325,9 @@
             if (puntosEsteTurno > 0) {
                 document.getElementById('msg-espera').innerHTML = "¡CORRECTO! 🎯";
                 document.getElementById('sub-msg-espera').innerHTML = `<span style="color: #28a745; font-size: 1.5rem; font-weight: bold;">+${puntosEsteTurno} pts</span><br><br>Continuamos con la presentación proyectada al frente...`;
+            } else if (opcion === 'TIMEOUT') {
+                document.getElementById('msg-espera').innerHTML = "¡TIEMPO AGOTADO! ⏳";
+                document.getElementById('sub-msg-espera').innerHTML = `<span style="color: #dc3545; font-size: 1.5rem; font-weight: bold;">0 pts</span><br><br>Continuamos con la presentación proyectada al frente...`;
             } else {
                 document.getElementById('msg-espera').innerHTML = "INCORRECTO ❌";
                 document.getElementById('sub-msg-espera').innerHTML = `<span style="color: #dc3545; font-size: 1.5rem; font-weight: bold;">0 pts</span><br><br>Continuamos con la presentación proyectada al frente...`;
