@@ -213,6 +213,21 @@
         alert("No se pudo cargar la conexión del juego. Revisa tu red e inténtalo de nuevo.");
     }
 
+        // -----------------------------------------------------------
+        // ESCUCHA DE REINICIO GLOBAL (HARD RESET)
+        // -----------------------------------------------------------
+        let ultimoReinicio = null;
+        database.ref('juego/reinicio_global').on('value', (snap) => {
+            const timestamp = snap.val();
+            if (timestamp) {
+                if (ultimoReinicio !== null && timestamp !== ultimoReinicio) {
+                    window.location.reload(); 
+                }
+                ultimoReinicio = timestamp;
+            }
+        });
+        // -----------------------------------------------------------
+
 
         let miNomina = "";
         let miAvatar = "nivea";
@@ -220,7 +235,6 @@
         let tiempoRestante = 20;
         let timerInterval;
         
-        // NUEVA BANDERA DE SEGURIDAD
         let respondioEstaPregunta = false;
 
         const respuestasCorrectas = { 1: 'B', 2: 'A', 3: 'C', 4: 'A' };
@@ -255,7 +269,7 @@
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
                 if (data.estado_actual === 'pregunta') {
-                    respondioEstaPregunta = false; // Se resetea al iniciar nueva pregunta
+                    respondioEstaPregunta = false; 
                     document.getElementById('view-juego').classList.add('active');
                     iniciarTimerLocal();
                 }
@@ -267,12 +281,10 @@
                     clearInterval(timerInterval);
                     document.getElementById('view-espera').classList.add('active');
 
-                    // Si pasamos a la carrera y el usuario NUNCA contestó, le marcamos tiempo agotado
                     if (!respondioEstaPregunta && data.estado_actual === 'carrera') {
                         document.getElementById('msg-espera').innerHTML = "¡TIEMPO AGOTADO! ⏳";
                         document.getElementById('sub-msg-espera').innerHTML = `<span style="color: #dc3545; font-size: 1.5rem; font-weight: bold;">0 pts</span><br><br>Continuamos con la presentación proyectada al frente...`;
                     } 
-                    // Si es cualquier otra pantalla y no ha contestado, solo le pedimos atención
                     else if (!respondioEstaPregunta && data.estado_actual !== 'carrera') {
                         document.getElementById('msg-espera').innerText = "¡Atento!";
                         document.getElementById('sub-msg-espera').innerText = "Mira la pantalla principal...";
@@ -290,7 +302,6 @@
                 tiempoRestante--;
                 document.getElementById('reloj-visual').innerText = tiempoRestante;
                 
-                // Si el reloj llega a cero y no ha tocado un botón, forzamos un envío de TIMEOUT
                 if (tiempoRestante <= 0) {
                     clearInterval(timerInterval);
                     if (!respondioEstaPregunta) {
@@ -301,7 +312,6 @@
         }
 
         function enviarRespuesta(opcion) {
-            // Evitar que el usuario le pique dos veces muy rápido
             if (respondioEstaPregunta) return; 
             respondioEstaPregunta = true;
             
