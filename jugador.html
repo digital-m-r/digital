@@ -39,7 +39,7 @@
             margin: 20px 0;
         }
 
-        /* NUEVO: Estilos para el encabezado de los logos */
+        /* ENCABEZADO DE LOGOS */
         .header-logos {
             display: flex;
             justify-content: space-between;
@@ -48,8 +48,14 @@
             width: 100%;
         }
 
-        .header-logos img {
-            height: 30px; /* Ajusta este valor si tus logos se ven muy grandes o chicos */
+        /* CONTROL DE TAMAÑO INDEPENDIENTE PARA CADA LOGO */
+        .logo-izq {
+            height: 25px;
+            object-fit: contain;
+        }
+
+        .logo-der {
+            height: 45px; 
             object-fit: contain;
         }
 
@@ -63,7 +69,6 @@
             font-size: 16px;
         }
 
-        /* CAMBIO A GRID: Para forzar 4 columnas exactas */
         .avatar-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -73,7 +78,7 @@
         }
 
         .avatar-opt {
-            width: 55px; /* Ligeramente más pequeño para que quepan 4 perfecto en celulares angostos */
+            width: 55px;
             height: 55px;
             border: 3px solid transparent;
             border-radius: 10px;
@@ -139,8 +144,8 @@
         <div class="caja-blanca">
             
             <div class="header-logos">
-                <img src="img/logo_beiersdorf.png" alt="Beiersdorf">
-                <img src="img/logo_digital.png" alt="Digital">
+                <img src="img/logo_beiersdorf.png" alt="Beiersdorf" class="logo-izq">
+                <img src="img/logo_digital.png" alt="Digital" class="logo-der">
             </div>
 
             <h2 style="color: #0032A0; margin-top: 0;">¡Únete a la Trivia BMM!</h2>
