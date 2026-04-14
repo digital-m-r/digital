@@ -52,6 +52,7 @@
         .avatar-grid {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap; /* Añadido para que los 8 avatares formen 2 filas y no se salgan del celular */
             gap: 15px;
             margin: 20px 0;
         }
@@ -145,6 +146,11 @@
                 </div>
                 <div class="avatar-opt" onclick="selectAvatar('aquaphor', this)"><img src="img/aquaphor.png"
                         alt="Aquaphor"></div>
+                
+                <div class="avatar-opt" onclick="selectAvatar('shower', this)"><img src="img/shower.png" alt="Shower"></div>
+                <div class="avatar-opt" onclick="selectAvatar('labello', this)"><img src="img/labello.png" alt="Labello"></div>
+                <div class="avatar-opt" onclick="selectAvatar('rollon', this)"><img src="img/rollon.png" alt="RollOn"></div>
+                <div class="avatar-opt" onclick="selectAvatar('ph5', this)"><img src="img/ph5.png" alt="PH5"></div>
             </div>
             <button class="btn-unirse" onclick="registrarUsuario()">Entrar</button>
         </div>
