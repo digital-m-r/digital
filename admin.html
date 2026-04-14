@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BMM Trivia - Admin Control V4</title>
+    <title>BMM Trivia - Admin Control V6 (Grid)</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -13,72 +13,73 @@
             --success: #28a745;
             --warning: #ffc107;
             --danger: #dc3545;
+            --purple: #6f42c1;
         }
 
         body {
             font-family: 'Segoe UI', Arial;
             background: #f4f7f6;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
         }
 
+        h2 {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
         .control-panel {
-            max-width: 400px;
+            max-width: 450px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
         }
 
-        .flex-row {
-            display: flex;
-            gap: 10px;
+        /* NUEVO: Contenedor Grid de 2 columnas */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
         button {
-            padding: 15px;
-            font-size: 16px;
+            padding: 18px 10px;
+            font-size: 15px;
             font-weight: bold;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             color: white;
             cursor: pointer;
-            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
         }
 
         button:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
         }
 
-        .btn-blue {
-            background: var(--beiersdorf-blue);
+        .icono-btn {
+            font-size: 24px;
         }
 
-        .btn-yellow {
-            background: var(--warning);
-            color: black;
-        }
-
-        .btn-green {
-            background: var(--success);
-        }
-
-        .btn-purple {
-            background: #6f42c1;
-            font-size: 18px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4);
-        }
-
-        .btn-red {
-            background: var(--danger);
-        }
-
-        .btn-reset-all {
-            background: #333;
-            margin-top: 30px;
-            font-size: 14px;
-            padding: 10px;
+        .btn-blue { background: var(--beiersdorf-blue); }
+        .btn-yellow { background: var(--warning); color: black; }
+        .btn-green { background: var(--success); }
+        .btn-purple { background: var(--purple); }
+        .btn-red { background: var(--danger); }
+        
+        .btn-reset-all { 
+            background: #333; 
+            margin-top: 20px; 
+            font-size: 14px; 
+            padding: 15px;
+            flex-direction: row; /* Este botón sí lo dejamos horizontal */
         }
 
         .info-box {
@@ -87,30 +88,57 @@
             border-radius: 10px;
             margin-top: 20px;
             border: 1px solid #ddd;
+            font-size: 15px;
+        }
+        
+        .estado-verde {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--success);
+            border-radius: 50%;
+            margin-right: 5px;
         }
     </style>
 </head>
 
 <body>
     <h2 style="color: var(--beiersdorf-blue)">Control BMM</h2>
-    <div id="status" style="margin-bottom: 20px; color: #666;">Conectando...</div>
+    <div id="status" style="margin-bottom: 20px; color: #666; font-size: 14px;">
+        <span class="estado-verde"></span>Conectando...
+    </div>
 
     <div class="control-panel">
-        <div class="flex-row">
-            <button class="btn-blue" onclick="cambiarDiapositiva(-1)">⏮️ Anterior Slide</button>
-            <button class="btn-blue" onclick="cambiarDiapositiva(1)">Siguiente Slide ⏭️</button>
+        
+        <div class="btn-grid">
+            <button class="btn-blue" onclick="cambiarDiapositiva(-1)">
+                <span class="icono-btn">⏮️</span> Anterior Slide
+            </button>
+            
+            <button class="btn-blue" onclick="cambiarDiapositiva(1)">
+                <span class="icono-btn">⏭️</span> Siguiente Slide
+            </button>
+
+            <button class="btn-yellow" onclick="lanzarPregunta()">
+                <span class="icono-btn">❓</span> Pregunta <span id="lbl-preg">1</span>
+            </button>
+
+            <button class="btn-green" onclick="setEstado('carrera')">
+                <span class="icono-btn">🏁</span> Ver Carrera
+            </button>
+
+            <button class="btn-purple" onclick="setEstado('podio')">
+                <span class="icono-btn">🏆</span> Podio Final
+            </button>
+
+            <button class="btn-red" onclick="setEstado('espera')">
+                <span class="icono-btn">🔄</span> Sala Espera
+            </button>
         </div>
 
-        <button class="btn-yellow" onclick="lanzarPregunta()" style="padding: 25px; font-size: 18px;">
-            ❓ LANZAR PREGUNTA <span id="lbl-preg">1</span>
+        <button class="btn-reset-all" onclick="reiniciarTriviaCompleta()">
+            ⚠️ RESETEAR TRIVIA COMPLETA
         </button>
-
-        <button class="btn-green" onclick="setEstado('carrera')">🏁 VER CARRERA</button>
-
-        <button class="btn-purple" onclick="setEstado('podio')">🏆 VER PODIO FINAL</button>
-
-        <button class="btn-red" onclick="setEstado('espera')">🔄 Sala de Espera</button>
-        <button class="btn-reset-all" onclick="reiniciarTriviaCompleta()">⚠️ RESETEAR TRIVIA COMPLETA</button>
     </div>
 
     <div class="info-box">
@@ -138,7 +166,7 @@
 
         database.ref('juego').on('value', (snap) => {
             const data = snap.val() || {};
-            document.getElementById('status').innerHTML = "🟢 Conectado";
+            document.getElementById('status').innerHTML = '<span class="estado-verde"></span>Conectado al Proyector';
             document.getElementById('current-state').innerText = data.estado_actual || "espera";
             document.getElementById('current-slide').innerText = data.diapositiva_actual || 1;
 
@@ -173,11 +201,18 @@
         }
 
         function reiniciarTriviaCompleta() {
-            if (confirm("🚨 ATENCIÓN 🚨\n\nEsto borrará todos los usuarios y puntajes.\n\n¿Reiniciar?")) {
-                database.ref('juego').set({ estado_actual: 'espera', diapositiva_actual: 1, pregunta_actual: 1, siguiente_pregunta: 1 });
+            if (confirm("🚨 ATENCIÓN 🚨\n\nEsto borrará todos los usuarios y recargará las pantallas de todos.\n\n¿Reiniciar?")) {
+                // Mantenido el reinicio_global (Hard Reset)
+                database.ref('juego').set({ 
+                    estado_actual: 'espera', 
+                    diapositiva_actual: 1, 
+                    pregunta_actual: 1, 
+                    siguiente_pregunta: 1,
+                    reinicio_global: Date.now() 
+                });
                 database.ref('usuarios').remove();
                 database.ref('respuestas').remove();
-                alert("¡Trivia limpia!");
+                alert("¡Trivia limpia! Los dispositivos se han reiniciado.");
             }
         }
     </script>
