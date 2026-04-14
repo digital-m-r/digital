@@ -39,6 +39,20 @@
             margin: 20px 0;
         }
 
+        /* NUEVO: Estilos para el encabezado de los logos */
+        .header-logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .header-logos img {
+            height: 30px; /* Ajusta este valor si tus logos se ven muy grandes o chicos */
+            object-fit: contain;
+        }
+
         input {
             width: 100%;
             padding: 15px;
@@ -49,17 +63,18 @@
             font-size: 16px;
         }
 
+        /* CAMBIO A GRID: Para forzar 4 columnas exactas */
         .avatar-grid {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap; /* Añadido para que los 8 avatares formen 2 filas y no se salgan del celular */
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
             margin: 20px 0;
+            justify-items: center;
         }
 
         .avatar-opt {
-            width: 60px;
-            height: 60px;
+            width: 55px; /* Ligeramente más pequeño para que quepan 4 perfecto en celulares angostos */
+            height: 55px;
             border: 3px solid transparent;
             border-radius: 10px;
             cursor: pointer;
@@ -111,21 +126,10 @@
             box-shadow: none;
         }
 
-        .bg-rojo {
-            background-color: #e21b3c;
-        }
-
-        .bg-azul {
-            background-color: #1368ce;
-        }
-
-        .bg-amar {
-            background-color: #d89e00;
-        }
-
-        .bg-verde {
-            background-color: #26890c;
-        }
+        .bg-rojo { background-color: #e21b3c; }
+        .bg-azul { background-color: #1368ce; }
+        .bg-amar { background-color: #d89e00; }
+        .bg-verde { background-color: #26890c; }
     </style>
 </head>
 
@@ -133,20 +137,23 @@
 
     <div id="view-login" class="view active">
         <div class="caja-blanca">
-            <h2 style="color: #0032A0;">¡Únete a la Trivia BMM!</h2>
+            
+            <div class="header-logos">
+                <img src="img/logo_beiersdorf.png" alt="Beiersdorf">
+                <img src="img/logo_digital.png" alt="Digital">
+            </div>
+
+            <h2 style="color: #0032A0; margin-top: 0;">¡Únete a la Trivia BMM!</h2>
             <input type="text" id="in-nombre" placeholder="Tu Nombre">
             <input type="text" id="in-nomina" placeholder="Tu Nómina">
-            <p>Elige tu Avatar:</p>
+            
+            <p style="font-weight: bold;">Elige tu Avatar:</p>
+            
             <div class="avatar-grid">
-                <div class="avatar-opt selected" onclick="selectAvatar('nivea', this)"><img src="img/nivea.png"
-                        alt="Nivea"></div>
-                <div class="avatar-opt" onclick="selectAvatar('eucerin', this)"><img src="img/eucerin.png"
-                        alt="Eucerin"></div>
-                <div class="avatar-opt" onclick="selectAvatar('atrix', this)"><img src="img/atrix.png" alt="Atrix">
-                </div>
-                <div class="avatar-opt" onclick="selectAvatar('aquaphor', this)"><img src="img/aquaphor.png"
-                        alt="Aquaphor"></div>
-                
+                <div class="avatar-opt selected" onclick="selectAvatar('nivea', this)"><img src="img/nivea.png" alt="Nivea"></div>
+                <div class="avatar-opt" onclick="selectAvatar('eucerin', this)"><img src="img/eucerin.png" alt="Eucerin"></div>
+                <div class="avatar-opt" onclick="selectAvatar('atrix', this)"><img src="img/atrix.png" alt="Atrix"></div>
+                <div class="avatar-opt" onclick="selectAvatar('aquaphor', this)"><img src="img/aquaphor.png" alt="Aquaphor"></div>
                 <div class="avatar-opt" onclick="selectAvatar('shower', this)"><img src="img/shower.png" alt="Shower"></div>
                 <div class="avatar-opt" onclick="selectAvatar('labello', this)"><img src="img/labello.png" alt="Labello"></div>
                 <div class="avatar-opt" onclick="selectAvatar('rollon', this)"><img src="img/rollon.png" alt="RollOn"></div>
@@ -238,7 +245,6 @@
                 const data = snap.val();
                 if (!data) return;
 
-                // MEJORA: Asegurar que la pregunta siempre se lea como un número entero
                 pregActual = parseInt(data.pregunta_actual) || 1;
 
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -255,7 +261,6 @@
                     clearInterval(timerInterval);
                     document.getElementById('view-espera').classList.add('active');
 
-                    // Solo resetear el mensaje si no venimos de contestar una pregunta
                     if (!document.getElementById('msg-espera').innerText.includes("CORRECTO")) {
                         document.getElementById('msg-espera').innerText = "¡Atento!";
                         document.getElementById('sub-msg-espera').innerText = "Mira la pantalla principal...";
@@ -279,7 +284,6 @@
             clearInterval(timerInterval);
             let puntosEsteTurno = 0;
 
-            // VALIDACIÓN MATEMÁTICA
             if (opcion === respuestasCorrectas[pregActual]) {
                 puntosEsteTurno = Math.round(500 + ((tiempoRestante / 20) * 500));
             }
@@ -294,7 +298,6 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-espera').classList.add('active');
 
-            // MEJORA VISUAL: Explicarle al usuario exactamente por qué ganó o no ganó puntos
             if (puntosEsteTurno > 0) {
                 document.getElementById('msg-espera').innerHTML = "¡CORRECTO! 🎯";
                 document.getElementById('sub-msg-espera').innerHTML = `<span style="color: #28a745; font-size: 1.5rem; font-weight: bold;">+${puntosEsteTurno} pts</span><br><br>Continuamos con la presentación proyectada al frente...`;
@@ -324,7 +327,7 @@
                 }
             });
         }
-    </script>
+</script>
 </body>
 
 </html>
