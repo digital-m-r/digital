@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMM Trivia - Proyector</title>
+    <title>BMM Trivia - Proyector V6</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -69,6 +69,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative; /* Añadido para controlar el video */
         }
 
         .slide-container img {
@@ -132,23 +133,12 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .op-rojo {
-            background-color: #e21b3c;
-        }
+        .op-rojo { background-color: #e21b3c; }
+        .op-azul { background-color: #1368ce; }
+        .op-amarillo { background-color: #d89e00; }
+        .op-verde { background-color: #26890c; }
 
-        .op-azul {
-            background-color: #1368ce;
-        }
-
-        .op-amarillo {
-            background-color: #d89e00;
-        }
-
-        .op-verde {
-            background-color: #26890c;
-        }
-
-        /* 4. CARRERA (AHORA TOP 10) */
+        /* 4. CARRERA */
         #pantalla-carrera {
             background: #e0e5ec;
             padding-top: 20px;
@@ -188,13 +178,8 @@
         }
 
         @keyframes moverBanda {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-120px);
-            }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-120px); }
         }
 
         .meta {
@@ -207,7 +192,6 @@
             z-index: 0;
         }
 
-        /* Ajuste de tamaño para que quepan 10 carriles */
         .carril {
             height: 6vh;
             border-bottom: 1px dashed #666;
@@ -279,24 +263,9 @@
             box-shadow: inset 0 10px 20px rgba(255, 255, 255, 0.3);
         }
 
-        .escalon-1 {
-            height: 45vh;
-            background: linear-gradient(to top, #856100, #facc15);
-            z-index: 3;
-            box-shadow: 0 0 40px rgba(250, 204, 21, 0.6);
-        }
-
-        .escalon-2 {
-            height: 32vh;
-            background: linear-gradient(to top, #475569, #cbd5e1);
-            z-index: 2;
-        }
-
-        .escalon-3 {
-            height: 22vh;
-            background: linear-gradient(to top, #78350f, #f59e0b);
-            z-index: 1;
-        }
+        .escalon-1 { height: 45vh; background: linear-gradient(to top, #856100, #facc15); z-index: 3; box-shadow: 0 0 40px rgba(250, 204, 21, 0.6); }
+        .escalon-2 { height: 32vh; background: linear-gradient(to top, #475569, #cbd5e1); z-index: 2; }
+        .escalon-3 { height: 22vh; background: linear-gradient(to top, #78350f, #f59e0b); z-index: 1; }
 
         .ganador-img {
             width: 130px;
@@ -343,13 +312,8 @@
         }
 
         @keyframes pulse {
-            0% {
-                opacity: 0.7;
-            }
-
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
@@ -364,7 +328,10 @@
     </div>
 
     <div id="pantalla-diapositiva" class="pantalla">
-        <div class="slide-container"><img id="slide-img" src=""></div>
+        <div class="slide-container">
+            <img id="slide-img" src="" style="display: block;">
+            <iframe id="slide-video" width="100%" height="100%" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="display: none; border: none; position: absolute; top:0; left:0; background: black;"></iframe>
+        </div>
     </div>
 
     <div id="pantalla-pregunta" class="pantalla">
@@ -450,7 +417,29 @@
             if (!pantallaDestino) return;
             pantallaDestino.classList.add('activa');
 
-            if (estado === 'diapositiva') document.getElementById('slide-img').src = `img/d_${data.diapositiva_actual}.PNG`;
+            if (estado === 'diapositiva') {
+                const numSlide = data.diapositiva_actual;
+                const imgEl = document.getElementById('slide-img');
+                const vidEl = document.getElementById('slide-video');
+
+                // -------------------------------------------------------------
+                // LÓGICA DEL VIDEO DE YOUTUBE 
+                // -------------------------------------------------------------
+                // CAMBIA AQUÍ EL NÚMERO "3" POR LA DIAPOSITIVA DONDE QUIERAS EL VIDEO
+                if (numSlide === 3) {
+                    imgEl.style.display = 'none';
+                    vidEl.style.display = 'block';
+                    
+                    // REEMPLAZA 'PON_TU_ID_AQUI' POR EL ID REAL DE TU VIDEO (ej. dQw4w9WgXcQ)
+                    vidEl.src = 'https://www.youtube.com/embed/_4G2STDxtE4?autoplay=1&controls=0&rel=0&modestbranding=1';
+                } else {
+                    vidEl.style.display = 'none';
+                    vidEl.src = ''; // Borramos el src para que deje de sonar al cambiar de slide
+                    imgEl.style.display = 'block';
+                    imgEl.src = `img/d_${numSlide}.PNG`;
+                }
+                // -------------------------------------------------------------
+            }
             else if (estado === 'pregunta') { preguntaActualNum = data.pregunta_actual; iniciarPregunta(); }
             else if (estado === 'carrera') generarCarrera();
             else if (estado === 'podio') generarPodio();
@@ -493,14 +482,11 @@
                     
                     const top10 = arr.slice(0, 10);
 
-                    // CAMBIO: La meta ahora siempre representa la suma total de TODO el juego (4000 puntos)
                     const MAX_PUNTOS_JUEGO = bancoPreguntas.length * 1000;
 
                     top10.forEach((user, index) => {
                         const imgSrc = avatares[user.avatar] || avatares['nivea'];
 
-                        // El porcentaje se calcula sobre los 4000 puntos posibles totales. 
-                        // Así en la pregunta 2, el máximo avance visual será alrededor de la mitad de la pantalla.
                         let avance = (user.puntaje_total / MAX_PUNTOS_JUEGO) * 85;
                         if (avance < 3) avance = 3;
 
