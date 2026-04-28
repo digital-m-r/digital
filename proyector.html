@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMM Trivia - Proyector V6</title>
+    <title>BMM Trivia - Proyector V8 (YouTube Hack)</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -40,7 +40,6 @@
             opacity: 1;
         }
 
-        /* 1. ESPERA */
         #pantalla-espera {
             background: white;
             text-align: center;
@@ -61,7 +60,6 @@
             margin-top: 20px;
         }
 
-        /* 2. DIAPOSITIVA */
         .slide-container {
             width: 100%;
             height: 100%;
@@ -69,7 +67,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative; /* Añadido para controlar el video */
+            position: relative;
         }
 
         .slide-container img {
@@ -78,7 +76,6 @@
             object-fit: contain;
         }
 
-        /* 3. PREGUNTA */
         #pantalla-pregunta {
             background: #f4f7f6;
         }
@@ -133,12 +130,22 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .op-rojo { background-color: #e21b3c; }
-        .op-azul { background-color: #1368ce; }
-        .op-amarillo { background-color: #d89e00; }
-        .op-verde { background-color: #26890c; }
+        .op-rojo {
+            background-color: #e21b3c;
+        }
 
-        /* 4. CARRERA */
+        .op-azul {
+            background-color: #1368ce;
+        }
+
+        .op-amarillo {
+            background-color: #d89e00;
+        }
+
+        .op-verde {
+            background-color: #26890c;
+        }
+
         #pantalla-carrera {
             background: #e0e5ec;
             padding-top: 20px;
@@ -178,8 +185,13 @@
         }
 
         @keyframes moverBanda {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-120px); }
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-120px);
+            }
         }
 
         .meta {
@@ -225,7 +237,6 @@
             white-space: nowrap;
         }
 
-        /* 5. PODIO FINAL */
         #pantalla-podio {
             background: #0f172a;
             color: white;
@@ -263,9 +274,24 @@
             box-shadow: inset 0 10px 20px rgba(255, 255, 255, 0.3);
         }
 
-        .escalon-1 { height: 45vh; background: linear-gradient(to top, #856100, #facc15); z-index: 3; box-shadow: 0 0 40px rgba(250, 204, 21, 0.6); }
-        .escalon-2 { height: 32vh; background: linear-gradient(to top, #475569, #cbd5e1); z-index: 2; }
-        .escalon-3 { height: 22vh; background: linear-gradient(to top, #78350f, #f59e0b); z-index: 1; }
+        .escalon-1 {
+            height: 45vh;
+            background: linear-gradient(to top, #856100, #facc15);
+            z-index: 3;
+            box-shadow: 0 0 40px rgba(250, 204, 21, 0.6);
+        }
+
+        .escalon-2 {
+            height: 32vh;
+            background: linear-gradient(to top, #475569, #cbd5e1);
+            z-index: 2;
+        }
+
+        .escalon-3 {
+            height: 22vh;
+            background: linear-gradient(to top, #78350f, #f59e0b);
+            z-index: 1;
+        }
 
         .ganador-img {
             width: 130px;
@@ -312,8 +338,13 @@
         }
 
         @keyframes pulse {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -322,15 +353,21 @@
 
     <div id="pantalla-espera" class="pantalla activa">
         <h1>Somos BMM - 1erQ 2026</h1>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://digital-m-r.github.io/digital/jugador" alt="QR"
-            style="border-radius: 20px; border: 10px solid #0032A0;">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://digital-m-r.github.io/digital/jugador"
+            alt="QR" style="border-radius: 20px; border: 10px solid #0032A0;">
         <div class="contador-usuarios">Usuarios Conectados: <strong id="lbl-total-users">0</strong></div>
     </div>
 
     <div id="pantalla-diapositiva" class="pantalla">
         <div class="slide-container">
             <img id="slide-img" src="" style="display: block;">
-            <iframe id="slide-video" width="100%" height="100%" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="display: none; border: none; position: absolute; top:0; left:0; background: black;"></iframe>
+
+            <div id="video-container"
+                style="display: none; width: 100%; height: 100%; overflow: hidden; pointer-events: none; position: absolute; top:0; left:0; background: black;">
+                <iframe id="slide-video" width="100%" height="100%" src="" frameborder="0"
+                    allow="autoplay; encrypted-media" allowfullscreen
+                    style="transform: scale(1.20); width: 100%; height: 100%; border: none;"></iframe>
+            </div>
         </div>
     </div>
 
@@ -371,15 +408,12 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // -----------------------------------------------------------
-        // ESCUCHA DE REINICIO GLOBAL (HARD RESET)
-        // -----------------------------------------------------------
         let ultimoReinicio = null;
         database.ref('juego/reinicio_global').on('value', (snap) => {
             const timestamp = snap.val();
             if (timestamp) {
                 if (ultimoReinicio !== null && timestamp !== ultimoReinicio) {
-                    window.location.reload(); 
+                    window.location.reload();
                 }
                 ultimoReinicio = timestamp;
             }
@@ -389,11 +423,20 @@
         let confettiInterval;
 
         const avatares = { 'nivea': 'img/nivea.png', 'eucerin': 'img/eucerin.png', 'atrix': 'img/atrix.png', 'aquaphor': 'img/aquaphor.png', 'shower': 'img/shower.png', 'labello': 'img/labello.png', 'rollon': 'img/rollon.png', 'ph5': 'img/ph5.png' };
+
+        // AQUÍ ESTÁN TUS 11 PREGUNTAS ACTUALIZADAS
         const bancoPreguntas = [
-            { texto: "¿De qué tamaño es la presentación del Ungüento Aquaphor Baby Reparador?", opciones: ["A. 40 GMS", "B. 85 GMS", "C. 198 GMS", "D. 250 GMS"] },
-            { texto: "¿De qué tamaño es la presentación del desodorante Nivea Men Deep Carbon?", opciones: ["A. 50 ML", "B. 75 ML", "C. 150 ML", "D. 200 ML"] },
-            { texto: "¿Cuántas piezas incluye la caja de Crema Nivea Lata 60ml (Item 14)?", opciones: ["A. 12 PZAS", "B. 24 PZAS", "C. 36 PZAS", "D. 60 PZAS"] },
-            { texto: "¿Cuál es el Factor de Protección Solar (FPS) de la Crema Nivea Protección Solar (Item 23)?", opciones: ["A. FPS 15", "B. FPS 30", "C. FPS 50", "D. FPS 50+"] }
+            { texto: "¿Cuáles son las tecnologías que han ayudado más a la mejora en eficiencia?", opciones: ["A. Botellas y tubos", "B. Tarros y roll-on", "C. Tubos y lip", "D. Botellas y dispensers"] },
+            { texto: "¿Cuál es el KPI de agua?", opciones: ["A. 0.922 m3/kpc", "B. 0.732 kpc/m3", "C. 1 m3/kpc", "D. 0.899 m3/kpc"] },
+            { texto: "¿A qué familia de productos pertenecen relanzamientos de este Q1?", opciones: ["A. Aquaphor, Coppertone, Labello", "B. Nivea hombre, eucerin cuerpo, Nivea cuerpo", "C. Eucerin cara, Nivea cuerpo y Nivea cara", "D. Deos, Eucerin cuerpo, Nivea cuerpo"] },
+            { texto: "¿Cuantos cambios de categoría del Q1 fueron aprobados en Total?", opciones: ["A. 69", "B. 109", "C. 89", "D. 99"] },
+            { texto: "¿Cómo se llama la nueva APP de Comunicación?", opciones: ["A. Comunicados", "B. BConecta", "C. Conectate", "D. Aplicación BMM"] },
+            { texto: "¿Qué tipo de líderes son los que generarán la transformación de F&P?", opciones: ["A. Líderes del futuro", "B. Líderes protagonistas", "C. Líderes que no actúan", "D. Líderes cerrados"] },
+            { texto: "¿Cual fue el promedio por persona de tarjetas Stop del equipo de almacén?", opciones: ["A. 6.2", "B. 3.8", "C. 4.3", "D. 2.6"] },
+            { texto: "¿Cuántas operaciones de importación tuvo BMM el año pasado?", opciones: ["A. 564", "B. 2629", "C. 92", "D. 3482"] },
+            { texto: "¿Cuál es la primer línea de producción que tiene planeada entregar AGAVE este año?", opciones: ["A. Botellas 9", "B. Tubos 5", "C. Nueva Línea de tarros 1", "D. Nueva línea de LIP"] },
+            { texto: "¿Cual de estas opciones no corresponde a Facilities?", opciones: ["A. Control de plagas", "B. Limpieza", "C. HVAC", "D. Equipos Productivos"] },
+            { texto: "¿Cómo se llama el nuevo director de BMM?", opciones: ["A. Armando", "B. Héctor", "C. Manuel", "D. Fernando"] }
         ];
 
         database.ref('usuarios').on('value', (snap) => {
@@ -420,25 +463,19 @@
             if (estado === 'diapositiva') {
                 const numSlide = data.diapositiva_actual;
                 const imgEl = document.getElementById('slide-img');
+                const vidContainer = document.getElementById('video-container');
                 const vidEl = document.getElementById('slide-video');
 
-                // -------------------------------------------------------------
-                // LÓGICA DEL VIDEO DE YOUTUBE 
-                // -------------------------------------------------------------
-                // CAMBIA AQUÍ EL NÚMERO "3" POR LA DIAPOSITIVA DONDE QUIERAS EL VIDEO
                 if (numSlide === 3) {
                     imgEl.style.display = 'none';
-                    vidEl.style.display = 'block';
-                    
-                    // REEMPLAZA 'PON_TU_ID_AQUI' POR EL ID REAL DE TU VIDEO (ej. dQw4w9WgXcQ)
-                    vidEl.src = 'https://www.youtube.com/embed/_4G2STDxtE4?autoplay=1&controls=0&rel=0&modestbranding=1';
+                    vidContainer.style.display = 'block';
+                    vidEl.src = 'https://www.youtube.com/embed/_4G2STDxtE4?autoplay=1&controls=0&rel=0&modestbranding=1&mute=0';
                 } else {
-                    vidEl.style.display = 'none';
-                    vidEl.src = ''; // Borramos el src para que deje de sonar al cambiar de slide
+                    vidContainer.style.display = 'none';
+                    vidEl.src = '';
                     imgEl.style.display = 'block';
                     imgEl.src = `img/d_${numSlide}.PNG`;
                 }
-                // -------------------------------------------------------------
             }
             else if (estado === 'pregunta') { preguntaActualNum = data.pregunta_actual; iniciarPregunta(); }
             else if (estado === 'carrera') generarCarrera();
@@ -471,22 +508,17 @@
 
         function generarCarrera() {
             const pista = document.getElementById('pista-carreras');
-
             pista.innerHTML = '<div class="banda-transportadora"></div><div class="meta"></div><div class="cargando-texto">Calculando posiciones...</div>';
 
             setTimeout(() => {
                 database.ref('usuarios').once('value').then((snap) => {
                     pista.innerHTML = '<div class="banda-transportadora"></div><div class="meta"></div>';
-
                     const arr = Object.values(snap.val() || {}).sort((a, b) => b.puntaje_total - a.puntaje_total);
-                    
                     const top10 = arr.slice(0, 10);
-
                     const MAX_PUNTOS_JUEGO = bancoPreguntas.length * 1000;
 
                     top10.forEach((user, index) => {
                         const imgSrc = avatares[user.avatar] || avatares['nivea'];
-
                         let avance = (user.puntaje_total / MAX_PUNTOS_JUEGO) * 85;
                         if (avance < 3) avance = 3;
 
@@ -505,7 +537,6 @@
                 const arr = Object.values(snap.val() || {}).sort((a, b) => b.puntaje_total - a.puntaje_total);
                 const top3 = arr.slice(0, 3);
                 if (top3.length === 0) return;
-
                 const ordenVisual = [1, 0, 2];
 
                 ordenVisual.forEach(i => {
