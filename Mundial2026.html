@@ -40,10 +40,10 @@
                     <input type="text" id="auth-nombre" class="w-full p-4 rounded-xl bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#0032A0] transition-all" placeholder="Nombre y Apellido">
                 </div>
 
-                <button id="btn-login" class="w-full bdf-blue hover:bg-blue-800 py-4 rounded-xl font-black text-lg transition-all shadow-lg shadow-blue-900/50 mt-4">
+                <button id="btn-login" class="w-full bdf-blue hover:bg-blue-800 py-4 rounded-xl font-black text-lg transition-all shadow-lg shadow-blue-900/50 mt-4 disabled:opacity-50">
                     ENTRAR A LA QUINIELA
                 </button>
-                <button id="btn-register" class="hidden w-full bg-green-600 hover:bg-green-700 py-4 rounded-xl font-black text-lg transition-all shadow-lg shadow-green-900/50 mt-4">
+                <button id="btn-register" class="hidden w-full bg-green-600 hover:bg-green-700 py-4 rounded-xl font-black text-lg transition-all shadow-lg shadow-green-900/50 mt-4 disabled:opacity-50">
                     REGISTRAR MIS DATOS
                 </button>
 
@@ -67,10 +67,9 @@
                     <p class="text-xs font-bold text-green-400">Total: <span id="user-display-points" class="text-lg">0</span> PTS</p>
                 </div>
                 
-                <div id="contenedor-partidos" class="space-y-8">
-                    </div>
+                <div id="contenedor-partidos" class="space-y-8"></div>
                 
-                <button id="btn-guardar" class="w-full bg-green-500 hover:bg-green-600 py-4 rounded-xl font-black text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] mt-6">
+                <button id="btn-guardar" class="w-full bg-green-500 hover:bg-green-600 py-4 rounded-xl font-black text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] mt-6 disabled:opacity-50">
                     GUARDAR PICKS PENDIENTES
                 </button>
             </div>
@@ -88,8 +87,7 @@
                                         <th class="px-4 py-3 font-bold text-right">Puntos</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabla-ranking-body" class="divide-y divide-gray-800 text-sm bg-gray-900/50">
-                                    </tbody>
+                                <tbody id="tabla-ranking-body" class="divide-y divide-gray-800 text-sm bg-gray-900/50"></tbody>
                             </table>
                         </div>
                     </div>
@@ -150,14 +148,13 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
-        apiKey: "AIzaSyA_3DcULns8hFp99w_3-Q5xH4E-iZ_veVM",
-        authDomain: "mundial2026-ed8dd.firebaseapp.com",
-        projectId: "mundial2026-ed8dd",
-        storageBucket: "mundial2026-ed8dd.firebasestorage.app",
-        messagingSenderId: "491372477350",
-        appId: "1:491372477350:web:9c6030765d54499aab2d67"
+            apiKey: "AIzaSyA_3DcULns8hFp99w_3-Q5xH4E-iZ_veVM",
+            authDomain: "mundial2026-ed8dd.firebaseapp.com",
+            projectId: "mundial2026-ed8dd",
+            storageBucket: "mundial2026-ed8dd.firebasestorage.app",
+            messagingSenderId: "491372477350",
+            appId: "1:491372477350:web:9c6030765d54499aab2d67"
         };
 
         let app, db;
@@ -190,7 +187,6 @@
 
         let usuarioLogueado = null;
 
-        // LÓGICA DE INTERFAZ LOGIN/REGISTRO
         window.toggleAuthMode = function(mode) {
             const isLogin = mode === 'login';
             document.getElementById('auth-title').innerText = isLogin ? "Iniciar Sesión" : "Crear Nueva Cuenta";
@@ -208,57 +204,89 @@
             }
         };
 
-        // EVENTO: INICIAR SESIÓN (Validando existencia)
-        document.getElementById('btn-login').addEventListener('click', async () => {
-            const nomina = document.getElementById('auth-nomina').value.trim();
-            if (!nomina) return alert("Por favor ingresa tu número de nómina.");
-
-            if(db) {
-                const userRef = doc(db, "usuarios", nomina);
-                const userSnap = await getDoc(userRef);
-                
-                if (!userSnap.exists()) {
-                    return alert("❌ Esta nómina no está registrada en el sistema. Por favor, crea una cuenta primero.");
-                }
-                
-                usuarioLogueado = { nomina: nomina, nombre: userSnap.data().nombre };
-                document.getElementById('user-display-points').innerText = userSnap.data().puntos || 0;
-            } else {
-                usuarioLogueado = { nomina: nomina, nombre: "Usuario Demo" };
-                document.getElementById('user-display-points').innerText = "13";
-            }
-            
-            iniciarAppCentral();
-        });
-
-        // EVENTO: REGISTRAR (Validando duplicados)
-        document.getElementById('btn-register').addEventListener('click', async () => {
+        // EVENTO REGISTRO CON MANEJO DE ERRORES (TRY/CATCH)
+        document.getElementById('btn-register').addEventListener('click', async (e) => {
             const nomina = document.getElementById('auth-nomina').value.trim();
             const nombre = document.getElementById('auth-nombre').value.trim();
 
-            if (!nomina || !nombre) return alert("Por favor completa tu nómina y nombre completo.");
+            if (!nomina || !nombre) return alert("⚠️ Por favor completa tu nómina y nombre completo.");
 
-            if(db) {
-                const userRef = doc(db, "usuarios", nomina);
-                const userSnap = await getDoc(userRef);
-                
-                if (userSnap.exists()) {
-                    return alert("⚠️ Esta nómina ya se encuentra registrada. Por favor ve a Iniciar Sesión.");
+            // Mostrar estado "Cargando"
+            const btn = e.target;
+            const originalText = btn.innerText;
+            btn.innerText = "REGISTRANDO...";
+            btn.disabled = true;
+
+            try {
+                if(db) {
+                    const userRef = doc(db, "usuarios", nomina);
+                    const userSnap = await getDoc(userRef);
+                    
+                    if (userSnap.exists()) {
+                        alert("⚠️ Esta nómina ya se encuentra registrada. Por favor ve a Iniciar Sesión.");
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                        return;
+                    }
+                    
+                    await setDoc(userRef, { nombre: nombre, puntos: 0 });
+                    usuarioLogueado = { nomina: nomina, nombre: nombre };
+                    document.getElementById('user-display-points').innerText = "0";
+                } else {
+                    usuarioLogueado = { nomina: nomina, nombre: nombre };
+                    document.getElementById('user-display-points').innerText = "0";
                 }
                 
-                // Guardar nuevo usuario
-                await setDoc(userRef, { nombre: nombre, puntos: 0 });
-                usuarioLogueado = { nomina: nomina, nombre: nombre };
-                document.getElementById('user-display-points').innerText = "0";
-            } else {
-                usuarioLogueado = { nomina: nomina, nombre: nombre };
-                document.getElementById('user-display-points').innerText = "0";
+                iniciarAppCentral();
+            } catch (error) {
+                // AQUÍ ES DONDE TE AVISARÁ SI HAY ERROR DE FIREBASE
+                console.error("Firebase Error:", error);
+                alert("❌ Ocurrió un error con Firebase. Asegúrate de haber creado la 'Firestore Database' en tu consola de Firebase.\n\nDetalle: " + error.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
-            
-            iniciarAppCentral();
         });
 
-        // INICIAR LA VISTA DE LA APP
+        // EVENTO LOGIN CON MANEJO DE ERRORES (TRY/CATCH)
+        document.getElementById('btn-login').addEventListener('click', async (e) => {
+            const nomina = document.getElementById('auth-nomina').value.trim();
+            if (!nomina) return alert("⚠️ Por favor ingresa tu número de nómina.");
+
+            const btn = e.target;
+            const originalText = btn.innerText;
+            btn.innerText = "CONECTANDO...";
+            btn.disabled = true;
+
+            try {
+                if(db) {
+                    const userRef = doc(db, "usuarios", nomina);
+                    const userSnap = await getDoc(userRef);
+                    
+                    if (!userSnap.exists()) {
+                        alert("❌ Esta nómina no está registrada. Por favor, crea una cuenta primero.");
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                        return;
+                    }
+                    
+                    usuarioLogueado = { nomina: nomina, nombre: userSnap.data().nombre };
+                    document.getElementById('user-display-points').innerText = userSnap.data().puntos || 0;
+                } else {
+                    usuarioLogueado = { nomina: nomina, nombre: "Usuario Demo" };
+                    document.getElementById('user-display-points').innerText = "13";
+                }
+                
+                iniciarAppCentral();
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                alert("❌ Error de conexión a Firebase. Revisa si creaste la base de datos Firestore.\n\nDetalle: " + error.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        });
+
         function iniciarAppCentral() {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
@@ -270,18 +298,21 @@
             else cargarRankingDemo();
         }
 
-        // CARGAR PARTIDOS (Lógica original)
         async function cargarPartidos() {
             const contenedor = document.getElementById('contenedor-partidos');
             contenedor.innerHTML = "";
 
             let misPicks = {};
-            if(db) {
-                const pronoRef = doc(db, "pronosticos", usuarioLogueado.nomina);
-                const pronoSnap = await getDoc(pronoRef);
-                if(pronoSnap.exists()) misPicks = pronoSnap.data().selecciones;
-            } else {
-                misPicks = { "octavos_1": { res: "local", gL: 2, gV: 1 } };
+            try {
+                if(db) {
+                    const pronoRef = doc(db, "pronosticos", usuarioLogueado.nomina);
+                    const pronoSnap = await getDoc(pronoRef);
+                    if(pronoSnap.exists()) misPicks = pronoSnap.data().selecciones;
+                } else {
+                    misPicks = { "octavos_1": { res: "local", gL: 2, gV: 1 } };
+                }
+            } catch (error) {
+                console.error("Error al cargar picks:", error);
             }
 
             calendarioGrafico.forEach(partido => {
@@ -360,7 +391,7 @@
             });
         }
 
-        document.getElementById('btn-guardar').addEventListener('click', async () => {
+        document.getElementById('btn-guardar').addEventListener('click', async (e) => {
             let faltaSeleccion = false;
             const selecciones = {};
 
@@ -380,16 +411,28 @@
 
             if(faltaSeleccion) return alert("⚠️ Asegúrate de seleccionar el ganador o empate en los partidos pendientes.");
 
-            if(db) {
-                await setDoc(doc(db, "pronosticos", usuarioLogueado.nomina), {
-                    nomina: usuarioLogueado.nomina,
-                    selecciones: selecciones
-                });
+            const btn = e.target;
+            const originalText = btn.innerText;
+            btn.innerText = "GUARDANDO...";
+            btn.disabled = true;
+
+            try {
+                if(db) {
+                    await setDoc(doc(db, "pronosticos", usuarioLogueado.nomina), {
+                        nomina: usuarioLogueado.nomina,
+                        selecciones: selecciones
+                    });
+                }
+                alert("✅ ¡Tus picks han sido guardados con éxito!");
+            } catch(error) {
+                console.error("Error guardando picks:", error);
+                alert("❌ Error al guardar en Firebase.\nDetalle: " + error.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
-            alert("✅ ¡Tus picks han sido guardados con éxito!");
         });
 
-        // POKA-YOKE
         window.autoSeleccionarGanador = function(partidoId) {
             const golesL = document.getElementById(`marcador-local-${partidoId}`).value;
             const golesV = document.getElementById(`marcador-visitante-${partidoId}`).value;
@@ -404,25 +447,29 @@
         };
 
         function escucharRanking() {
-            const q = query(collection(db, "usuarios"), orderBy("puntos", "desc"), limit(10));
-            onSnapshot(q, (snapshot) => {
-                const tbody = document.getElementById('tabla-ranking-body');
-                tbody.innerHTML = "";
-                let index = 0;
-                snapshot.forEach((doc) => {
-                    const user = doc.data();
-                    let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}`;
-                    let rowClass = index === 0 ? "bg-blue-900/20" : "";
-                    tbody.innerHTML += `
-                        <tr class="${rowClass} hover:bg-gray-800 transition-colors">
-                            <td class="px-4 py-4 text-lg text-center">${medal}</td>
-                            <td class="px-4 py-4 font-bold text-white">${user.nombre}</td>
-                            <td class="px-4 py-4 text-right font-black text-green-400">${user.puntos || 0}</td>
-                        </tr>
-                    `;
-                    index++;
+            try {
+                const q = query(collection(db, "usuarios"), orderBy("puntos", "desc"), limit(10));
+                onSnapshot(q, (snapshot) => {
+                    const tbody = document.getElementById('tabla-ranking-body');
+                    tbody.innerHTML = "";
+                    let index = 0;
+                    snapshot.forEach((doc) => {
+                        const user = doc.data();
+                        let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}`;
+                        let rowClass = index === 0 ? "bg-blue-900/20" : "";
+                        tbody.innerHTML += `
+                            <tr class="${rowClass} hover:bg-gray-800 transition-colors">
+                                <td class="px-4 py-4 text-lg text-center">${medal}</td>
+                                <td class="px-4 py-4 font-bold text-white">${user.nombre}</td>
+                                <td class="px-4 py-4 text-right font-black text-green-400">${user.puntos || 0}</td>
+                            </tr>
+                        `;
+                        index++;
+                    });
                 });
-            });
+            } catch (error) {
+                console.error("Error en ranking:", error);
+            }
         }
 
         function cargarRankingDemo() {
