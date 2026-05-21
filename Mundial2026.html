@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiniela BMM - Mundial 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { background-color: #0B132B; color: #FFFFFF; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .bdf-blue { background-color: #0032A0; }
+        .card-bg { background-color: #161F38; }
+        .selected-glow { box-shadow: 0 0 15px rgba(0, 163, 255, 0.4); }
+        .partido-finalizado { opacity: 0.85; filter: grayscale(15%); }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="min-h-screen pb-24 relative">
+
+    <header class="bdf-blue p-6 rounded-b-3xl shadow-2xl text-center mb-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent"></div>
+        <h1 class="text-3xl font-black tracking-widest relative z-10">QUINIELA 2026</h1>
+        <p class="text-sm text-blue-200 mt-1 relative z-10 font-medium">BMM Fase Final</p>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4">
+        
+        <section id="auth-screen" class="card-bg p-8 rounded-3xl shadow-xl border border-gray-800">
+            <h2 id="auth-title" class="text-2xl font-black mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-200">Iniciar Sesión</h2>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Número de Nómina</label>
+                    <input type="number" id="auth-nomina" class="w-full p-4 rounded-xl bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#0032A0] transition-all" placeholder="Ej. 123456">
+                </div>
+                
+                <div id="campo-nombre" class="hidden">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Nombre Completo</label>
+                    <input type="text" id="auth-nombre" class="w-full p-4 rounded-xl bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#0032A0] transition-all" placeholder="Nombre y Apellido">
+                </div>
+
+                <button id="btn-login" class="w-full bdf-blue hover:bg-blue-800 py-4 rounded-xl font-black text-lg transition-all shadow-lg shadow-blue-900/50 mt-4">
+                    ENTRAR A LA QUINIELA
+                </button>
+                <button id="btn-register" class="hidden w-full bg-green-600 hover:bg-green-700 py-4 rounded-xl font-black text-lg transition-all shadow-lg shadow-green-900/50 mt-4">
+                    REGISTRAR MIS DATOS
+                </button>
+
+                <div class="text-center mt-4">
+                    <p id="toggle-text" class="text-sm text-gray-400">
+                        ¿No tienes cuenta? <button onclick="toggleAuthMode('register')" class="text-blue-400 font-bold hover:underline ml-1">Regístrate aquí</button>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="main-app" class="hidden space-y-8">
+            <div class="flex bg-gray-900 p-1.5 rounded-xl border border-gray-800">
+                <button onclick="switchTab('partidos')" id="tab-btn-partidos" class="w-1/2 py-2.5 text-sm font-black rounded-lg bdf-blue text-white shadow transition-all">Mis Picks</button>
+                <button onclick="switchTab('ranking')" id="tab-btn-ranking" class="w-1/2 py-2.5 text-sm font-black rounded-lg text-gray-500 hover:text-gray-300 transition-all">Ranking Top 10</button>
+            </div>
+
+            <div id="tab-partidos" class="space-y-5">
+                <div class="flex justify-between items-end mb-2">
+                    <h3 class="text-xl font-black text-white">Tus Pronósticos</h3>
+                    <p class="text-xs font-bold text-green-400">Total: <span id="user-display-points" class="text-lg">0</span> PTS</p>
+                </div>
+                
+                <div id="contenedor-partidos" class="space-y-8">
+                    </div>
+                
+                <button id="btn-guardar" class="w-full bg-green-500 hover:bg-green-600 py-4 rounded-xl font-black text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] mt-6">
+                    GUARDAR PICKS PENDIENTES
+                </button>
+            </div>
+
+            <div id="tab-ranking" class="hidden">
+                <div class="relative p-[2px] rounded-3xl bg-gradient-to-b from-[#0032A0] via-blue-500 to-gray-900 shadow-2xl">
+                    <div class="bg-[#0B132B] rounded-3xl p-6 h-full w-full">
+                        <h3 class="text-2xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 mb-6">🏆 LÍDERES DE PLANTA</h3>
+                        <div class="overflow-hidden rounded-xl border border-gray-800">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-900">
+                                    <tr class="text-xs text-gray-400 uppercase tracking-wider">
+                                        <th class="px-4 py-3 font-bold">Pos</th>
+                                        <th class="px-4 py-3 font-bold">Colaborador</th>
+                                        <th class="px-4 py-3 font-bold text-right">Puntos</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-ranking-body" class="divide-y divide-gray-800 text-sm bg-gray-900/50">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-reglas" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/80 backdrop-blur-sm px-4 transition-opacity duration-300">
+        <div class="card-bg border border-blue-900 rounded-3xl shadow-[0_0_40px_rgba(0,50,160,0.3)] max-w-md w-full overflow-hidden transform scale-100 transition-all">
+            <div class="bdf-blue p-5 text-center relative">
+                <h2 class="text-2xl font-black tracking-wider text-white">📜 REGLAS DEL JUEGO</h2>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex items-start">
+                    <div class="text-2xl mr-4 bg-gray-800 p-2 rounded-xl border border-gray-700">✅</div>
+                    <div>
+                        <h4 class="font-bold text-blue-300 text-sm uppercase tracking-wide">Picks Obligatorios</h4>
+                        <p class="text-gray-400 text-xs mt-1 leading-relaxed">Para guardar, debes elegir obligatoriamente al ganador (Local/Visitante) o el Empate en todos los juegos pendientes.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-2xl mr-4 bg-gray-800 p-2 rounded-xl border border-gray-700">🎯</div>
+                    <div class="w-full">
+                        <h4 class="font-bold text-blue-300 text-sm uppercase tracking-wide">Sistema de Puntos</h4>
+                        <p class="text-gray-400 text-xs mt-1 mb-3 leading-relaxed">Poner los goles es opcional, pero es clave para ganar:</p>
+                        <div class="space-y-2 w-full">
+                            <div class="flex justify-between items-center bg-gray-800/80 px-3 py-2 rounded-lg border border-gray-700">
+                                <span class="text-xs text-gray-300">Acertar Ganador o Empate</span>
+                                <span class="font-black text-green-400 text-sm">+3 PTS</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-gray-800/80 px-3 py-2 rounded-lg border border-gray-700">
+                                <span class="text-xs text-gray-300">Acertar Marcador (Goles)</span>
+                                <span class="font-black text-green-400 text-sm">+5 PTS</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-blue-900/40 px-3 py-2 rounded-lg border border-[#0032A0] shadow-[0_0_10px_rgba(0,50,160,0.5)]">
+                                <span class="text-[11px] font-black text-blue-200">¡ACERTAR A LAS DOS COSAS!</span>
+                                <span class="font-black text-yellow-400 text-base">+10 PTS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-2xl mr-4 bg-gray-800 p-2 rounded-xl border border-gray-700">⏳</div>
+                    <div>
+                        <h4 class="font-bold text-red-400 text-sm uppercase tracking-wide">Cierre Automático</h4>
+                        <p class="text-gray-400 text-xs mt-1 leading-relaxed">Una vez que un partido comienza, se bloquea permanentemente. ¡Guarda a tiempo!</p>
+                    </div>
+                </div>
+                <button onclick="cerrarModalReglas()" class="w-full bg-green-500 hover:bg-green-600 py-3 mt-4 rounded-xl font-black text-lg transition-all shadow-[0_0_15px_rgba(34,197,94,0.3)] text-white">
+                    ¡ENTENDIDO, A JUGAR!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyA_3DcULns8hFp99w_3-Q5xH4E-iZ_veVM",
+        authDomain: "mundial2026-ed8dd.firebaseapp.com",
+        projectId: "mundial2026-ed8dd",
+        storageBucket: "mundial2026-ed8dd.firebasestorage.app",
+        messagingSenderId: "491372477350",
+        appId: "1:491372477350:web:9c6030765d54499aab2d67"
+        };
+
+        let app, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+        } catch(e) {
+            console.warn("Firebase no configurado. Ejecutando en Modo Demo.");
+        }
+
+        const svgCamiseta = `<svg viewBox="0 0 24 24" class="w-14 h-14 drop-shadow-md transition-transform duration-200"><path fill="currentColor" d="M15.3,2.4l4.8,2.7c0.4,0.2,0.6,0.7,0.5,1.2l-0.9,4.2c-0.1,0.5-0.6,0.8-1.1,0.6l-2-0.8v10.2c0,0.6-0.4,1-1,1H8.5c-0.6,0-1-0.4-1-1V10.4l-2,0.8c-0.5,0.2-1-0.1-1.1-0.6L3.5,6.3C3.4,5.8,3.6,5.3,4,5.1l4.8-2.7C9.5,2,10.3,1.6,11.2,1.6h1.7C13.8,1.6,14.6,2,15.3,2.4z"/></svg>`;
+
+        const calendarioGrafico = [
+            { 
+                id: "octavos_1", fase: "Octavos - 11/06", estadoSimulado: "finalizado", resOficial: "local",
+                local: { nombre: "México", code: "MEX", color: "#006847", txtColor: "#FFFFFF" }, 
+                visitante: { nombre: "USA", code: "USA", color: "#FFFFFF", txtColor: "#B31942" }
+            },
+            { 
+                id: "octavos_2", fase: "Octavos - 12/06", estadoSimulado: "finalizado", resOficial: "empate",
+                local: { nombre: "Argentina", code: "ARG", color: "#75AADB", txtColor: "#FFFFFF" }, 
+                visitante: { nombre: "Alemania", code: "GER", color: "#000000", txtColor: "#FFFFFF" }
+            },
+            { 
+                id: "cuartos_1", fase: "Cuartos - PENDIENTE", estadoSimulado: "pendiente", resOficial: null,
+                local: { nombre: "España", code: "ESP", color: "#C60B1E", txtColor: "#FFC400" }, 
+                visitante: { nombre: "Francia", code: "FRA", color: "#002395", txtColor: "#FFFFFF" }
+            }
+        ];
+
+        let usuarioLogueado = null;
+
+        // LÓGICA DE INTERFAZ LOGIN/REGISTRO
+        window.toggleAuthMode = function(mode) {
+            const isLogin = mode === 'login';
+            document.getElementById('auth-title').innerText = isLogin ? "Iniciar Sesión" : "Crear Nueva Cuenta";
+            
+            if (isLogin) {
+                document.getElementById('campo-nombre').classList.add('hidden');
+                document.getElementById('btn-login').classList.remove('hidden');
+                document.getElementById('btn-register').classList.add('hidden');
+                document.getElementById('toggle-text').innerHTML = `¿No tienes cuenta? <button onclick="toggleAuthMode('register')" class="text-blue-400 font-bold hover:underline ml-1">Regístrate aquí</button>`;
+            } else {
+                document.getElementById('campo-nombre').classList.remove('hidden');
+                document.getElementById('btn-login').classList.add('hidden');
+                document.getElementById('btn-register').classList.remove('hidden');
+                document.getElementById('toggle-text').innerHTML = `¿Ya tienes cuenta? <button onclick="toggleAuthMode('login')" class="text-blue-400 font-bold hover:underline ml-1">Inicia sesión</button>`;
+            }
+        };
+
+        // EVENTO: INICIAR SESIÓN (Validando existencia)
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const nomina = document.getElementById('auth-nomina').value.trim();
+            if (!nomina) return alert("Por favor ingresa tu número de nómina.");
+
+            if(db) {
+                const userRef = doc(db, "usuarios", nomina);
+                const userSnap = await getDoc(userRef);
+                
+                if (!userSnap.exists()) {
+                    return alert("❌ Esta nómina no está registrada en el sistema. Por favor, crea una cuenta primero.");
+                }
+                
+                usuarioLogueado = { nomina: nomina, nombre: userSnap.data().nombre };
+                document.getElementById('user-display-points').innerText = userSnap.data().puntos || 0;
+            } else {
+                usuarioLogueado = { nomina: nomina, nombre: "Usuario Demo" };
+                document.getElementById('user-display-points').innerText = "13";
+            }
+            
+            iniciarAppCentral();
+        });
+
+        // EVENTO: REGISTRAR (Validando duplicados)
+        document.getElementById('btn-register').addEventListener('click', async () => {
+            const nomina = document.getElementById('auth-nomina').value.trim();
+            const nombre = document.getElementById('auth-nombre').value.trim();
+
+            if (!nomina || !nombre) return alert("Por favor completa tu nómina y nombre completo.");
+
+            if(db) {
+                const userRef = doc(db, "usuarios", nomina);
+                const userSnap = await getDoc(userRef);
+                
+                if (userSnap.exists()) {
+                    return alert("⚠️ Esta nómina ya se encuentra registrada. Por favor ve a Iniciar Sesión.");
+                }
+                
+                // Guardar nuevo usuario
+                await setDoc(userRef, { nombre: nombre, puntos: 0 });
+                usuarioLogueado = { nomina: nomina, nombre: nombre };
+                document.getElementById('user-display-points').innerText = "0";
+            } else {
+                usuarioLogueado = { nomina: nomina, nombre: nombre };
+                document.getElementById('user-display-points').innerText = "0";
+            }
+            
+            iniciarAppCentral();
+        });
+
+        // INICIAR LA VISTA DE LA APP
+        function iniciarAppCentral() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            
+            cargarPartidos();
+            document.getElementById('modal-reglas').classList.remove('hidden');
+            
+            if(db) escucharRanking(); 
+            else cargarRankingDemo();
+        }
+
+        // CARGAR PARTIDOS (Lógica original)
+        async function cargarPartidos() {
+            const contenedor = document.getElementById('contenedor-partidos');
+            contenedor.innerHTML = "";
+
+            let misPicks = {};
+            if(db) {
+                const pronoRef = doc(db, "pronosticos", usuarioLogueado.nomina);
+                const pronoSnap = await getDoc(pronoRef);
+                if(pronoSnap.exists()) misPicks = pronoSnap.data().selecciones;
+            } else {
+                misPicks = { "octavos_1": { res: "local", gL: 2, gV: 1 } };
+            }
+
+            calendarioGrafico.forEach(partido => {
+                let esFinalizado = partido.estadoSimulado === "finalizado";
+                let bloqueoAttr = esFinalizado ? "disabled" : "";
+                let bloqueoClase = esFinalizado ? "partido-finalizado pointer-events-none" : "";
+                
+                let miPickObj = misPicks[partido.id];
+                let miRes = miPickObj ? miPickObj.res : null;
+                let miGL = miPickObj ? miPickObj.gL : "";
+                let miGV = miPickObj ? miPickObj.gV : "";
+
+                let acierto = esFinalizado && miRes === partido.resOficial;
+                let fallo = esFinalizado && miRes !== partido.resOficial && miRes !== null;
+                let noParticipo = esFinalizado && miRes === null;
+
+                let bordeEstado = acierto ? "border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.2)]" : 
+                                  fallo ? "border-red-900 opacity-60" : 
+                                  noParticipo ? "border-gray-600 opacity-60" : "border-gray-700";
+
+                let badgeHTML = "";
+                if (acierto) badgeHTML = `<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10">¡ACERTASTE!</div>`;
+                else if (fallo) badgeHTML = `<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-red-800 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10">INCORRECTO</div>`;
+                else if (noParticipo) badgeHTML = `<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gray-600 text-gray-200 text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10">TIEMPO AGOTADO</div>`;
+
+                let htmlCard = `
+                    <div id="card-${partido.id}" class="card-bg p-5 rounded-2xl border ${bordeEstado} relative ${acierto ? 'tarjeta-ganadora' : ''}">
+                        ${badgeHTML}
+                        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#0032A0] to-transparent"></div>
+                        <div class="text-center text-xs font-bold text-gray-400 mb-4 uppercase tracking-widest">${partido.fase}</div>
+                        
+                        <div class="flex justify-between items-start ${bloqueoClase}">
+                            <div class="flex-1 flex flex-col items-center">
+                                <label class="cursor-pointer group relative w-full flex flex-col items-center">
+                                    <input type="radio" name="radio-${partido.id}" value="local" class="peer sr-only" ${miRes === 'local' ? 'checked' : ''} ${bloqueoAttr}>
+                                    <div class="p-2 rounded-xl border-2 border-transparent peer-checked:border-[#0032A0] peer-checked:bg-blue-900/30 peer-checked:selected-glow transition-all duration-300 w-full flex flex-col items-center">
+                                        <div class="relative flex justify-center items-center text-[${partido.local.color}] peer-checked:scale-110 transition-transform">
+                                            ${svgCamiseta}
+                                            <span class="absolute text-[10px] font-black mt-2" style="color: ${partido.local.txtColor}">${partido.local.code}</span>
+                                        </div>
+                                        <span class="block text-sm font-bold mt-2 text-center text-gray-400 peer-checked:text-white">${partido.local.nombre}</span>
+                                    </div>
+                                </label>
+                                <input type="number" id="marcador-local-${partido.id}" oninput="autoSeleccionarGanador('${partido.id}')" placeholder="-" min="0" max="20" class="mt-2 w-12 h-10 text-center bg-gray-900 border border-gray-600 rounded-lg text-white font-black text-lg focus:outline-none focus:border-[#0032A0] focus:ring-1 focus:ring-[#0032A0]" value="${miGL}" ${bloqueoAttr}>
+                            </div>
+
+                            <div class="px-2 flex flex-col items-center justify-start mt-6">
+                                <label class="cursor-pointer group relative flex flex-col items-center">
+                                    <input type="radio" name="radio-${partido.id}" value="empate" class="peer sr-only" ${miRes === 'empate' ? 'checked' : ''} ${bloqueoAttr}>
+                                    <div class="p-3 rounded-full border-2 border-transparent peer-checked:border-gray-400 peer-checked:bg-gray-800 transition-all duration-300 peer-checked:scale-110">
+                                        <div class="w-8 h-8 flex justify-center items-center rounded-full bg-gray-800 border border-gray-600">
+                                            <span class="text-xs font-black text-gray-300">VS</span>
+                                        </div>
+                                    </div>
+                                    <span class="block text-[10px] font-bold mt-1 text-center text-gray-500 peer-checked:text-white uppercase">Empate</span>
+                                </label>
+                            </div>
+
+                            <div class="flex-1 flex flex-col items-center">
+                                <label class="cursor-pointer group relative w-full flex flex-col items-center">
+                                    <input type="radio" name="radio-${partido.id}" value="visitante" class="peer sr-only" ${miRes === 'visitante' ? 'checked' : ''} ${bloqueoAttr}>
+                                    <div class="p-2 rounded-xl border-2 border-transparent peer-checked:border-[#0032A0] peer-checked:bg-blue-900/30 peer-checked:selected-glow transition-all duration-300 w-full flex flex-col items-center">
+                                        <div class="relative flex justify-center items-center text-[${partido.visitante.color}] peer-checked:scale-110 transition-transform">
+                                            ${svgCamiseta}
+                                            <span class="absolute text-[10px] font-black mt-2" style="color: ${partido.visitante.txtColor}">${partido.visitante.code}</span>
+                                        </div>
+                                        <span class="block text-sm font-bold mt-2 text-center text-gray-400 peer-checked:text-white">${partido.visitante.nombre}</span>
+                                    </div>
+                                </label>
+                                <input type="number" id="marcador-visitante-${partido.id}" oninput="autoSeleccionarGanador('${partido.id}')" placeholder="-" min="0" max="20" class="mt-2 w-12 h-10 text-center bg-gray-900 border border-gray-600 rounded-lg text-white font-black text-lg focus:outline-none focus:border-[#0032A0] focus:ring-1 focus:ring-[#0032A0]" value="${miGV}" ${bloqueoAttr}>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                contenedor.innerHTML += htmlCard;
+            });
+        }
+
+        document.getElementById('btn-guardar').addEventListener('click', async () => {
+            let faltaSeleccion = false;
+            const selecciones = {};
+
+            calendarioGrafico.forEach(partido => {
+                if(partido.estadoSimulado === "pendiente") {
+                    const elegido = document.querySelector(`input[name="radio-${partido.id}"]:checked`);
+                    const gL = document.getElementById(`marcador-local-${partido.id}`).value;
+                    const gV = document.getElementById(`marcador-visitante-${partido.id}`).value;
+
+                    if (!elegido) {
+                        faltaSeleccion = true;
+                    } else {
+                        selecciones[partido.id] = { res: elegido.value, gL: gL, gV: gV };
+                    }
+                }
+            });
+
+            if(faltaSeleccion) return alert("⚠️ Asegúrate de seleccionar el ganador o empate en los partidos pendientes.");
+
+            if(db) {
+                await setDoc(doc(db, "pronosticos", usuarioLogueado.nomina), {
+                    nomina: usuarioLogueado.nomina,
+                    selecciones: selecciones
+                });
+            }
+            alert("✅ ¡Tus picks han sido guardados con éxito!");
+        });
+
+        // POKA-YOKE
+        window.autoSeleccionarGanador = function(partidoId) {
+            const golesL = document.getElementById(`marcador-local-${partidoId}`).value;
+            const golesV = document.getElementById(`marcador-visitante-${partidoId}`).value;
+
+            if (golesL !== "" && golesV !== "") {
+                const numL = parseInt(golesL);
+                const numV = parseInt(golesV);
+                if (numL > numV) document.querySelector(`input[name="radio-${partidoId}"][value="local"]`).checked = true;
+                else if (numL < numV) document.querySelector(`input[name="radio-${partidoId}"][value="visitante"]`).checked = true;
+                else document.querySelector(`input[name="radio-${partidoId}"][value="empate"]`).checked = true;
+            }
+        };
+
+        function escucharRanking() {
+            const q = query(collection(db, "usuarios"), orderBy("puntos", "desc"), limit(10));
+            onSnapshot(q, (snapshot) => {
+                const tbody = document.getElementById('tabla-ranking-body');
+                tbody.innerHTML = "";
+                let index = 0;
+                snapshot.forEach((doc) => {
+                    const user = doc.data();
+                    let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}`;
+                    let rowClass = index === 0 ? "bg-blue-900/20" : "";
+                    tbody.innerHTML += `
+                        <tr class="${rowClass} hover:bg-gray-800 transition-colors">
+                            <td class="px-4 py-4 text-lg text-center">${medal}</td>
+                            <td class="px-4 py-4 font-bold text-white">${user.nombre}</td>
+                            <td class="px-4 py-4 text-right font-black text-green-400">${user.puntos || 0}</td>
+                        </tr>
+                    `;
+                    index++;
+                });
+            });
+        }
+
+        function cargarRankingDemo() {
+            const tbody = document.getElementById('tabla-ranking-body');
+            const demoData = [{ n: "Salma Torres", p: 45 }, { n: "Alejandra Moya", p: 42 }, { n: "Gilberto Ayala", p: 38 }];
+            tbody.innerHTML = "";
+            demoData.forEach((user, index) => {
+                let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}`;
+                let rowClass = index === 0 ? "bg-blue-900/20" : "";
+                tbody.innerHTML += `
+                    <tr class="${rowClass} hover:bg-gray-800 transition-colors">
+                        <td class="px-4 py-4 text-lg text-center">${medal}</td>
+                        <td class="px-4 py-4 font-bold text-white">${user.n}</td>
+                        <td class="px-4 py-4 text-right font-black text-green-400">${user.p}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.switchTab = function(tab) {
+            if (tab === 'partidos') {
+                document.getElementById('tab-partidos').classList.remove('hidden');
+                document.getElementById('tab-ranking').classList.add('hidden');
+                document.getElementById('tab-btn-partidos').className = "w-1/2 py-2.5 text-sm font-black rounded-lg bdf-blue text-white shadow transition-all";
+                document.getElementById('tab-btn-ranking').className = "w-1/2 py-2.5 text-sm font-black rounded-lg text-gray-500 hover:text-gray-300 transition-all";
+            } else {
+                document.getElementById('tab-partidos').classList.add('hidden');
+                document.getElementById('tab-ranking').classList.remove('hidden');
+                document.getElementById('tab-btn-partidos').className = "w-1/2 py-2.5 text-sm font-black rounded-lg text-gray-500 hover:text-gray-300 transition-all";
+                document.getElementById('tab-btn-ranking').className = "w-1/2 py-2.5 text-sm font-black rounded-lg bdf-blue text-white shadow transition-all";
+            }
+        };
+
+        window.cerrarModalReglas = function() {
+            document.getElementById('modal-reglas').classList.add('hidden');
+            setTimeout(() => {
+                const tarjetasGanadoras = document.querySelectorAll('.tarjeta-ganadora');
+                const observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const rect = entry.target.getBoundingClientRect();
+                            const x = (rect.left + rect.width / 2) / window.innerWidth;
+                            const y = (rect.top + rect.height / 2) / window.innerHeight;
+                            confetti({ origin: { x, y }, particleCount: 80, spread: 70, colors: ['#0032A0', '#FFFFFF', '#FFD700', '#22C55E'], zIndex: 100 });
+                            obs.unobserve(entry.target); 
+                        }
+                    });
+                }, { threshold: 0.5 });
+                tarjetasGanadoras.forEach(tarjeta => observer.observe(tarjeta));
+            }, 500);
+        };
+    </script>
+</body>
+</html>
