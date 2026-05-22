@@ -590,64 +590,39 @@
                 const colorLocalCSS = partido.local.color;
                 const colorVisitanteCSS = partido.visitante.color;
 
-                let htmlCard = `
-                <div id="card-${partido.id}" class="card-bg p-5 pt-8 rounded-2xl border ${bordeEstado} relative animate-panini ${acierto ? 'tarjeta-ganadora' : ''}" style="animation-delay: ${index * 50}ms" data-colores="${coloresJSON}">
-                    ${badgeHTML}
-                    <div class="absolute top-0 left-0">
-                        <div class="bg-gradient-to-r from-red-600 to-red-800 text-white font-black uppercase tracking-widest text-[10px] px-5 py-1.5 transform skew-x-[-15deg] shadow-lg border-l-4 border-yellow-400 -ml-2 rounded-br-lg">
-                            <span class="inline-block transform skew-x-[15deg]">${partido.fase}</span>
+            let htmlCard = `
+            <div id="card-${partido.id}" class="card-bg p-4 rounded-xl border ${bordeEstado} relative animate-panini">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[9px] font-black text-red-500 uppercase">${partido.fase}</span>
+                </div>
+                
+                <div class="flex justify-between items-center gap-2 ${bloqueoClase}">
+                    <label class="flex-1 cursor-pointer">
+                        <input type="radio" name="radio-${partido.id}" value="local" class="peer sr-only" ${miRes === 'local' ? 'checked' : ''} ${bloqueoAttr}>
+                        <div class="peer-checked:bg-blue-900/50 p-2 rounded-lg text-center transition-all border border-transparent peer-checked:border-blue-500">
+                            <div class="text-3xl">🇲🇽</div> 
+                            <div class="text-[10px] font-bold mt-1">${partido.local.nombre}</div>
                         </div>
+                    </label>
+            
+                    <div class="flex flex-col items-center">
+                        <div class="flex gap-1 mb-2">
+                            <input type="number" id="marcador-local-${partido.id}" value="${miGL}" class="w-8 h-8 bg-gray-900 text-center rounded border border-gray-700 text-sm font-bold" placeholder="0">
+                            <span class="text-gray-500">:</span>
+                            <input type="number" id="marcador-visitante-${partido.id}" value="${miGV}" class="w-8 h-8 bg-gray-900 text-center rounded border border-gray-700 text-sm font-bold" placeholder="0">
+                        </div>
+                        <span class="text-[9px] text-gray-500 uppercase font-bold">Empate</span>
                     </div>
-
-                    <div class="flex justify-between items-start mt-4 ${bloqueoClase}">
-                        <!-- LOCAL -->
-                        <div class="flex-1 flex flex-col items-center">
-                            <label class="cursor-pointer group relative w-full flex flex-col items-center">
-                                <input type="radio" name="radio-${partido.id}" value="local" class="peer sr-only" ${miRes === 'local' ? 'checked' : ''} ${bloqueoAttr}>
-                                <div class="p-2 rounded-xl border-2 border-transparent peer-checked:border-[#0032A0] peer-checked:bg-blue-900/30 peer-checked:selected-glow transition-all duration-300 w-full flex flex-col items-center">
-                                    <div class="relative flex justify-center items-center" style="color: ${colorLocalCSS}">
-                                        ${svgCamiseta}
-                                        <span class="absolute text-[10px] font-black mt-2" style="color: ${partido.local.txtColor}">${partido.local.code}</span>
-                                    </div>
-                                    <span class="block text-sm font-bold mt-2 text-center ${esTBDLocal ? 'text-gray-500 italic' : 'text-gray-400'} peer-checked:text-white leading-tight">${partido.local.nombre}</span>
-                                </div>
-                            </label>
-                            <input type="number" id="marcador-local-${partido.id}" oninput="autoSeleccionarGanador('${partido.id}')" placeholder="-" min="0" max="20"
-                                class="mt-2 w-12 h-10 text-center bg-gray-900 border border-gray-600 rounded-lg text-white font-black text-lg focus:outline-none focus:border-[#0032A0] focus:ring-1 focus:ring-[#0032A0]"
-                                value="${miGL}" ${bloqueoAttr}>
+            
+                    <label class="flex-1 cursor-pointer">
+                        <input type="radio" name="radio-${partido.id}" value="visitante" class="peer sr-only" ${miRes === 'visitante' ? 'checked' : ''} ${bloqueoAttr}>
+                        <div class="peer-checked:bg-blue-900/50 p-2 rounded-lg text-center transition-all border border-transparent peer-checked:border-blue-500">
+                            <div class="text-3xl">🇿🇦</div>
+                            <div class="text-[10px] font-bold mt-1">${partido.visitante.nombre}</div>
                         </div>
-
-                        <!-- EMPATE -->
-                        <div class="px-2 flex flex-col items-center justify-start mt-6">
-                            <label class="cursor-pointer group relative flex flex-col items-center">
-                                <input type="radio" name="radio-${partido.id}" value="empate" class="peer sr-only" ${miRes === 'empate' ? 'checked' : ''} ${bloqueoAttr}>
-                                <div class="p-3 rounded-full border-2 border-transparent peer-checked:border-gray-400 peer-checked:bg-gray-800 transition-all duration-300 peer-checked:scale-110">
-                                    <div class="w-8 h-8 flex justify-center items-center rounded-full bg-gray-800 border border-gray-600">
-                                        <span class="text-xs font-black text-gray-300">VS</span>
-                                    </div>
-                                </div>
-                                <span class="block text-[10px] font-bold mt-1 text-center text-gray-500 peer-checked:text-white uppercase">Empate</span>
-                            </label>
-                        </div>
-
-                        <!-- VISITANTE -->
-                        <div class="flex-1 flex flex-col items-center">
-                            <label class="cursor-pointer group relative w-full flex flex-col items-center">
-                                <input type="radio" name="radio-${partido.id}" value="visitante" class="peer sr-only" ${miRes === 'visitante' ? 'checked' : ''} ${bloqueoAttr}>
-                                <div class="p-2 rounded-xl border-2 border-transparent peer-checked:border-[#0032A0] peer-checked:bg-blue-900/30 peer-checked:selected-glow transition-all duration-300 w-full flex flex-col items-center">
-                                    <div class="relative flex justify-center items-center" style="color: ${colorVisitanteCSS}">
-                                        ${svgCamiseta}
-                                        <span class="absolute text-[10px] font-black mt-2" style="color: ${partido.visitante.txtColor}">${partido.visitante.code}</span>
-                                    </div>
-                                    <span class="block text-sm font-bold mt-2 text-center ${esTBDVisitante ? 'text-gray-500 italic' : 'text-gray-400'} peer-checked:text-white leading-tight">${partido.visitante.nombre}</span>
-                                </div>
-                            </label>
-                            <input type="number" id="marcador-visitante-${partido.id}" oninput="autoSeleccionarGanador('${partido.id}')" placeholder="-" min="0" max="20"
-                                class="mt-2 w-12 h-10 text-center bg-gray-900 border border-gray-600 rounded-lg text-white font-black text-lg focus:outline-none focus:border-[#0032A0] focus:ring-1 focus:ring-[#0032A0]"
-                                value="${miGV}" ${bloqueoAttr}>
-                        </div>
-                    </div>
-                </div>`;
+                    </label>
+                </div>
+            </div>`;
                 contenedor.innerHTML += htmlCard;
             });
 
@@ -659,49 +634,44 @@
         // =====================================================================
         // GUARDAR PICKS
         // =====================================================================
-        document.getElementById('btn-guardar').addEventListener('click', async (e) => {
+       document.getElementById('btn-guardar').addEventListener('click', async (e) => {
             const parteSeleccionada = parseInt(document.getElementById('filtro-fase').value);
             const partidosVisibles = calendarioGrafico.filter(p => p.parte === parteSeleccionada);
-
-            let faltaSeleccion = false;
+        
             let nuevasSelecciones = {};
-
+            let algunPick = false;
+        
             partidosVisibles.forEach(partido => {
                 if (!esPartidoBloqueado(partido.fechaBloqueo)) {
                     const elegido = document.querySelector(`input[name="radio-${partido.id}"]:checked`);
                     const gL = document.getElementById(`marcador-local-${partido.id}`).value;
                     const gV = document.getElementById(`marcador-visitante-${partido.id}`).value;
-                    if (!elegido) {
-                        faltaSeleccion = true;
-                    } else {
-                        nuevasSelecciones[partido.id] = { res: elegido.value, gL, gV };
+                    
+                    if (elegido) {
+                        nuevasSelecciones[partido.id] = { res: elegido.value, gL: gL || "0", gV: gV || "0" };
+                        algunPick = true;
                     }
                 }
             });
-
-            if (faltaSeleccion) return alert("⚠️ Selecciona ganador o empate en todos los partidos pendientes antes de guardar.");
-
+        
+            if (!algunPick) return alert("⚠️ Selecciona al menos un resultado.");
+        
             const btn = e.target;
-            const textoBtn = document.getElementById('texto-btn-guardar');
-            textoBtn.innerText = "GUARDANDO...";
             btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-
+            
             try {
-                if(db) {
-                    const docRef = doc(db, "pronosticos", usuarioLogueado.nomina);
-                    const docSnap = await getDoc(docRef);
-                    let seleccionesPrevias = docSnap.exists() ? (docSnap.data().selecciones || {}) : {};
-                    const seleccionesConsolidadas = { ...seleccionesPrevias, ...nuevasSelecciones };
-                    await setDoc(docRef, { nomina: usuarioLogueado.nomina, selecciones: seleccionesConsolidadas }, { merge: true });
-                }
+                const docRef = doc(db, "pronosticos", usuarioLogueado.nomina);
+                // Usamos setDoc con merge para no borrar los picks de otras partes
+                await setDoc(docRef, { 
+                    nomina: usuarioLogueado.nomina, 
+                    selecciones: nuevasSelecciones 
+                }, { merge: true });
+                
                 document.getElementById('modal-confirmacion').classList.remove('hidden');
             } catch(err) {
                 alert("❌ Error al guardar: " + err.message);
             } finally {
-                textoBtn.innerText = "GUARDAR PICKS PENDIENTES";
                 btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         });
 
