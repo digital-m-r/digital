@@ -16,13 +16,8 @@
             --bg-card2: #1A2234;
             --border: #1F2D45;
             --text-muted: #6B7A99;
-            --green: #22C55E;
-            --yellow: #FBBF24;
-            --red: #EF4444;
         }
-
         * { box-sizing: border-box; }
-
         body {
             background-color: var(--bg-deep);
             color: #FFFFFF;
@@ -32,28 +27,18 @@
                 radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,50,160,0.25) 0%, transparent 60%),
                 radial-gradient(ellipse 40% 30% at 80% 80%, rgba(0,50,160,0.08) 0%, transparent 60%);
         }
-
         h1, h2, .bebas { font-family: 'Bebas Neue', sans-serif; }
-
-        /* Header */
         .header-bar {
             background: linear-gradient(135deg, #001880 0%, #0032A0 50%, #001880 100%);
             border-bottom: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 4px 32px rgba(0,50,160,0.4);
         }
-
-        /* Cards */
         .card-bg { background-color: var(--bg-card); border: 1px solid var(--border); }
-        .card-bg2 { background-color: var(--bg-card2); border: 1px solid var(--border); }
-
-        /* Inputs */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
-
-        /* Pick selection */
         .pick-label input[type="radio"]:checked + .pick-box {
-            background: rgba(0, 50, 160, 0.35);
+            background: rgba(0,50,160,0.35);
             border-color: #4A7FE0;
             box-shadow: 0 0 0 1px #4A7FE0, 0 0 16px rgba(0,80,200,0.3);
         }
@@ -63,26 +48,16 @@
             cursor: pointer;
         }
         .pick-box:hover { border-color: rgba(74,127,224,0.4); background: rgba(74,127,224,0.08); }
-
-        /* Partido estados */
-        .partido-bloqueado .pick-box { cursor: not-allowed; opacity: 0.6; }
-        .partido-bloqueado .pick-box:hover { border-color: transparent; background: transparent; }
-
-        /* Animations */
+        .parte-bloqueada .pick-box { cursor: not-allowed; opacity: 0.55; }
+        .parte-bloqueada .pick-box:hover { border-color: transparent !important; background: transparent !important; }
+        .parte-bloqueada input[type="number"] { cursor: not-allowed; opacity: 0.55; }
+        .partido-jugado .pick-box { cursor: not-allowed; }
+        .partido-jugado .pick-box:hover { border-color: transparent !important; background: transparent !important; }
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         .slide-up { animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
-
-        @keyframes pulse-ring {
-            0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
-            100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
-        }
-        .pulse-green { animation: pulse-ring 1.5s infinite; }
-
-        /* Score inputs */
         .score-input {
             width: 36px; height: 36px;
             background: #0D1526;
@@ -95,109 +70,100 @@
             transition: border-color 0.15s;
         }
         .score-input:focus { outline: none; border-color: var(--brand-blue-light); }
-
-        /* Badges */
         .badge {
             position: absolute;
             top: -11px; left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-size: 9px;
-            font-weight: 800;
+            font-size: 9px; font-weight: 800;
             letter-spacing: 0.05em;
             padding: 3px 10px;
             border-radius: 999px;
-            text-transform: uppercase;
-            z-index: 10;
+            text-transform: uppercase; z-index: 10;
         }
         .badge-win    { background: #16A34A; color: #fff; box-shadow: 0 0 12px rgba(34,197,94,0.4); }
         .badge-loss   { background: #991B1B; color: #fca5a5; }
         .badge-miss   { background: #374151; color: #9CA3AF; }
         .badge-locked-pick { background: #854D0E; color: #fde68a; }
         .badge-locked-no   { background: #1F2D45; color: #64748b; }
-
-        /* Fase label */
-        .fase-label { font-size: 9px; letter-spacing: 0.12em; font-weight: 700; text-transform: uppercase; }
-
-        /* Flag emoji */
-        .flag-emoji { font-size: 32px; line-height: 1; display: block; }
-
-        /* Tab buttons */
+        .badge-preview { background: #1e3a5f; color: #93c5fd; }
         .tab-active { background: var(--brand-blue); color: #fff; box-shadow: 0 2px 12px rgba(0,50,160,0.5); }
         .tab-inactive { color: var(--text-muted); }
         .tab-inactive:hover { color: #9ab0d4; }
-
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #1F2D45; border-radius: 3px; }
-
-        /* Toast */
         #toast {
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(80px);
             transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.3s;
-            opacity: 0; z-index: 9999;
-            pointer-events: none;
+            opacity: 0; z-index: 9999; pointer-events: none;
         }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-        /* Loading skeleton */
         .skeleton {
             background: linear-gradient(90deg, #111827 25%, #1A2234 50%, #111827 75%);
             background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 8px;
+            animation: shimmer 1.5s infinite; border-radius: 8px;
         }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-        /* Progress bar */
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
         .progress-bar { height: 3px; background: #1F2D45; border-radius: 2px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--brand-blue), #4A7FE0); border-radius: 2px; transition: width 0.4s ease; }
-
-        /* Modal backdrop */
         .modal-backdrop { backdrop-filter: blur(8px); background: rgba(0,0,0,0.75); }
-
-        /* User chip */
         .user-chip { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); }
+        /* Flag images */
+        .flag-img { width: 40px; height: 27px; object-fit: cover; border-radius: 3px; display: block; margin: 0 auto 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+        .flag-tbd { width: 40px; height: 27px; border-radius: 3px; background: #374151; display: flex; align-items: center; justify-content: center; margin: 0 auto 4px; font-size: 9px; color: #6B7A99; font-weight: 700; }
+        /* Horario badge */
+        .horario-badge { font-size: 10px; font-weight: 800; color: #93c5fd; background: rgba(0,50,160,0.3); border: 1px solid rgba(74,127,224,0.3); border-radius: 6px; padding: 1px 7px; display: inline-block; }
+        /* Login mascots */
+        .mascots-img { width: 100%; max-width: 420px; display: block; margin: 0 auto; border-radius: 16px; opacity: 0.92; }
+        /* Logo BMM header */
+        .logo-bmm { height: 38px; width: auto; object-fit: contain; }
+        /* Logo FIFA login */
+        .logo-fifa-login { height: 80px; width: auto; display: block; margin: 0 auto 12px; }
     </style>
 </head>
 <body class="pb-24">
 
-    <!-- HEADER -->
-    <header class="header-bar px-4 py-4 mb-8 sticky top-0 z-30">
-        <div class="max-w-2xl mx-auto flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <span class="text-2xl">⚽</span>
-                <div>
-                    <h1 class="text-2xl leading-none text-white tracking-widest">QUINIELA 2026</h1>
-                    <p class="text-[10px] text-blue-300 font-semibold tracking-widest mt-0.5">BMM FASE FINAL</p>
-                </div>
+<!-- HEADER -->
+<header class="header-bar px-4 py-3 mb-6 sticky top-0 z-30">
+    <div class="max-w-2xl mx-auto flex items-center justify-between gap-2">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">&#x26BD;</span>
+            <div>
+                <h1 class="bebas text-2xl leading-none text-white tracking-widest">QUINIELA 2026</h1>
+                <p class="text-[10px] text-blue-300 font-semibold tracking-widest mt-0.5">BMM FASE FINAL</p>
             </div>
-            <!-- User info chip — visible después del login -->
-            <div id="user-chip" class="hidden user-chip rounded-xl px-3 py-2 text-right min-w-0 max-w-[160px]">
+        </div>
+        <div class="flex items-center gap-2">
+            <div id="user-chip" class="hidden user-chip rounded-xl px-3 py-2 text-right min-w-0 max-w-[150px]">
                 <p id="chip-nombre" class="text-xs font-bold text-white truncate leading-tight"></p>
-                <p class="text-[10px] text-blue-300 font-semibold">Nómina: <span id="chip-nomina" class="text-white"></span></p>
+                <p class="text-[10px] text-blue-300 font-semibold">N&oacute;mina: <span id="chip-nomina" class="text-white"></span></p>
             </div>
-            <!-- Reglas button -->
             <button id="btn-reglas" onclick="document.getElementById('modal-reglas').classList.remove('hidden')"
                 class="hidden text-[11px] font-bold text-blue-300 hover:text-white border border-blue-800 hover:border-blue-500 px-3 py-2 rounded-lg transition-all whitespace-nowrap">
-                📜 Reglas
+                &#x1F4DC; Reglas
             </button>
+            <!-- Logo BMM - siempre visible en header -->
+            <img src="img/logo-bmm.png" alt="BMM" class="logo-bmm" onerror="this.style.display='none'">
         </div>
-    </header>
+    </div>
+</header>
 
-    <main class="max-w-2xl mx-auto px-4">
+<main class="max-w-2xl mx-auto px-4">
 
-        <!-- AUTH SCREEN -->
-        <section id="auth-screen" class="card-bg p-8 rounded-2xl shadow-2xl slide-up">
-            <div class="text-center mb-8">
-                <div class="text-5xl mb-3">🏆</div>
-                <h2 id="auth-title" class="text-3xl text-white tracking-widest">INICIAR SESIÓN</h2>
-                <p class="text-sm text-blue-300 mt-1 font-medium">Mundial 2026 — Quiniela Interna</p>
+    <!-- AUTH SCREEN -->
+    <section id="auth-screen" class="slide-up">
+        <div class="card-bg p-8 rounded-2xl shadow-2xl">
+            <div class="text-center mb-6">
+                <!-- Logo FIFA oficial en lugar del emoji -->
+                <img src="img/logo-fifa2026.png" alt="FIFA World Cup 2026" class="logo-fifa-login" onerror="this.outerHTML='<div class=&quot;text-6xl mb-3 text-center&quot;>&#x1F3C6;</div>'">
+                <h2 id="auth-title" class="bebas text-3xl text-white tracking-widest">INICIAR SESI&Oacute;N</h2>
+                <p class="text-sm text-blue-300 mt-1 font-medium">Mundial 2026 &mdash; Quiniela Interna BMM</p>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-[10px] font-bold text-blue-400 mb-2 uppercase tracking-widest">Número de Nómina</label>
+                    <label class="block text-[10px] font-bold text-blue-400 mb-2 uppercase tracking-widest">N&uacute;mero de N&oacute;mina</label>
                     <input type="number" id="auth-nomina"
                         class="w-full p-4 rounded-xl bg-[#0D1526] border border-[#1F2D45] text-white focus:outline-none focus:border-blue-600 transition-all text-lg font-bold"
                         placeholder="Ej. 123456">
@@ -210,186 +176,151 @@
                 </div>
                 <button id="btn-login"
                     class="w-full bg-blue-700 hover:bg-blue-600 py-4 rounded-xl font-black text-lg transition-all shadow-lg mt-2 disabled:opacity-40">
-                    ENTRAR A LA QUINIELA →
+                    ENTRAR A LA QUINIELA &rarr;
                 </button>
                 <button id="btn-register"
                     class="hidden w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-black text-lg transition-all shadow-lg mt-2 disabled:opacity-40">
-                    CREAR CUENTA →
+                    CREAR CUENTA &rarr;
                 </button>
                 <p id="toggle-text" class="text-center text-sm text-gray-500 pt-2">
-                    ¿No tienes cuenta? <button onclick="toggleAuthMode('register')" class="text-blue-400 font-bold hover:underline ml-1">Regístrate aquí</button>
+                    &iquest;No tienes cuenta? <button onclick="toggleAuthMode('register')" class="text-blue-400 font-bold hover:underline ml-1">Reg&iacute;strate aqu&iacute;</button>
                 </p>
             </div>
-        </section>
+        </div>
+        <!-- Mascots image below login card -->
+        <div class="mt-4 px-2">
+            <img src="img/mascotas.png" alt="Mascotas FIFA 2026" class="mascots-img" onerror="this.style.display='none'">
+        </div>
+    </section>
 
-        <!-- MAIN APP -->
-        <section id="main-app" class="hidden space-y-6">
-
-            <!-- Stats bar -->
-            <div id="stats-bar" class="grid grid-cols-3 gap-3">
-                <div class="card-bg rounded-xl p-3 text-center">
-                    <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Mis Puntos</p>
-                    <p id="user-display-points" class="text-2xl font-black text-white">0</p>
-                </div>
-                <div class="card-bg rounded-xl p-3 text-center">
-                    <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Aciertes</p>
-                    <p id="stats-aciertos" class="text-2xl font-black text-green-400">0</p>
-                </div>
-                <div class="card-bg rounded-xl p-3 text-center">
-                    <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Picks</p>
-                    <p id="stats-picks" class="text-2xl font-black text-yellow-400">0</p>
-                </div>
+    <!-- MAIN APP -->
+    <section id="main-app" class="hidden space-y-5">
+        <div class="grid grid-cols-3 gap-3">
+            <div class="card-bg rounded-xl p-3 text-center">
+                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Mis Puntos</p>
+                <p id="user-display-points" class="text-2xl font-black text-white">0</p>
             </div>
-
-            <!-- Tabs -->
-            <div class="flex bg-[#0D1526] p-1.5 rounded-xl border border-[#1F2D45]">
-                <button onclick="switchTab('partidos')" id="tab-btn-partidos"
-                    class="w-1/2 py-2.5 text-sm font-black rounded-lg transition-all tab-active">Mis Picks</button>
-                <button onclick="switchTab('ranking')" id="tab-btn-ranking"
-                    class="w-1/2 py-2.5 text-sm font-black rounded-lg transition-all tab-inactive">Ranking Top 10</button>
+            <div class="card-bg rounded-xl p-3 text-center">
+                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Aciertes</p>
+                <p id="stats-aciertos" class="text-2xl font-black text-green-400">0</p>
             </div>
-
-            <!-- TAB PICKS -->
-            <div id="tab-partidos" class="space-y-5">
-
-                <!-- Filtro partes -->
-                <div class="relative">
-                    <label class="block text-[10px] font-bold text-blue-400 mb-2 uppercase tracking-widest">Filtrar Partidos</label>
-                    <div class="relative">
-                        <select id="filtro-fase" onchange="cargarPartidos()"
-                            class="w-full p-4 rounded-xl bg-[#0D1526] text-white border border-[#1F2D45] focus:border-blue-600 outline-none font-bold appearance-none cursor-pointer transition-colors">
-                            <option value="1">Parte 1 — Partidos 1 al 26 (Jun 11–17)</option>
-                            <option value="2" id="opt-parte2">Parte 2 — Partidos 27 al 52 (Jun 18–24)</option>
-                            <option value="3" id="opt-parte3">Parte 3 — Partidos 53 al 78 (Jun 24–30)</option>
-                            <option value="4" id="opt-parte4">Parte 4 — Partidos 79 al 102 (Jul 1–19)</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-blue-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </div>
-                    </div>
-                    <!-- Progress de picks -->
-                    <div id="picks-progress-wrap" class="mt-2 hidden">
-                        <div class="flex justify-between text-[10px] font-bold text-blue-400 mb-1">
-                            <span>Picks completados</span>
-                            <span id="picks-progress-label">0 / 0</span>
-                        </div>
-                        <div class="progress-bar"><div id="picks-progress-fill" class="progress-fill" style="width:0%"></div></div>
-                    </div>
-                    <div id="banner-estado-parte" class="hidden mt-2 text-center text-[11px] font-bold py-2 px-4 rounded-lg"></div>
-                </div>
-
-                <div id="contenedor-partidos" class="space-y-3"></div>
-
-                <button id="btn-guardar"
-                    class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-black text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.25)] mt-4 disabled:opacity-40 hidden">
-                    <span id="texto-btn-guardar">💾 GUARDAR PICKS</span>
-                </button>
-            </div>
-
-            <!-- TAB RANKING -->
-            <div id="tab-ranking" class="hidden">
-                <div class="card-bg rounded-2xl overflow-hidden border border-[#1F2D45]">
-                    <div class="bg-gradient-to-r from-[#0032A0] to-[#001880] px-6 py-5 text-center">
-                        <h3 class="text-2xl text-white tracking-widest">🏆 LÍDERES DE PLANTA</h3>
-                        <p class="text-blue-300 text-xs mt-1 font-semibold">Actualización en tiempo real</p>
-                    </div>
-                    <div class="overflow-hidden">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="text-[10px] text-blue-400 uppercase tracking-widest border-b border-[#1F2D45]">
-                                    <th class="px-4 py-3 font-bold">Pos</th>
-                                    <th class="px-4 py-3 font-bold">Colaborador</th>
-                                    <th class="px-4 py-3 font-bold text-right">Puntos</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabla-ranking-body" class="divide-y divide-[#1A2234] text-sm"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- TOAST -->
-    <div id="toast" class="card-bg border border-[#1F2D45] rounded-xl px-5 py-3 text-sm font-bold shadow-2xl"></div>
-
-    <!-- MODAL REGLAS -->
-    <div id="modal-reglas" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center hidden modal-backdrop px-4 pb-4 sm:pb-0">
-        <div class="card-bg rounded-2xl shadow-2xl max-w-md w-full overflow-hidden slide-up">
-            <div class="bg-gradient-to-r from-[#0032A0] to-[#001880] p-5 text-center">
-                <h2 class="text-2xl text-white tracking-widest">📜 REGLAS DEL JUEGO</h2>
-            </div>
-            <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-                <div class="flex items-start gap-4">
-                    <div class="text-2xl bg-[#0D1526] p-2.5 rounded-xl border border-[#1F2D45] shrink-0">✅</div>
-                    <div>
-                        <h4 class="font-bold text-blue-300 text-xs uppercase tracking-wide mb-1">Picks Obligatorios</h4>
-                        <p class="text-gray-400 text-xs leading-relaxed">Debes elegir el resultado (Local / Empate / Visitante) en todos los partidos pendientes para guardar.</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="text-2xl bg-[#0D1526] p-2.5 rounded-xl border border-[#1F2D45] shrink-0">🎯</div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-blue-300 text-xs uppercase tracking-wide mb-2">Sistema de Puntos</h4>
-                        <div class="space-y-1.5">
-                            <div class="flex justify-between items-center bg-[#0D1526] px-3 py-2 rounded-lg border border-[#1F2D45]">
-                                <span class="text-xs text-gray-300">Acertar Ganador o Empate</span>
-                                <span class="font-black text-green-400 text-sm">+3 PTS</span>
-                            </div>
-                            <div class="flex justify-between items-center bg-[#0D1526] px-3 py-2 rounded-lg border border-[#1F2D45]">
-                                <span class="text-xs text-gray-300">Acertar Marcador Exacto</span>
-                                <span class="font-black text-green-400 text-sm">+5 PTS</span>
-                            </div>
-                            <div class="flex justify-between items-center bg-blue-900/40 px-3 py-2 rounded-lg border border-blue-700">
-                                <span class="text-xs font-black text-blue-200">¡AMBAS COSAS!</span>
-                                <span class="font-black text-yellow-400 text-base">+10 PTS</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="text-2xl bg-[#0D1526] p-2.5 rounded-xl border border-[#1F2D45] shrink-0">⏳</div>
-                    <div>
-                        <h4 class="font-bold text-red-400 text-xs uppercase tracking-wide mb-1">Cierre Automático</h4>
-                        <p class="text-gray-400 text-xs leading-relaxed">Cada partido se bloquea a las <strong class="text-white">00:00 del día que se juega</strong> (hora Ciudad de México).</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="text-2xl bg-[#0D1526] p-2.5 rounded-xl border border-[#1F2D45] shrink-0">🔓</div>
-                    <div>
-                        <h4 class="font-bold text-yellow-400 text-xs uppercase tracking-wide mb-1">Apertura de Partes</h4>
-                        <p class="text-gray-400 text-xs leading-relaxed">Cada parte se habilita <strong class="text-white">7 días antes</strong> de su primer partido.</p>
-                    </div>
-                </div>
-                <button onclick="cerrarModalReglas()"
-                    class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-black text-lg transition-all text-white mt-2">
-                    ¡ENTENDIDO, A JUGAR! 🚀
-                </button>
+            <div class="card-bg rounded-xl p-3 text-center">
+                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Picks</p>
+                <p id="stats-picks" class="text-2xl font-black text-yellow-400">0</p>
             </div>
         </div>
-    </div>
+        <div class="flex bg-[#0D1526] p-1.5 rounded-xl border border-[#1F2D45]">
+            <button onclick="switchTab('partidos')" id="tab-btn-partidos" class="w-1/2 py-2.5 text-sm font-black rounded-lg transition-all tab-active">Mis Picks</button>
+            <button onclick="switchTab('ranking')" id="tab-btn-ranking" class="w-1/2 py-2.5 text-sm font-black rounded-lg transition-all tab-inactive">Ranking Top 10</button>
+        </div>
+        <div id="tab-partidos" class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-bold text-blue-400 mb-2 uppercase tracking-widest">Filtrar Partidos</label>
+                <div class="relative">
+                    <select id="filtro-fase" onchange="cargarPartidos()"
+                        class="w-full p-4 rounded-xl bg-[#0D1526] text-white border border-[#1F2D45] focus:border-blue-600 outline-none font-bold appearance-none cursor-pointer transition-colors">
+                        <option value="1">Parte 1 &mdash; Partidos 1 al 26 (Jun 11&ndash;17)</option>
+                        <option value="2" id="opt-parte2">Parte 2 &mdash; Partidos 27 al 52 (Jun 18&ndash;24)</option>
+                        <option value="3" id="opt-parte3">Parte 3 &mdash; Partidos 53 al 78 (Jun 24&ndash;30)</option>
+                        <option value="4" id="opt-parte4">Parte 4 &mdash; Partidos 79 al 102 (Jul 1&ndash;19)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-blue-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+                <div id="picks-progress-wrap" class="mt-2 hidden">
+                    <div class="flex justify-between text-[10px] font-bold text-blue-400 mb-1">
+                        <span>Picks completados</span>
+                        <span id="picks-progress-label">0 / 0</span>
+                    </div>
+                    <div class="progress-bar"><div id="picks-progress-fill" class="progress-fill" style="width:0%"></div></div>
+                </div>
+                <div id="banner-estado-parte" class="hidden mt-2 text-center text-[11px] font-bold py-2 px-4 rounded-lg"></div>
+            </div>
+            <div id="contenedor-partidos" class="space-y-3"></div>
+            <button id="btn-guardar" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-black text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.25)] mt-4 disabled:opacity-40 hidden">
+                <span id="texto-btn-guardar">&#x1F4BE; GUARDAR PICKS</span>
+            </button>
+        </div>
+        <div id="tab-ranking" class="hidden">
+            <div class="card-bg rounded-2xl overflow-hidden border border-[#1F2D45]">
+                <div class="bg-gradient-to-r from-[#0032A0] to-[#001880] px-6 py-5 text-center">
+                    <h3 class="bebas text-2xl text-white tracking-widest">&#x1F3C6; L&Iacute;DERES DE PLANTA</h3>
+                    <p class="text-blue-300 text-xs mt-1 font-semibold">Actualizaci&oacute;n en tiempo real</p>
+                </div>
+                <div class="overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] text-blue-400 uppercase tracking-widest border-b border-[#1F2D45]">
+                                <th class="px-4 py-3 font-bold">Pos</th>
+                                <th class="px-4 py-3 font-bold">Colaborador</th>
+                                <th class="px-4 py-3 font-bold text-right">Puntos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-ranking-body" class="divide-y divide-[#1A2234] text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
 
-    <!-- MODAL CONFIRMACIÓN -->
-    <div id="modal-confirmacion" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop px-4">
-        <div class="card-bg rounded-2xl shadow-2xl max-w-sm w-full p-8 text-center slide-up">
-            <div class="text-6xl mb-4">✅</div>
-            <h3 class="text-2xl text-white tracking-wider mb-2">¡GUARDADO!</h3>
-            <p class="text-gray-400 text-sm mb-6 leading-relaxed">Tus pronósticos fueron registrados. ¡Buena suerte!</p>
-            <button onclick="cerrarModalConfirmacion()"
-                class="w-full bg-blue-700 hover:bg-blue-600 py-3 rounded-xl font-black text-lg transition-all text-white">
-                ACEPTAR
+<div id="toast" class="card-bg border border-[#1F2D45] rounded-xl px-5 py-3 text-sm font-bold shadow-2xl"></div>
+
+<!-- MODAL REGLAS -->
+<div id="modal-reglas" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center hidden modal-backdrop px-4 pb-4 sm:pb-0">
+    <div class="card-bg rounded-2xl shadow-2xl max-w-md w-full overflow-hidden slide-up">
+        <div class="bg-gradient-to-r from-[#0032A0] to-[#001880] p-5 text-center">
+            <h2 class="bebas text-2xl text-white tracking-widest">&#x1F4DC; REGLAS DEL JUEGO</h2>
+        </div>
+        <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+            <div class="flex items-start gap-4">
+                <div class="text-2xl bg-[#0D1526] p-2.5 rounded-xl border border-[#1F2D45] shrink-0">&#x2705;</div>
+                <div><h4 class="font-bold text-blue-300 text-xs uppercase tracking-wide mb-1">Picks Obligatorios</h4>
+                <p class="text-gray-400 text-xs leading-relaxed">Debes elegir el resultado (Local / Empate / Visitante) en todos los partidos pendientes para guardar.</p></div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="text-2xl bg-[#0D1526] p-2.5 rounded-xl border border-[#1F2D45] shrink-0">&#x1F3AF;</div>
+                <div class="flex-1"><h4 class="font-bold text-blue-300 text-xs uppercase tracking-wide mb-2">Sistema de Puntos</h4>
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center bg-[#0D1526] px-3 py-2 rounded-lg border border-[#1F2D45]"><span class="text-xs text-gray-300">Acertar Ganador o Empate</span><span class="font-black text-green-400 text-sm">+3 PTS</span></div>
+                        <div class="flex justify-between items-center bg-[#0D1526] px-3 py-2 rounded-lg border border-[#1F2D45]"><span class="text-xs text-gray-300">Acertar Marcador Exacto</span><span class="font-black text-green-400 text-sm">+5 PTS</span></div>
+                        <div class="flex justify-between items-center bg-blue-900/40 px-3 py-2 rounded-lg border border-blue-700"><span class="text-xs font-black text-blue-200">&iexcl;AMBAS COSAS!</span><span class="font-black text-yellow-400 text-base">+10 PTS</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="text-2xl bg-[#0D1526] p-2.5 rounded-xl border border-[#1F2D45] shrink-0">&#x23F3;</div>
+                <div><h4 class="font-bold text-red-400 text-xs uppercase tracking-wide mb-1">Cierre Autom&aacute;tico</h4>
+                <p class="text-gray-400 text-xs leading-relaxed">Cada partido se bloquea a las <strong class="text-white">00:00 del d&iacute;a que se juega</strong> (hora Ciudad de M&eacute;xico).</p></div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="text-2xl bg-[#0D1526] p-2.5 rounded-xl border border-[#1F2D45] shrink-0">&#x1F513;</div>
+                <div><h4 class="font-bold text-yellow-400 text-xs uppercase tracking-wide mb-1">Apertura de Partes</h4>
+                <p class="text-gray-400 text-xs leading-relaxed">Cada parte se habilita <strong class="text-white">7 d&iacute;as antes</strong> de su primer partido.</p></div>
+            </div>
+            <button onclick="cerrarModalReglas()" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-black text-lg transition-all text-white mt-2">
+                &iexcl;ENTENDIDO, A JUGAR! &#x1F680;
             </button>
         </div>
     </div>
+</div>
+
+<!-- MODAL CONFIRMACION -->
+<div id="modal-confirmacion" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop px-4">
+    <div class="card-bg rounded-2xl shadow-2xl max-w-sm w-full p-8 text-center slide-up">
+        <div class="text-6xl mb-4">&#x2705;</div>
+        <h3 class="bebas text-2xl text-white tracking-wider mb-2">&iexcl;GUARDADO!</h3>
+        <p class="text-gray-400 text-sm mb-6 leading-relaxed">Tus pron&oacute;sticos fueron registrados. &iexcl;Buena suerte!</p>
+        <button onclick="cerrarModalConfirmacion()" class="w-full bg-blue-700 hover:bg-blue-600 py-3 rounded-xl font-black text-lg transition-all text-white">ACEPTAR</button>
+    </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import {
-    getFirestore, doc, setDoc, getDoc, collection,
-    onSnapshot, query, orderBy, limit
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, limit }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ─── FIREBASE CONFIG ──────────────────────────────────────────────────────────
 const firebaseConfig = {
     apiKey: "AIzaSyA_3DcULns8hFp99w_3-Q5xH4E-iZ_veVM",
     authDomain: "mundial2026-ed8dd.firebaseapp.com",
@@ -398,243 +329,243 @@ const firebaseConfig = {
     messagingSenderId: "491372477350",
     appId: "1:491372477350:web:9c6030765d54499aab2d67"
 };
-
 let db;
-try {
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-} catch(e) { console.warn("Firebase no disponible. Modo demo activo."); }
+try { const app = initializeApp(firebaseConfig); db = getFirestore(app); }
+catch(e) { console.warn("Firebase no disponible. Modo demo."); }
 
-// ─── FLAG MAP ─────────────────────────────────────────────────────────────────
-// Mapa local completo de code → emoji bandera
-const FLAGS = {
-    MEX: "🇲🇽", RSA: "🇿🇦", KOR: "🇰🇷", CZE: "🇨🇿", CAN: "🇨🇦", BIH: "🇧🇦",
-    USA: "🇺🇸", PAR: "🇵🇾", BRA: "🇧🇷", MAR: "🇲🇦", HAI: "🇭🇹", SCO: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
-    AUS: "🇦🇺", TUR: "🇹🇷", QAT: "🇶🇦", SUI: "🇨🇭", GER: "🇩🇪", CUW: "🇨🇼",
-    NED: "🇳🇱", JPN: "🇯🇵", CIV: "🇨🇮", ECU: "🇪🇨", SWE: "🇸🇪", TUN: "🇹🇳",
-    ESP: "🇪🇸", CPV: "🇨🇻", BEL: "🇧🇪", EGY: "🇪🇬", KSA: "🇸🇦", URU: "🇺🇾",
-    IRN: "🇮🇷", NZL: "🇳🇿", FRA: "🇫🇷", SEN: "🇸🇳", IRQ: "🇮🇶", NOR: "🇳🇴",
-    ARG: "🇦🇷", ALG: "🇩🇿", AUT: "🇦🇹", JOR: "🇯🇴", POR: "🇵🇹", COD: "🇨🇩",
-    ENG: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", CRO: "🇭🇷", GHA: "🇬🇭", PAN: "🇵🇦", UZB: "🇺🇿", COL: "🇨🇴",
+// FLAG CDN - flagcdn.com, zero Unicode chars, 100% cross-browser
+const FLAG_ISO = {
+    MEX:"mx",RSA:"za",KOR:"kr",CZE:"cz",CAN:"ca",BIH:"ba",
+    USA:"us",PAR:"py",BRA:"br",MAR:"ma",HAI:"ht",SCO:"gb-sct",
+    AUS:"au",TUR:"tr",QAT:"qa",SUI:"ch",GER:"de",CUW:"cw",
+    NED:"nl",JPN:"jp",CIV:"ci",ECU:"ec",SWE:"se",TUN:"tn",
+    ESP:"es",CPV:"cv",BEL:"be",EGY:"eg",KSA:"sa",URU:"uy",
+    IRN:"ir",NZL:"nz",FRA:"fr",SEN:"sn",IRQ:"iq",NOR:"no",
+    ARG:"ar",ALG:"dz",AUT:"at",JOR:"jo",POR:"pt",COD:"cd",
+    ENG:"gb-eng",CRO:"hr",GHA:"gh",PAN:"pa",UZB:"uz",COL:"co"
 };
-function getFlag(code) { return FLAGS[code] || "🏳️"; }
+function getFlagHTML(code) {
+    const iso = FLAG_ISO[code];
+    if (!iso) return '<div class="flag-tbd">?</div>';
+    return '<img class="flag-img" src="https://flagcdn.com/w80/' + iso + '.png" alt="' + code + '" loading="lazy">';
+}
 
-// ─── TIMEZONE HELPER ──────────────────────────────────────────────────────────
+// HORARIOS CDMX oficiales (fuente: FIFA / Yahoo Sports - ET-2h = CDMX)
+const HORARIOS = {
+    p_1:"13:00",p_2:"20:00",
+    p_3:"13:00",p_4:"19:00",
+    p_5:"16:00",p_6:"19:00",p_7:"10:00",p_8:"13:00",
+    p_9:"11:00",p_10:"14:00",p_11:"17:00",p_12:"20:00",
+    p_13:"10:00",p_14:"13:00",p_15:"16:00",p_16:"19:00",
+    p_17:"13:00",p_18:"16:00",p_19:"19:00",p_20:"22:00",
+    p_21:"11:00",p_22:"14:00",p_23:"17:00",p_24:"20:00",
+    p_25:"10:00",p_26:"19:00",
+    p_27:"16:00",p_28:"13:00",
+    p_29:"18:30",p_30:"16:00",p_31:"13:00",p_32:"21:00",
+    p_33:"14:00",p_34:"18:00",p_35:"11:00",p_36:"22:00",
+    p_37:"13:00",p_38:"19:00",p_39:"10:00",p_40:"16:00",
+    p_41:"15:00",p_42:"18:00",p_43:"11:00",p_44:"21:00",
+    p_45:"11:00",p_46:"20:00",p_47:"14:00",p_48:"17:00",
+    p_49:"19:00",p_50:"19:00",p_51:"13:00",p_52:"13:00",
+    p_53:"14:00",p_54:"14:00",p_55:"17:00",p_56:"17:00",p_57:"20:00",p_58:"20:00",
+    p_59:"13:00",p_60:"13:00",p_61:"21:00",p_62:"21:00",p_63:"18:00",p_64:"18:00",
+    p_65:"15:00",p_66:"15:00",p_67:"19:00",p_68:"19:00",p_69:"20:00",p_70:"20:00",
+    p_71:"13:00",p_72:"11:00",p_73:"14:00",p_74:"17:00",
+    p_75:"11:00",p_76:"14:00",p_77:"17:00",p_78:"20:00",
+    p_79:"11:00",p_80:"14:00",p_81:"17:00",
+    p_82:"11:00",p_83:"14:00",p_84:"17:00",
+    p_85:"11:00",p_86:"14:00",
+    p_87:"13:00",p_88:"16:00",p_89:"13:00",p_90:"16:00",
+    p_91:"13:00",p_92:"16:00",p_93:"13:00",p_94:"16:00",
+    p_95:"14:00",p_96:"14:00",p_97:"14:00",p_98:"14:00",
+    p_99:"14:00",p_100:"14:00",
+    p_101:"13:00",p_102:"13:00"
+};
+
 function getFechaMexicoHoy() {
     return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' });
 }
-
-// ─── UNLOCK DATES ─────────────────────────────────────────────────────────────
-const PARTES_UNLOCK = {
-    1: "2026-05-22",
-    2: "2026-06-11",
-    3: "2026-06-17",
-    4: "2026-06-24"
-};
+const PARTES_UNLOCK = { 1:"2026-05-22", 2:"2026-06-11", 3:"2026-06-17", 4:"2026-06-24" };
 function esParteDesbloqueada(p) { return getFechaMexicoHoy() >= PARTES_UNLOCK[p]; }
 function esPartidoBloqueado(fecha) { return getFechaMexicoHoy() >= fecha; }
 
-// ─── CALENDARIO ───────────────────────────────────────────────────────────────
-const TBD = { color: "#374151", txtColor: "#9CA3AF", code: "???" };
-
 const calendario = [
-    // PARTE 1
-    { parte:1, id:"p_1",  fase:"Jue 11/06 — Partido 1",  fechaBloqueo:"2026-06-11", resOficial:null, local:{nombre:"México",       code:"MEX"}, visitante:{nombre:"Sudáfrica",    code:"RSA"}},
-    { parte:1, id:"p_2",  fase:"Jue 11/06 — Partido 2",  fechaBloqueo:"2026-06-11", resOficial:null, local:{nombre:"Corea del Sur",code:"KOR"}, visitante:{nombre:"R. Checa",     code:"CZE"}},
-    { parte:1, id:"p_3",  fase:"Vie 12/06 — Partido 3",  fechaBloqueo:"2026-06-12", resOficial:null, local:{nombre:"Canadá",       code:"CAN"}, visitante:{nombre:"Bosnia y H.",  code:"BIH"}},
-    { parte:1, id:"p_4",  fase:"Vie 12/06 — Partido 4",  fechaBloqueo:"2026-06-12", resOficial:null, local:{nombre:"Est. Unidos",  code:"USA"}, visitante:{nombre:"Paraguay",     code:"PAR"}},
-    { parte:1, id:"p_5",  fase:"Sáb 13/06 — Partido 5",  fechaBloqueo:"2026-06-13", resOficial:null, local:{nombre:"Brasil",       code:"BRA"}, visitante:{nombre:"Marruecos",    code:"MAR"}},
-    { parte:1, id:"p_6",  fase:"Sáb 13/06 — Partido 6",  fechaBloqueo:"2026-06-13", resOficial:null, local:{nombre:"Haití",        code:"HAI"}, visitante:{nombre:"Escocia",      code:"SCO"}},
-    { parte:1, id:"p_7",  fase:"Sáb 13/06 — Partido 7",  fechaBloqueo:"2026-06-13", resOficial:null, local:{nombre:"Australia",    code:"AUS"}, visitante:{nombre:"Turquía",      code:"TUR"}},
-    { parte:1, id:"p_8",  fase:"Sáb 13/06 — Partido 8",  fechaBloqueo:"2026-06-13", resOficial:null, local:{nombre:"Qatar",        code:"QAT"}, visitante:{nombre:"Suiza",        code:"SUI"}},
-    { parte:1, id:"p_9",  fase:"Dom 14/06 — Partido 9",  fechaBloqueo:"2026-06-14", resOficial:null, local:{nombre:"Alemania",     code:"GER"}, visitante:{nombre:"Curazao",      code:"CUW"}},
-    { parte:1, id:"p_10", fase:"Dom 14/06 — Partido 10", fechaBloqueo:"2026-06-14", resOficial:null, local:{nombre:"Países Bajos", code:"NED"}, visitante:{nombre:"Japón",        code:"JPN"}},
-    { parte:1, id:"p_11", fase:"Dom 14/06 — Partido 11", fechaBloqueo:"2026-06-14", resOficial:null, local:{nombre:"C. de Marfil", code:"CIV"}, visitante:{nombre:"Ecuador",      code:"ECU"}},
-    { parte:1, id:"p_12", fase:"Dom 14/06 — Partido 12", fechaBloqueo:"2026-06-14", resOficial:null, local:{nombre:"Suecia",       code:"SWE"}, visitante:{nombre:"Túnez",        code:"TUN"}},
-    { parte:1, id:"p_13", fase:"Lun 15/06 — Partido 13", fechaBloqueo:"2026-06-15", resOficial:null, local:{nombre:"España",       code:"ESP"}, visitante:{nombre:"Cabo Verde",   code:"CPV"}},
-    { parte:1, id:"p_14", fase:"Lun 15/06 — Partido 14", fechaBloqueo:"2026-06-15", resOficial:null, local:{nombre:"Bélgica",      code:"BEL"}, visitante:{nombre:"Egipto",       code:"EGY"}},
-    { parte:1, id:"p_15", fase:"Lun 15/06 — Partido 15", fechaBloqueo:"2026-06-15", resOficial:null, local:{nombre:"A. Saudita",   code:"KSA"}, visitante:{nombre:"Uruguay",      code:"URU"}},
-    { parte:1, id:"p_16", fase:"Lun 15/06 — Partido 16", fechaBloqueo:"2026-06-15", resOficial:null, local:{nombre:"Irán",         code:"IRN"}, visitante:{nombre:"N. Zelanda",   code:"NZL"}},
-    { parte:1, id:"p_17", fase:"Mar 16/06 — Partido 17", fechaBloqueo:"2026-06-16", resOficial:null, local:{nombre:"Francia",      code:"FRA"}, visitante:{nombre:"Senegal",      code:"SEN"}},
-    { parte:1, id:"p_18", fase:"Mar 16/06 — Partido 18", fechaBloqueo:"2026-06-16", resOficial:null, local:{nombre:"Irak",         code:"IRQ"}, visitante:{nombre:"Noruega",      code:"NOR"}},
-    { parte:1, id:"p_19", fase:"Mar 16/06 — Partido 19", fechaBloqueo:"2026-06-16", resOficial:null, local:{nombre:"Argentina",    code:"ARG"}, visitante:{nombre:"Argelia",      code:"ALG"}},
-    { parte:1, id:"p_20", fase:"Mar 16/06 — Partido 20", fechaBloqueo:"2026-06-16", resOficial:null, local:{nombre:"Austria",      code:"AUT"}, visitante:{nombre:"Jordania",     code:"JOR"}},
-    { parte:1, id:"p_21", fase:"Mié 17/06 — Partido 21", fechaBloqueo:"2026-06-17", resOficial:null, local:{nombre:"Portugal",     code:"POR"}, visitante:{nombre:"Congo",        code:"COD"}},
-    { parte:1, id:"p_22", fase:"Mié 17/06 — Partido 22", fechaBloqueo:"2026-06-17", resOficial:null, local:{nombre:"Inglaterra",   code:"ENG"}, visitante:{nombre:"Croacia",      code:"CRO"}},
-    { parte:1, id:"p_23", fase:"Mié 17/06 — Partido 23", fechaBloqueo:"2026-06-17", resOficial:null, local:{nombre:"Ghana",        code:"GHA"}, visitante:{nombre:"Panamá",       code:"PAN"}},
-    { parte:1, id:"p_24", fase:"Mié 17/06 — Partido 24", fechaBloqueo:"2026-06-17", resOficial:null, local:{nombre:"Uzbekistán",   code:"UZB"}, visitante:{nombre:"Colombia",     code:"COL"}},
-    { parte:1, id:"p_25", fase:"Jue 18/06 — Partido 25", fechaBloqueo:"2026-06-18", resOficial:null, local:{nombre:"R. Checa",     code:"CZE"}, visitante:{nombre:"Sudáfrica",    code:"RSA"}},
-    { parte:1, id:"p_26", fase:"Jue 18/06 — Partido 26", fechaBloqueo:"2026-06-18", resOficial:null, local:{nombre:"México",       code:"MEX"}, visitante:{nombre:"Corea del Sur",code:"KOR"}},
-    // PARTE 2
-    { parte:2, id:"p_27", fase:"Jue 18/06 — Partido 27", fechaBloqueo:"2026-06-18", resOficial:null, local:{nombre:"Canadá",       code:"CAN"}, visitante:{nombre:"Qatar",        code:"QAT"}},
-    { parte:2, id:"p_28", fase:"Jue 18/06 — Partido 28", fechaBloqueo:"2026-06-18", resOficial:null, local:{nombre:"Suiza",        code:"SUI"}, visitante:{nombre:"Bosnia y H.",  code:"BIH"}},
-    { parte:2, id:"p_29", fase:"Vie 19/06 — Partido 29", fechaBloqueo:"2026-06-19", resOficial:null, local:{nombre:"Brasil",       code:"BRA"}, visitante:{nombre:"Haití",        code:"HAI"}},
-    { parte:2, id:"p_30", fase:"Vie 19/06 — Partido 30", fechaBloqueo:"2026-06-19", resOficial:null, local:{nombre:"Escocia",      code:"SCO"}, visitante:{nombre:"Marruecos",    code:"MAR"}},
-    { parte:2, id:"p_31", fase:"Vie 19/06 — Partido 31", fechaBloqueo:"2026-06-19", resOficial:null, local:{nombre:"Est. Unidos",  code:"USA"}, visitante:{nombre:"Australia",    code:"AUS"}},
-    { parte:2, id:"p_32", fase:"Vie 19/06 — Partido 32", fechaBloqueo:"2026-06-19", resOficial:null, local:{nombre:"Turquía",      code:"TUR"}, visitante:{nombre:"Paraguay",     code:"PAR"}},
-    { parte:2, id:"p_33", fase:"Sáb 20/06 — Partido 33", fechaBloqueo:"2026-06-20", resOficial:null, local:{nombre:"Alemania",     code:"GER"}, visitante:{nombre:"C. de Marfil", code:"CIV"}},
-    { parte:2, id:"p_34", fase:"Sáb 20/06 — Partido 34", fechaBloqueo:"2026-06-20", resOficial:null, local:{nombre:"Ecuador",      code:"ECU"}, visitante:{nombre:"Curazao",      code:"CUW"}},
-    { parte:2, id:"p_35", fase:"Sáb 20/06 — Partido 35", fechaBloqueo:"2026-06-20", resOficial:null, local:{nombre:"Países Bajos", code:"NED"}, visitante:{nombre:"Suecia",       code:"SWE"}},
-    { parte:2, id:"p_36", fase:"Sáb 20/06 — Partido 36", fechaBloqueo:"2026-06-20", resOficial:null, local:{nombre:"Túnez",        code:"TUN"}, visitante:{nombre:"Japón",        code:"JPN"}},
-    { parte:2, id:"p_37", fase:"Dom 21/06 — Partido 37", fechaBloqueo:"2026-06-21", resOficial:null, local:{nombre:"Bélgica",      code:"BEL"}, visitante:{nombre:"Irán",         code:"IRN"}},
-    { parte:2, id:"p_38", fase:"Dom 21/06 — Partido 38", fechaBloqueo:"2026-06-21", resOficial:null, local:{nombre:"N. Zelanda",   code:"NZL"}, visitante:{nombre:"Egipto",       code:"EGY"}},
-    { parte:2, id:"p_39", fase:"Dom 21/06 — Partido 39", fechaBloqueo:"2026-06-21", resOficial:null, local:{nombre:"España",       code:"ESP"}, visitante:{nombre:"A. Saudita",   code:"KSA"}},
-    { parte:2, id:"p_40", fase:"Dom 21/06 — Partido 40", fechaBloqueo:"2026-06-21", resOficial:null, local:{nombre:"Uruguay",      code:"URU"}, visitante:{nombre:"Cabo Verde",   code:"CPV"}},
-    { parte:2, id:"p_41", fase:"Lun 22/06 — Partido 41", fechaBloqueo:"2026-06-22", resOficial:null, local:{nombre:"Francia",      code:"FRA"}, visitante:{nombre:"Irak",         code:"IRQ"}},
-    { parte:2, id:"p_42", fase:"Lun 22/06 — Partido 42", fechaBloqueo:"2026-06-22", resOficial:null, local:{nombre:"Noruega",      code:"NOR"}, visitante:{nombre:"Senegal",      code:"SEN"}},
-    { parte:2, id:"p_43", fase:"Lun 22/06 — Partido 43", fechaBloqueo:"2026-06-22", resOficial:null, local:{nombre:"Argentina",    code:"ARG"}, visitante:{nombre:"Austria",      code:"AUT"}},
-    { parte:2, id:"p_44", fase:"Lun 22/06 — Partido 44", fechaBloqueo:"2026-06-22", resOficial:null, local:{nombre:"Jordania",     code:"JOR"}, visitante:{nombre:"Argelia",      code:"ALG"}},
-    { parte:2, id:"p_45", fase:"Mar 23/06 — Partido 45", fechaBloqueo:"2026-06-23", resOficial:null, local:{nombre:"Portugal",     code:"POR"}, visitante:{nombre:"Uzbekistán",   code:"UZB"}},
-    { parte:2, id:"p_46", fase:"Mar 23/06 — Partido 46", fechaBloqueo:"2026-06-23", resOficial:null, local:{nombre:"Colombia",     code:"COL"}, visitante:{nombre:"Congo",        code:"COD"}},
-    { parte:2, id:"p_47", fase:"Mar 23/06 — Partido 47", fechaBloqueo:"2026-06-23", resOficial:null, local:{nombre:"Inglaterra",   code:"ENG"}, visitante:{nombre:"Ghana",        code:"GHA"}},
-    { parte:2, id:"p_48", fase:"Mar 23/06 — Partido 48", fechaBloqueo:"2026-06-23", resOficial:null, local:{nombre:"Panamá",       code:"PAN"}, visitante:{nombre:"Croacia",      code:"CRO"}},
-    { parte:2, id:"p_49", fase:"Mié 24/06 — Partido 49", fechaBloqueo:"2026-06-24", resOficial:null, local:{nombre:"Sudáfrica",    code:"RSA"}, visitante:{nombre:"Corea del Sur",code:"KOR"}},
-    { parte:2, id:"p_50", fase:"Mié 24/06 — Partido 50", fechaBloqueo:"2026-06-24", resOficial:null, local:{nombre:"R. Checa",     code:"CZE"}, visitante:{nombre:"México",       code:"MEX"}},
-    { parte:2, id:"p_51", fase:"Mié 24/06 — Partido 51", fechaBloqueo:"2026-06-24", resOficial:null, local:{nombre:"Suiza",        code:"SUI"}, visitante:{nombre:"Canadá",       code:"CAN"}},
-    { parte:2, id:"p_52", fase:"Mié 24/06 — Partido 52", fechaBloqueo:"2026-06-24", resOficial:null, local:{nombre:"Bosnia y H.",  code:"BIH"}, visitante:{nombre:"Qatar",        code:"QAT"}},
-    // PARTE 3
-    { parte:3, id:"p_53", fase:"Jue 25/06 — Partido 53", fechaBloqueo:"2026-06-25", resOficial:null, local:{nombre:"Curazao",      code:"CUW"}, visitante:{nombre:"C. de Marfil", code:"CIV"}},
-    { parte:3, id:"p_54", fase:"Jue 25/06 — Partido 54", fechaBloqueo:"2026-06-25", resOficial:null, local:{nombre:"Ecuador",      code:"ECU"}, visitante:{nombre:"Alemania",     code:"GER"}},
-    { parte:3, id:"p_55", fase:"Jue 25/06 — Partido 55", fechaBloqueo:"2026-06-25", resOficial:null, local:{nombre:"Japón",        code:"JPN"}, visitante:{nombre:"Suecia",       code:"SWE"}},
-    { parte:3, id:"p_56", fase:"Jue 25/06 — Partido 56", fechaBloqueo:"2026-06-25", resOficial:null, local:{nombre:"Túnez",        code:"TUN"}, visitante:{nombre:"Países Bajos", code:"NED"}},
-    { parte:3, id:"p_57", fase:"Jue 25/06 — Partido 57", fechaBloqueo:"2026-06-25", resOficial:null, local:{nombre:"Turquía",      code:"TUR"}, visitante:{nombre:"Est. Unidos",  code:"USA"}},
-    { parte:3, id:"p_58", fase:"Jue 25/06 — Partido 58", fechaBloqueo:"2026-06-25", resOficial:null, local:{nombre:"Paraguay",     code:"PAR"}, visitante:{nombre:"Australia",    code:"AUS"}},
-    { parte:3, id:"p_59", fase:"Vie 26/06 — Partido 59", fechaBloqueo:"2026-06-26", resOficial:null, local:{nombre:"Noruega",      code:"NOR"}, visitante:{nombre:"Francia",      code:"FRA"}},
-    { parte:3, id:"p_60", fase:"Vie 26/06 — Partido 60", fechaBloqueo:"2026-06-26", resOficial:null, local:{nombre:"Senegal",      code:"SEN"}, visitante:{nombre:"Irak",         code:"IRQ"}},
-    { parte:3, id:"p_61", fase:"Vie 26/06 — Partido 61", fechaBloqueo:"2026-06-26", resOficial:null, local:{nombre:"Egipto",       code:"EGY"}, visitante:{nombre:"Irán",         code:"IRN"}},
-    { parte:3, id:"p_62", fase:"Vie 26/06 — Partido 62", fechaBloqueo:"2026-06-26", resOficial:null, local:{nombre:"N. Zelanda",   code:"NZL"}, visitante:{nombre:"Bélgica",      code:"BEL"}},
-    { parte:3, id:"p_63", fase:"Vie 26/06 — Partido 63", fechaBloqueo:"2026-06-26", resOficial:null, local:{nombre:"Cabo Verde",   code:"CPV"}, visitante:{nombre:"A. Saudita",   code:"KSA"}},
-    { parte:3, id:"p_64", fase:"Vie 26/06 — Partido 64", fechaBloqueo:"2026-06-26", resOficial:null, local:{nombre:"Uruguay",      code:"URU"}, visitante:{nombre:"España",       code:"ESP"}},
-    { parte:3, id:"p_65", fase:"Sáb 27/06 — Partido 65", fechaBloqueo:"2026-06-27", resOficial:null, local:{nombre:"Panamá",       code:"PAN"}, visitante:{nombre:"Inglaterra",   code:"ENG"}},
-    { parte:3, id:"p_66", fase:"Sáb 27/06 — Partido 66", fechaBloqueo:"2026-06-27", resOficial:null, local:{nombre:"Croacia",      code:"CRO"}, visitante:{nombre:"Ghana",        code:"GHA"}},
-    { parte:3, id:"p_67", fase:"Sáb 27/06 — Partido 67", fechaBloqueo:"2026-06-27", resOficial:null, local:{nombre:"Argelia",      code:"ALG"}, visitante:{nombre:"Austria",      code:"AUT"}},
-    { parte:3, id:"p_68", fase:"Sáb 27/06 — Partido 68", fechaBloqueo:"2026-06-27", resOficial:null, local:{nombre:"Jordania",     code:"JOR"}, visitante:{nombre:"Argentina",    code:"ARG"}},
-    { parte:3, id:"p_69", fase:"Sáb 27/06 — Partido 69", fechaBloqueo:"2026-06-27", resOficial:null, local:{nombre:"Colombia",     code:"COL"}, visitante:{nombre:"Portugal",     code:"POR"}},
-    { parte:3, id:"p_70", fase:"Sáb 27/06 — Partido 70", fechaBloqueo:"2026-06-27", resOficial:null, local:{nombre:"RD Congo",     code:"COD"}, visitante:{nombre:"Uzbekistán",   code:"UZB"}},
-    { parte:3, id:"p_71", fase:"Dom 28/06 — Partido 71 (16avos)", fechaBloqueo:"2026-06-28", resOficial:null, local:{nombre:"2° Grupo A", code:"???"}, visitante:{nombre:"2° Grupo B",  code:"???"}},
-    { parte:3, id:"p_72", fase:"Lun 29/06 — Partido 72 (16avos)", fechaBloqueo:"2026-06-29", resOficial:null, local:{nombre:"1° Grupo C", code:"???"}, visitante:{nombre:"2° Grupo F",  code:"???"}},
-    { parte:3, id:"p_73", fase:"Lun 29/06 — Partido 73 (16avos)", fechaBloqueo:"2026-06-29", resOficial:null, local:{nombre:"1° Grupo E", code:"???"}, visitante:{nombre:"3° A/B/C/D/F",code:"???"}},
-    { parte:3, id:"p_74", fase:"Lun 29/06 — Partido 74 (16avos)", fechaBloqueo:"2026-06-29", resOficial:null, local:{nombre:"1° Grupo F", code:"???"}, visitante:{nombre:"2° Grupo C",  code:"???"}},
-    { parte:3, id:"p_75", fase:"Mar 30/06 — Partido 75 (16avos)", fechaBloqueo:"2026-06-30", resOficial:null, local:{nombre:"1° Grupo I", code:"???"}, visitante:{nombre:"3° C/D/F/G/H",code:"???"}},
-    { parte:3, id:"p_76", fase:"Mar 30/06 — Partido 76 (16avos)", fechaBloqueo:"2026-06-30", resOficial:null, local:{nombre:"2° Grupo E", code:"???"}, visitante:{nombre:"2° Grupo I",  code:"???"}},
-    { parte:3, id:"p_77", fase:"Mar 30/06 — Partido 77 (16avos)", fechaBloqueo:"2026-06-30", resOficial:null, local:{nombre:"1° Grupo A", code:"???"}, visitante:{nombre:"3° C/E/G/H/I",code:"???"}},
-    { parte:3, id:"p_78", fase:"Mar 30/06 — Partido 78 (16avos)", fechaBloqueo:"2026-06-30", resOficial:null, local:{nombre:"2° Grupo D", code:"???"}, visitante:{nombre:"2° Grupo G",  code:"???"}},
-    // PARTE 4
-    { parte:4, id:"p_79",  fase:"Mié 01/07 — Partido 79 (16avos)",    fechaBloqueo:"2026-07-01", resOficial:null, local:{nombre:"1° Grupo L",  code:"???"}, visitante:{nombre:"3° E/H/I/J/K",code:"???"}},
-    { parte:4, id:"p_80",  fase:"Mié 01/07 — Partido 80 (16avos)",    fechaBloqueo:"2026-07-01", resOficial:null, local:{nombre:"1° Grupo G",  code:"???"}, visitante:{nombre:"3° A/E/H/I/J",code:"???"}},
-    { parte:4, id:"p_81",  fase:"Mié 01/07 — Partido 81 (16avos)",    fechaBloqueo:"2026-07-01", resOficial:null, local:{nombre:"1° Grupo D",  code:"???"}, visitante:{nombre:"3° B/E/F/I/J",code:"???"}},
-    { parte:4, id:"p_82",  fase:"Jue 02/07 — Partido 82 (16avos)",    fechaBloqueo:"2026-07-02", resOficial:null, local:{nombre:"2° Grupo K",  code:"???"}, visitante:{nombre:"2° Grupo L",  code:"???"}},
-    { parte:4, id:"p_83",  fase:"Jue 02/07 — Partido 83 (16avos)",    fechaBloqueo:"2026-07-02", resOficial:null, local:{nombre:"1° Grupo H",  code:"???"}, visitante:{nombre:"2° Grupo J",  code:"???"}},
-    { parte:4, id:"p_84",  fase:"Jue 02/07 — Partido 84 (16avos)",    fechaBloqueo:"2026-07-02", resOficial:null, local:{nombre:"1° Grupo B",  code:"???"}, visitante:{nombre:"3° E/F/G/I/J",code:"???"}},
-    { parte:4, id:"p_85",  fase:"Vie 03/07 — Partido 85 (16avos)",    fechaBloqueo:"2026-07-03", resOficial:null, local:{nombre:"1° Grupo J",  code:"???"}, visitante:{nombre:"2° Grupo H",  code:"???"}},
-    { parte:4, id:"p_86",  fase:"Vie 03/07 — Partido 86 (16avos)",    fechaBloqueo:"2026-07-03", resOficial:null, local:{nombre:"1° Grupo K",  code:"???"}, visitante:{nombre:"3° D/E/I/J/L",code:"???"}},
-    { parte:4, id:"p_87",  fase:"Sáb 04/07 — Partido 87 (Octavos)",   fechaBloqueo:"2026-07-04", resOficial:null, local:{nombre:"W Partido 71",code:"???"}, visitante:{nombre:"W Partido 75",code:"???"}},
-    { parte:4, id:"p_88",  fase:"Sáb 04/07 — Partido 88 (Octavos)",   fechaBloqueo:"2026-07-04", resOficial:null, local:{nombre:"W Partido 72",code:"???"}, visitante:{nombre:"W Partido 73",code:"???"}},
-    { parte:4, id:"p_89",  fase:"Dom 05/07 — Partido 89 (Octavos)",   fechaBloqueo:"2026-07-05", resOficial:null, local:{nombre:"W Partido 74",code:"???"}, visitante:{nombre:"W Partido 76",code:"???"}},
-    { parte:4, id:"p_90",  fase:"Dom 05/07 — Partido 90 (Octavos)",   fechaBloqueo:"2026-07-05", resOficial:null, local:{nombre:"W Partido 77",code:"???"}, visitante:{nombre:"W Partido 78",code:"???"}},
-    { parte:4, id:"p_91",  fase:"Lun 06/07 — Partido 91 (Octavos)",   fechaBloqueo:"2026-07-06", resOficial:null, local:{nombre:"W Partido 81",code:"???"}, visitante:{nombre:"W Partido 82",code:"???"}},
-    { parte:4, id:"p_92",  fase:"Lun 06/07 — Partido 92 (Octavos)",   fechaBloqueo:"2026-07-06", resOficial:null, local:{nombre:"W Partido 79",code:"???"}, visitante:{nombre:"W Partido 80",code:"???"}},
-    { parte:4, id:"p_93",  fase:"Mar 07/07 — Partido 93 (Octavos)",   fechaBloqueo:"2026-07-07", resOficial:null, local:{nombre:"W Partido 84",code:"???"}, visitante:{nombre:"W Partido 88",code:"???"}},
-    { parte:4, id:"p_94",  fase:"Mar 07/07 — Partido 94 (Octavos)",   fechaBloqueo:"2026-07-07", resOficial:null, local:{nombre:"W Partido 83",code:"???"}, visitante:{nombre:"W Partido 85",code:"???"}},
-    { parte:4, id:"p_95",  fase:"Jue 09/07 — Partido 95 (Cuartos)",   fechaBloqueo:"2026-07-09", resOficial:null, local:{nombre:"W Partido 87",code:"???"}, visitante:{nombre:"W Partido 88",code:"???"}},
-    { parte:4, id:"p_96",  fase:"Vie 10/07 — Partido 96 (Cuartos)",   fechaBloqueo:"2026-07-10", resOficial:null, local:{nombre:"W Partido 91",code:"???"}, visitante:{nombre:"W Partido 92",code:"???"}},
-    { parte:4, id:"p_97",  fase:"Sáb 11/07 — Partido 97 (Cuartos)",   fechaBloqueo:"2026-07-11", resOficial:null, local:{nombre:"W Partido 89",code:"???"}, visitante:{nombre:"W Partido 90",code:"???"}},
-    { parte:4, id:"p_98",  fase:"Sáb 11/07 — Partido 98 (Cuartos)",   fechaBloqueo:"2026-07-11", resOficial:null, local:{nombre:"W Partido 93",code:"???"}, visitante:{nombre:"W Partido 94",code:"???"}},
-    { parte:4, id:"p_99",  fase:"Mar 14/07 — Partido 99 (Semis)",     fechaBloqueo:"2026-07-14", resOficial:null, local:{nombre:"W Partido 95",code:"???"}, visitante:{nombre:"W Partido 96",code:"???"}},
-    { parte:4, id:"p_100", fase:"Mié 15/07 — Partido 100 (Semis)",    fechaBloqueo:"2026-07-15", resOficial:null, local:{nombre:"W Partido 97",code:"???"}, visitante:{nombre:"W Partido 98",code:"???"}},
-    { parte:4, id:"p_101", fase:"Sáb 18/07 — Partido 101 (3er Lugar)",fechaBloqueo:"2026-07-18", resOficial:null, local:{nombre:"Per. Semi 1", code:"???"}, visitante:{nombre:"Per. Semi 2", code:"???"}},
-    { parte:4, id:"p_102", fase:"Dom 19/07 — 🏆 FINAL",               fechaBloqueo:"2026-07-19", resOficial:null, local:{nombre:"W Partido 99",code:"???"}, visitante:{nombre:"W Partido 100",code:"???"}},
+    {parte:1,id:"p_1", fase:"JUE 11/06",num:"PARTIDO 1", fechaBloqueo:"2026-06-11",resOficial:null,local:{nombre:"México",       code:"MEX"},visitante:{nombre:"Sudáfrica",  code:"RSA"}},
+    {parte:1,id:"p_2", fase:"JUE 11/06",num:"PARTIDO 2", fechaBloqueo:"2026-06-11",resOficial:null,local:{nombre:"Corea del Sur",code:"KOR"},visitante:{nombre:"R. Checa",    code:"CZE"}},
+    {parte:1,id:"p_3", fase:"VIE 12/06",num:"PARTIDO 3", fechaBloqueo:"2026-06-12",resOficial:null,local:{nombre:"Canadá",      code:"CAN"},visitante:{nombre:"Bosnia y H.", code:"BIH"}},
+    {parte:1,id:"p_4", fase:"VIE 12/06",num:"PARTIDO 4", fechaBloqueo:"2026-06-12",resOficial:null,local:{nombre:"Est. Unidos", code:"USA"},visitante:{nombre:"Paraguay",    code:"PAR"}},
+    {parte:1,id:"p_5", fase:"SÁB 13/06",num:"PARTIDO 5", fechaBloqueo:"2026-06-13",resOficial:null,local:{nombre:"Brasil",      code:"BRA"},visitante:{nombre:"Marruecos",  code:"MAR"}},
+    {parte:1,id:"p_6", fase:"SÁB 13/06",num:"PARTIDO 6", fechaBloqueo:"2026-06-13",resOficial:null,local:{nombre:"Haití",       code:"HAI"},visitante:{nombre:"Escocia",    code:"SCO"}},
+    {parte:1,id:"p_7", fase:"SÁB 13/06",num:"PARTIDO 7", fechaBloqueo:"2026-06-13",resOficial:null,local:{nombre:"Australia",  code:"AUS"},visitante:{nombre:"Turquía",    code:"TUR"}},
+    {parte:1,id:"p_8", fase:"SÁB 13/06",num:"PARTIDO 8", fechaBloqueo:"2026-06-13",resOficial:null,local:{nombre:"Qatar",      code:"QAT"},visitante:{nombre:"Suiza",       code:"SUI"}},
+    {parte:1,id:"p_9", fase:"DOM 14/06",num:"PARTIDO 9", fechaBloqueo:"2026-06-14",resOficial:null,local:{nombre:"Alemania",   code:"GER"},visitante:{nombre:"Curazao",     code:"CUW"}},
+    {parte:1,id:"p_10",fase:"DOM 14/06",num:"PARTIDO 10",fechaBloqueo:"2026-06-14",resOficial:null,local:{nombre:"Países Bajos",code:"NED"},visitante:{nombre:"Japón",       code:"JPN"}},
+    {parte:1,id:"p_11",fase:"DOM 14/06",num:"PARTIDO 11",fechaBloqueo:"2026-06-14",resOficial:null,local:{nombre:"C. de Marfil",code:"CIV"},visitante:{nombre:"Ecuador",     code:"ECU"}},
+    {parte:1,id:"p_12",fase:"DOM 14/06",num:"PARTIDO 12",fechaBloqueo:"2026-06-14",resOficial:null,local:{nombre:"Suecia",     code:"SWE"},visitante:{nombre:"Túnez",       code:"TUN"}},
+    {parte:1,id:"p_13",fase:"LUN 15/06",num:"PARTIDO 13",fechaBloqueo:"2026-06-15",resOficial:null,local:{nombre:"España",      code:"ESP"},visitante:{nombre:"Cabo Verde",  code:"CPV"}},
+    {parte:1,id:"p_14",fase:"LUN 15/06",num:"PARTIDO 14",fechaBloqueo:"2026-06-15",resOficial:null,local:{nombre:"Bélgica",     code:"BEL"},visitante:{nombre:"Egipto",      code:"EGY"}},
+    {parte:1,id:"p_15",fase:"LUN 15/06",num:"PARTIDO 15",fechaBloqueo:"2026-06-15",resOficial:null,local:{nombre:"A. Saudita", code:"KSA"},visitante:{nombre:"Uruguay",     code:"URU"}},
+    {parte:1,id:"p_16",fase:"LUN 15/06",num:"PARTIDO 16",fechaBloqueo:"2026-06-15",resOficial:null,local:{nombre:"Irán",        code:"IRN"},visitante:{nombre:"N. Zelanda",  code:"NZL"}},
+    {parte:1,id:"p_17",fase:"MAR 16/06",num:"PARTIDO 17",fechaBloqueo:"2026-06-16",resOficial:null,local:{nombre:"Francia",    code:"FRA"},visitante:{nombre:"Senegal",     code:"SEN"}},
+    {parte:1,id:"p_18",fase:"MAR 16/06",num:"PARTIDO 18",fechaBloqueo:"2026-06-16",resOficial:null,local:{nombre:"Irak",       code:"IRQ"},visitante:{nombre:"Noruega",     code:"NOR"}},
+    {parte:1,id:"p_19",fase:"MAR 16/06",num:"PARTIDO 19",fechaBloqueo:"2026-06-16",resOficial:null,local:{nombre:"Argentina", code:"ARG"},visitante:{nombre:"Argelia",     code:"ALG"}},
+    {parte:1,id:"p_20",fase:"MAR 16/06",num:"PARTIDO 20",fechaBloqueo:"2026-06-16",resOficial:null,local:{nombre:"Austria",   code:"AUT"},visitante:{nombre:"Jordania",    code:"JOR"}},
+    {parte:1,id:"p_21",fase:"MIÉ 17/06",num:"PARTIDO 21",fechaBloqueo:"2026-06-17",resOficial:null,local:{nombre:"Portugal",  code:"POR"},visitante:{nombre:"Congo",       code:"COD"}},
+    {parte:1,id:"p_22",fase:"MIÉ 17/06",num:"PARTIDO 22",fechaBloqueo:"2026-06-17",resOficial:null,local:{nombre:"Inglaterra",code:"ENG"},visitante:{nombre:"Croacia",     code:"CRO"}},
+    {parte:1,id:"p_23",fase:"MIÉ 17/06",num:"PARTIDO 23",fechaBloqueo:"2026-06-17",resOficial:null,local:{nombre:"Ghana",     code:"GHA"},visitante:{nombre:"Panamá",      code:"PAN"}},
+    {parte:1,id:"p_24",fase:"MIÉ 17/06",num:"PARTIDO 24",fechaBloqueo:"2026-06-17",resOficial:null,local:{nombre:"Uzbekistán",code:"UZB"},visitante:{nombre:"Colombia",    code:"COL"}},
+    {parte:1,id:"p_25",fase:"JUE 18/06",num:"PARTIDO 25",fechaBloqueo:"2026-06-18",resOficial:null,local:{nombre:"R. Checa",   code:"CZE"},visitante:{nombre:"Sudáfrica",  code:"RSA"}},
+    {parte:1,id:"p_26",fase:"JUE 18/06",num:"PARTIDO 26",fechaBloqueo:"2026-06-18",resOficial:null,local:{nombre:"México",      code:"MEX"},visitante:{nombre:"Corea del Sur",code:"KOR"}},
+    {parte:2,id:"p_27",fase:"JUE 18/06",num:"PARTIDO 27",fechaBloqueo:"2026-06-18",resOficial:null,local:{nombre:"Canadá",      code:"CAN"},visitante:{nombre:"Qatar",       code:"QAT"}},
+    {parte:2,id:"p_28",fase:"JUE 18/06",num:"PARTIDO 28",fechaBloqueo:"2026-06-18",resOficial:null,local:{nombre:"Suiza",      code:"SUI"},visitante:{nombre:"Bosnia y H.", code:"BIH"}},
+    {parte:2,id:"p_29",fase:"VIE 19/06",num:"PARTIDO 29",fechaBloqueo:"2026-06-19",resOficial:null,local:{nombre:"Brasil",     code:"BRA"},visitante:{nombre:"Haití",       code:"HAI"}},
+    {parte:2,id:"p_30",fase:"VIE 19/06",num:"PARTIDO 30",fechaBloqueo:"2026-06-19",resOficial:null,local:{nombre:"Escocia",   code:"SCO"},visitante:{nombre:"Marruecos",  code:"MAR"}},
+    {parte:2,id:"p_31",fase:"VIE 19/06",num:"PARTIDO 31",fechaBloqueo:"2026-06-19",resOficial:null,local:{nombre:"Est. Unidos",code:"USA"},visitante:{nombre:"Australia",  code:"AUS"}},
+    {parte:2,id:"p_32",fase:"VIE 19/06",num:"PARTIDO 32",fechaBloqueo:"2026-06-19",resOficial:null,local:{nombre:"Turquía",    code:"TUR"},visitante:{nombre:"Paraguay",    code:"PAR"}},
+    {parte:2,id:"p_33",fase:"SÁB 20/06",num:"PARTIDO 33",fechaBloqueo:"2026-06-20",resOficial:null,local:{nombre:"Alemania",  code:"GER"},visitante:{nombre:"C. de Marfil",code:"CIV"}},
+    {parte:2,id:"p_34",fase:"SÁB 20/06",num:"PARTIDO 34",fechaBloqueo:"2026-06-20",resOficial:null,local:{nombre:"Ecuador",   code:"ECU"},visitante:{nombre:"Curazao",     code:"CUW"}},
+    {parte:2,id:"p_35",fase:"SÁB 20/06",num:"PARTIDO 35",fechaBloqueo:"2026-06-20",resOficial:null,local:{nombre:"Países Bajos",code:"NED"},visitante:{nombre:"Suecia",      code:"SWE"}},
+    {parte:2,id:"p_36",fase:"SÁB 20/06",num:"PARTIDO 36",fechaBloqueo:"2026-06-20",resOficial:null,local:{nombre:"Túnez",      code:"TUN"},visitante:{nombre:"Japón",       code:"JPN"}},
+    {parte:2,id:"p_37",fase:"DOM 21/06",num:"PARTIDO 37",fechaBloqueo:"2026-06-21",resOficial:null,local:{nombre:"Bélgica",    code:"BEL"},visitante:{nombre:"Irán",        code:"IRN"}},
+    {parte:2,id:"p_38",fase:"DOM 21/06",num:"PARTIDO 38",fechaBloqueo:"2026-06-21",resOficial:null,local:{nombre:"N. Zelanda", code:"NZL"},visitante:{nombre:"Egipto",      code:"EGY"}},
+    {parte:2,id:"p_39",fase:"DOM 21/06",num:"PARTIDO 39",fechaBloqueo:"2026-06-21",resOficial:null,local:{nombre:"España",     code:"ESP"},visitante:{nombre:"A. Saudita", code:"KSA"}},
+    {parte:2,id:"p_40",fase:"DOM 21/06",num:"PARTIDO 40",fechaBloqueo:"2026-06-21",resOficial:null,local:{nombre:"Uruguay",   code:"URU"},visitante:{nombre:"Cabo Verde",  code:"CPV"}},
+    {parte:2,id:"p_41",fase:"LUN 22/06",num:"PARTIDO 41",fechaBloqueo:"2026-06-22",resOficial:null,local:{nombre:"Francia",   code:"FRA"},visitante:{nombre:"Irak",        code:"IRQ"}},
+    {parte:2,id:"p_42",fase:"LUN 22/06",num:"PARTIDO 42",fechaBloqueo:"2026-06-22",resOficial:null,local:{nombre:"Noruega",   code:"NOR"},visitante:{nombre:"Senegal",     code:"SEN"}},
+    {parte:2,id:"p_43",fase:"LUN 22/06",num:"PARTIDO 43",fechaBloqueo:"2026-06-22",resOficial:null,local:{nombre:"Argentina",code:"ARG"},visitante:{nombre:"Austria",      code:"AUT"}},
+    {parte:2,id:"p_44",fase:"LUN 22/06",num:"PARTIDO 44",fechaBloqueo:"2026-06-22",resOficial:null,local:{nombre:"Jordania",  code:"JOR"},visitante:{nombre:"Argelia",     code:"ALG"}},
+    {parte:2,id:"p_45",fase:"MAR 23/06",num:"PARTIDO 45",fechaBloqueo:"2026-06-23",resOficial:null,local:{nombre:"Portugal", code:"POR"},visitante:{nombre:"Uzbekistán", code:"UZB"}},
+    {parte:2,id:"p_46",fase:"MAR 23/06",num:"PARTIDO 46",fechaBloqueo:"2026-06-23",resOficial:null,local:{nombre:"Colombia", code:"COL"},visitante:{nombre:"Congo",       code:"COD"}},
+    {parte:2,id:"p_47",fase:"MAR 23/06",num:"PARTIDO 47",fechaBloqueo:"2026-06-23",resOficial:null,local:{nombre:"Inglaterra",code:"ENG"},visitante:{nombre:"Ghana",       code:"GHA"}},
+    {parte:2,id:"p_48",fase:"MAR 23/06",num:"PARTIDO 48",fechaBloqueo:"2026-06-23",resOficial:null,local:{nombre:"Panamá",    code:"PAN"},visitante:{nombre:"Croacia",     code:"CRO"}},
+    {parte:2,id:"p_49",fase:"MIÉ 24/06",num:"PARTIDO 49",fechaBloqueo:"2026-06-24",resOficial:null,local:{nombre:"Sudáfrica", code:"RSA"},visitante:{nombre:"Corea del Sur",code:"KOR"}},
+    {parte:2,id:"p_50",fase:"MIÉ 24/06",num:"PARTIDO 50",fechaBloqueo:"2026-06-24",resOficial:null,local:{nombre:"R. Checa",  code:"CZE"},visitante:{nombre:"México",      code:"MEX"}},
+    {parte:2,id:"p_51",fase:"MIÉ 24/06",num:"PARTIDO 51",fechaBloqueo:"2026-06-24",resOficial:null,local:{nombre:"Suiza",     code:"SUI"},visitante:{nombre:"Canadá",      code:"CAN"}},
+    {parte:2,id:"p_52",fase:"MIÉ 24/06",num:"PARTIDO 52",fechaBloqueo:"2026-06-24",resOficial:null,local:{nombre:"Bosnia y H.",code:"BIH"},visitante:{nombre:"Qatar",       code:"QAT"}},
+    {parte:3,id:"p_53",fase:"JUE 25/06",num:"PARTIDO 53",fechaBloqueo:"2026-06-25",resOficial:null,local:{nombre:"Curazao",  code:"CUW"},visitante:{nombre:"C. de Marfil",code:"CIV"}},
+    {parte:3,id:"p_54",fase:"JUE 25/06",num:"PARTIDO 54",fechaBloqueo:"2026-06-25",resOficial:null,local:{nombre:"Ecuador",  code:"ECU"},visitante:{nombre:"Alemania",   code:"GER"}},
+    {parte:3,id:"p_55",fase:"JUE 25/06",num:"PARTIDO 55",fechaBloqueo:"2026-06-25",resOficial:null,local:{nombre:"Japón",      code:"JPN"},visitante:{nombre:"Suecia",     code:"SWE"}},
+    {parte:3,id:"p_56",fase:"JUE 25/06",num:"PARTIDO 56",fechaBloqueo:"2026-06-25",resOficial:null,local:{nombre:"Túnez",      code:"TUN"},visitante:{nombre:"Países Bajos",code:"NED"}},
+    {parte:3,id:"p_57",fase:"JUE 25/06",num:"PARTIDO 57",fechaBloqueo:"2026-06-25",resOficial:null,local:{nombre:"Turquía",   code:"TUR"},visitante:{nombre:"Est. Unidos",code:"USA"}},
+    {parte:3,id:"p_58",fase:"JUE 25/06",num:"PARTIDO 58",fechaBloqueo:"2026-06-25",resOficial:null,local:{nombre:"Paraguay", code:"PAR"},visitante:{nombre:"Australia",  code:"AUS"}},
+    {parte:3,id:"p_59",fase:"VIE 26/06",num:"PARTIDO 59",fechaBloqueo:"2026-06-26",resOficial:null,local:{nombre:"Noruega",  code:"NOR"},visitante:{nombre:"Francia",    code:"FRA"}},
+    {parte:3,id:"p_60",fase:"VIE 26/06",num:"PARTIDO 60",fechaBloqueo:"2026-06-26",resOficial:null,local:{nombre:"Senegal",  code:"SEN"},visitante:{nombre:"Irak",       code:"IRQ"}},
+    {parte:3,id:"p_61",fase:"VIE 26/06",num:"PARTIDO 61",fechaBloqueo:"2026-06-26",resOficial:null,local:{nombre:"Egipto",   code:"EGY"},visitante:{nombre:"Irán",       code:"IRN"}},
+    {parte:3,id:"p_62",fase:"VIE 26/06",num:"PARTIDO 62",fechaBloqueo:"2026-06-26",resOficial:null,local:{nombre:"N. Zelanda",code:"NZL"},visitante:{nombre:"Bélgica",    code:"BEL"}},
+    {parte:3,id:"p_63",fase:"VIE 26/06",num:"PARTIDO 63",fechaBloqueo:"2026-06-26",resOficial:null,local:{nombre:"Cabo Verde",code:"CPV"},visitante:{nombre:"A. Saudita", code:"KSA"}},
+    {parte:3,id:"p_64",fase:"VIE 26/06",num:"PARTIDO 64",fechaBloqueo:"2026-06-26",resOficial:null,local:{nombre:"Uruguay",  code:"URU"},visitante:{nombre:"España",     code:"ESP"}},
+    {parte:3,id:"p_65",fase:"SÁB 27/06",num:"PARTIDO 65",fechaBloqueo:"2026-06-27",resOficial:null,local:{nombre:"Panamá",    code:"PAN"},visitante:{nombre:"Inglaterra",code:"ENG"}},
+    {parte:3,id:"p_66",fase:"SÁB 27/06",num:"PARTIDO 66",fechaBloqueo:"2026-06-27",resOficial:null,local:{nombre:"Croacia",  code:"CRO"},visitante:{nombre:"Ghana",      code:"GHA"}},
+    {parte:3,id:"p_67",fase:"SÁB 27/06",num:"PARTIDO 67",fechaBloqueo:"2026-06-27",resOficial:null,local:{nombre:"Argelia",  code:"ALG"},visitante:{nombre:"Austria",    code:"AUT"}},
+    {parte:3,id:"p_68",fase:"SÁB 27/06",num:"PARTIDO 68",fechaBloqueo:"2026-06-27",resOficial:null,local:{nombre:"Jordania", code:"JOR"},visitante:{nombre:"Argentina", code:"ARG"}},
+    {parte:3,id:"p_69",fase:"SÁB 27/06",num:"PARTIDO 69",fechaBloqueo:"2026-06-27",resOficial:null,local:{nombre:"Colombia", code:"COL"},visitante:{nombre:"Portugal",  code:"POR"}},
+    {parte:3,id:"p_70",fase:"SÁB 27/06",num:"PARTIDO 70",fechaBloqueo:"2026-06-27",resOficial:null,local:{nombre:"RD Congo", code:"COD"},visitante:{nombre:"Uzbekistán",code:"UZB"}},
+    {parte:3,id:"p_71",fase:"DOM 28/06",num:"PARTIDO 71 (16avos)",fechaBloqueo:"2026-06-28",resOficial:null,local:{nombre:"2° Grupo A",code:"???"},visitante:{nombre:"2° Grupo B",code:"???"}},
+    {parte:3,id:"p_72",fase:"LUN 29/06",num:"PARTIDO 72 (16avos)",fechaBloqueo:"2026-06-29",resOficial:null,local:{nombre:"1° Grupo C",code:"???"},visitante:{nombre:"2° Grupo F",code:"???"}},
+    {parte:3,id:"p_73",fase:"LUN 29/06",num:"PARTIDO 73 (16avos)",fechaBloqueo:"2026-06-29",resOficial:null,local:{nombre:"1° Grupo E",code:"???"},visitante:{nombre:"3° A/B/C",code:"???"}},
+    {parte:3,id:"p_74",fase:"LUN 29/06",num:"PARTIDO 74 (16avos)",fechaBloqueo:"2026-06-29",resOficial:null,local:{nombre:"1° Grupo F",code:"???"},visitante:{nombre:"2° Grupo C",code:"???"}},
+    {parte:3,id:"p_75",fase:"MAR 30/06",num:"PARTIDO 75 (16avos)",fechaBloqueo:"2026-06-30",resOficial:null,local:{nombre:"1° Grupo I",code:"???"},visitante:{nombre:"3° C/D/F",code:"???"}},
+    {parte:3,id:"p_76",fase:"MAR 30/06",num:"PARTIDO 76 (16avos)",fechaBloqueo:"2026-06-30",resOficial:null,local:{nombre:"2° Grupo E",code:"???"},visitante:{nombre:"2° Grupo I",code:"???"}},
+    {parte:3,id:"p_77",fase:"MAR 30/06",num:"PARTIDO 77 (16avos)",fechaBloqueo:"2026-06-30",resOficial:null,local:{nombre:"1° Grupo A",code:"???"},visitante:{nombre:"3° C/E/G",code:"???"}},
+    {parte:3,id:"p_78",fase:"MAR 30/06",num:"PARTIDO 78 (16avos)",fechaBloqueo:"2026-06-30",resOficial:null,local:{nombre:"2° Grupo D",code:"???"},visitante:{nombre:"2° Grupo G",code:"???"}},
+    {parte:4,id:"p_79", fase:"MIÉ 01/07",num:"PARTIDO 79 (16avos)",  fechaBloqueo:"2026-07-01",resOficial:null,local:{nombre:"1° Grupo L",code:"???"},visitante:{nombre:"3° E/H/I",code:"???"}},
+    {parte:4,id:"p_80", fase:"MIÉ 01/07",num:"PARTIDO 80 (16avos)",  fechaBloqueo:"2026-07-01",resOficial:null,local:{nombre:"1° Grupo G",code:"???"},visitante:{nombre:"3° A/E/H",code:"???"}},
+    {parte:4,id:"p_81", fase:"MIÉ 01/07",num:"PARTIDO 81 (16avos)",  fechaBloqueo:"2026-07-01",resOficial:null,local:{nombre:"1° Grupo D",code:"???"},visitante:{nombre:"3° B/E/F",code:"???"}},
+    {parte:4,id:"p_82", fase:"JUE 02/07",num:"PARTIDO 82 (16avos)",  fechaBloqueo:"2026-07-02",resOficial:null,local:{nombre:"2° Grupo K",code:"???"},visitante:{nombre:"2° Grupo L",code:"???"}},
+    {parte:4,id:"p_83", fase:"JUE 02/07",num:"PARTIDO 83 (16avos)",  fechaBloqueo:"2026-07-02",resOficial:null,local:{nombre:"1° Grupo H",code:"???"},visitante:{nombre:"2° Grupo J",code:"???"}},
+    {parte:4,id:"p_84", fase:"JUE 02/07",num:"PARTIDO 84 (16avos)",  fechaBloqueo:"2026-07-02",resOficial:null,local:{nombre:"1° Grupo B",code:"???"},visitante:{nombre:"3° E/F/G",code:"???"}},
+    {parte:4,id:"p_85", fase:"VIE 03/07",num:"PARTIDO 85 (16avos)",  fechaBloqueo:"2026-07-03",resOficial:null,local:{nombre:"1° Grupo J",code:"???"},visitante:{nombre:"2° Grupo H",code:"???"}},
+    {parte:4,id:"p_86", fase:"VIE 03/07",num:"PARTIDO 86 (16avos)",  fechaBloqueo:"2026-07-03",resOficial:null,local:{nombre:"1° Grupo K",code:"???"},visitante:{nombre:"3° D/E/I",code:"???"}},
+    {parte:4,id:"p_87", fase:"SÁB 04/07",num:"PARTIDO 87 (Octavos)", fechaBloqueo:"2026-07-04",resOficial:null,local:{nombre:"W P71",code:"???"},visitante:{nombre:"W P75",code:"???"}},
+    {parte:4,id:"p_88", fase:"SÁB 04/07",num:"PARTIDO 88 (Octavos)", fechaBloqueo:"2026-07-04",resOficial:null,local:{nombre:"W P72",code:"???"},visitante:{nombre:"W P73",code:"???"}},
+    {parte:4,id:"p_89", fase:"DOM 05/07",num:"PARTIDO 89 (Octavos)", fechaBloqueo:"2026-07-05",resOficial:null,local:{nombre:"W P74",code:"???"},visitante:{nombre:"W P76",code:"???"}},
+    {parte:4,id:"p_90", fase:"DOM 05/07",num:"PARTIDO 90 (Octavos)", fechaBloqueo:"2026-07-05",resOficial:null,local:{nombre:"W P77",code:"???"},visitante:{nombre:"W P78",code:"???"}},
+    {parte:4,id:"p_91", fase:"LUN 06/07",num:"PARTIDO 91 (Octavos)", fechaBloqueo:"2026-07-06",resOficial:null,local:{nombre:"W P81",code:"???"},visitante:{nombre:"W P82",code:"???"}},
+    {parte:4,id:"p_92", fase:"LUN 06/07",num:"PARTIDO 92 (Octavos)", fechaBloqueo:"2026-07-06",resOficial:null,local:{nombre:"W P79",code:"???"},visitante:{nombre:"W P80",code:"???"}},
+    {parte:4,id:"p_93", fase:"MAR 07/07",num:"PARTIDO 93 (Octavos)", fechaBloqueo:"2026-07-07",resOficial:null,local:{nombre:"W P84",code:"???"},visitante:{nombre:"W P88",code:"???"}},
+    {parte:4,id:"p_94", fase:"MAR 07/07",num:"PARTIDO 94 (Octavos)", fechaBloqueo:"2026-07-07",resOficial:null,local:{nombre:"W P83",code:"???"},visitante:{nombre:"W P85",code:"???"}},
+    {parte:4,id:"p_95", fase:"JUE 09/07",num:"PARTIDO 95 (Cuartos)", fechaBloqueo:"2026-07-09",resOficial:null,local:{nombre:"W P87",code:"???"},visitante:{nombre:"W P88",code:"???"}},
+    {parte:4,id:"p_96", fase:"VIE 10/07",num:"PARTIDO 96 (Cuartos)", fechaBloqueo:"2026-07-10",resOficial:null,local:{nombre:"W P91",code:"???"},visitante:{nombre:"W P92",code:"???"}},
+    {parte:4,id:"p_97", fase:"SÁB 11/07",num:"PARTIDO 97 (Cuartos)", fechaBloqueo:"2026-07-11",resOficial:null,local:{nombre:"W P89",code:"???"},visitante:{nombre:"W P90",code:"???"}},
+    {parte:4,id:"p_98", fase:"SÁB 11/07",num:"PARTIDO 98 (Cuartos)", fechaBloqueo:"2026-07-11",resOficial:null,local:{nombre:"W P93",code:"???"},visitante:{nombre:"W P94",code:"???"}},
+    {parte:4,id:"p_99", fase:"MAR 14/07",num:"PARTIDO 99 (Semis)",   fechaBloqueo:"2026-07-14",resOficial:null,local:{nombre:"W P95",code:"???"},visitante:{nombre:"W P96",code:"???"}},
+    {parte:4,id:"p_100",fase:"MIÉ 15/07",num:"PARTIDO 100 (Semis)",  fechaBloqueo:"2026-07-15",resOficial:null,local:{nombre:"W P97",code:"???"},visitante:{nombre:"W P98",code:"???"}},
+    {parte:4,id:"p_101",fase:"SÁB 18/07",num:"PARTIDO 101 (3er Lugar)",fechaBloqueo:"2026-07-18",resOficial:null,local:{nombre:"Per. S1",code:"???"},visitante:{nombre:"Per. S2",code:"???"}},
+    {parte:4,id:"p_102",fase:"DOM 19/07",num:"FINAL",                 fechaBloqueo:"2026-07-19",resOficial:null,local:{nombre:"W P99",code:"???"},visitante:{nombre:"W P100",code:"???"}},
 ];
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
 let usuarioLogueado = null;
-let todosLosPicks = {}; // ← Clave del fix: guardamos TODOS los picks en memoria
+let todosLosPicks = {};
 
-// ─── TOAST ────────────────────────────────────────────────────────────────────
 function showToast(msg, type = "info") {
     const t = document.getElementById('toast');
-    const colors = { info: "#1A2234", success: "#14532d", error: "#7f1d1d" };
+    const colors = { info:"#1A2234", success:"#14532d", error:"#7f1d1d" };
     t.style.background = colors[type] || colors.info;
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// ─── AUTH ─────────────────────────────────────────────────────────────────────
 window.toggleAuthMode = function(mode) {
     const isLogin = mode === 'login';
-    document.getElementById('auth-title').textContent = isLogin ? "INICIAR SESIÓN" : "CREAR CUENTA";
+    document.getElementById('auth-title').textContent = isLogin ? "INICIAR SESI\u00d3N" : "CREAR CUENTA";
     document.getElementById('campo-nombre').classList.toggle('hidden', isLogin);
     document.getElementById('btn-login').classList.toggle('hidden', !isLogin);
     document.getElementById('btn-register').classList.toggle('hidden', isLogin);
     document.getElementById('toggle-text').innerHTML = isLogin
-        ? `¿No tienes cuenta? <button onclick="toggleAuthMode('register')" class="text-blue-400 font-bold hover:underline ml-1">Regístrate aquí</button>`
-        : `¿Ya tienes cuenta? <button onclick="toggleAuthMode('login')" class="text-blue-400 font-bold hover:underline ml-1">Inicia sesión</button>`;
+        ? `&iquest;No tienes cuenta? <button onclick="toggleAuthMode('register')" class="text-blue-400 font-bold hover:underline ml-1">Reg&iacute;strate aqu&iacute;</button>`
+        : `&iquest;Ya tienes cuenta? <button onclick="toggleAuthMode('login')" class="text-blue-400 font-bold hover:underline ml-1">Inicia sesi&oacute;n</button>`;
 };
 
 document.getElementById('btn-register').addEventListener('click', async (e) => {
     const nomina = document.getElementById('auth-nomina').value.trim();
     const nombre = document.getElementById('auth-nombre').value.trim();
-    if (!nomina || !nombre) return showToast("⚠️ Completa nómina y nombre.", "error");
+    if (!nomina || !nombre) return showToast("Completa n\u00f3mina y nombre.", "error");
     const btn = e.target; btn.textContent = "REGISTRANDO..."; btn.disabled = true;
     try {
         if (db) {
             const userRef = doc(db, "usuarios", nomina);
             const snap = await getDoc(userRef);
-            if (snap.exists()) {
-                showToast("⚠️ Esta nómina ya está registrada. Inicia sesión.", "error");
-                btn.textContent = "CREAR CUENTA →"; btn.disabled = false; return;
-            }
+            if (snap.exists()) { showToast("N\u00f3mina ya registrada. Inicia sesi\u00f3n.", "error"); btn.textContent = "CREAR CUENTA \u2192"; btn.disabled = false; return; }
             await setDoc(userRef, { nombre, puntos: 0, nomina });
         }
         usuarioLogueado = { nomina, nombre, puntos: 0 };
         iniciarApp();
-    } catch (err) {
-        showToast("❌ Error: " + err.message, "error");
-    } finally { btn.textContent = "CREAR CUENTA →"; btn.disabled = false; }
+    } catch(err) { showToast("Error: " + err.message, "error"); }
+    finally { btn.textContent = "CREAR CUENTA \u2192"; btn.disabled = false; }
 });
 
 document.getElementById('btn-login').addEventListener('click', async (e) => {
     const nomina = document.getElementById('auth-nomina').value.trim();
-    if (!nomina) return showToast("⚠️ Ingresa tu número de nómina.", "error");
+    if (!nomina) return showToast("Ingresa tu n\u00famero de n\u00f3mina.", "error");
     const btn = e.target; btn.textContent = "CONECTANDO..."; btn.disabled = true;
     try {
         if (db) {
             const userRef = doc(db, "usuarios", nomina);
             const snap = await getDoc(userRef);
-            if (!snap.exists()) {
-                showToast("❌ Nómina no registrada. Crea una cuenta.", "error");
-                btn.textContent = "ENTRAR A LA QUINIELA →"; btn.disabled = false; return;
-            }
+            if (!snap.exists()) { showToast("N\u00f3mina no registrada. Crea una cuenta.", "error"); btn.textContent = "ENTRAR A LA QUINIELA \u2192"; btn.disabled = false; return; }
             const data = snap.data();
             usuarioLogueado = { nomina, nombre: data.nombre, puntos: data.puntos || 0 };
             document.getElementById('user-display-points').textContent = data.puntos || 0;
-
-            // Cargar TODOS los picks del usuario de una sola vez
             const pronoRef = doc(db, "pronosticos", nomina);
             const pronoSnap = await getDoc(pronoRef);
-            if (pronoSnap.exists()) {
-                todosLosPicks = pronoSnap.data().selecciones || {};
-            }
+            if (pronoSnap.exists()) todosLosPicks = pronoSnap.data().selecciones || {};
         } else {
             usuarioLogueado = { nomina, nombre: "Usuario Demo", puntos: 13 };
             document.getElementById('user-display-points').textContent = "13";
         }
         iniciarApp();
-    } catch (err) {
-        showToast("❌ Error: " + err.message, "error");
-    } finally { btn.textContent = "ENTRAR A LA QUINIELA →"; btn.disabled = false; }
+    } catch(err) { showToast("Error: " + err.message, "error"); }
+    finally { btn.textContent = "ENTRAR A LA QUINIELA \u2192"; btn.disabled = false; }
 });
 
 function iniciarApp() {
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
-    // User chip en header
     document.getElementById('user-chip').classList.remove('hidden');
     document.getElementById('btn-reglas').classList.remove('hidden');
     document.getElementById('chip-nombre').textContent = usuarioLogueado.nombre;
     document.getElementById('chip-nomina').textContent = usuarioLogueado.nomina;
-    // Stats
     document.getElementById('user-display-points').textContent = usuarioLogueado.puntos;
     actualizarStats();
     actualizarEstadoOpciones();
@@ -643,7 +574,6 @@ function iniciarApp() {
     if (db) escucharRanking(); else cargarRankingDemo();
 }
 
-// ─── STATS ────────────────────────────────────────────────────────────────────
 function actualizarStats() {
     let aciertos = 0, picks = 0;
     for (const id in todosLosPicks) {
@@ -655,68 +585,49 @@ function actualizarStats() {
     document.getElementById('stats-picks').textContent = picks;
 }
 
-// ─── SELECT OPTIONS ───────────────────────────────────────────────────────────
 function actualizarEstadoOpciones() {
-    for (let p = 1; p <= 4; p++) {
+    for (let p = 2; p <= 4; p++) {
         const opt = document.getElementById(`opt-parte${p}`);
         if (!opt) continue;
-        const desbloqueada = esParteDesbloqueada(p);
-        opt.disabled = !desbloqueada;
-        if (!desbloqueada) {
+        // NO deshabilitamos — solo mostramos candado en texto
+        if (!esParteDesbloqueada(p)) {
             const [y, m, d] = PARTES_UNLOCK[p].split('-');
-            if (!opt.textContent.includes('🔒'))
-                opt.textContent += ` 🔒 Abre ${d}/${m}`;
+            if (!opt.textContent.includes('Abre'))
+                opt.textContent += ` \uD83D\uDD12 Abre ${d}/${m}`;
         }
     }
-    const parteActual = parseInt(document.getElementById('filtro-fase').value);
-    if (!esParteDesbloqueada(parteActual))
-        document.getElementById('filtro-fase').value = "1";
 }
 
-// ─── RENDER PARTIDOS ──────────────────────────────────────────────────────────
 window.cargarPartidos = async function() {
     const parteSeleccionada = parseInt(document.getElementById('filtro-fase').value);
     const contenedor = document.getElementById('contenedor-partidos');
+    const parteEsDesbloqueada = esParteDesbloqueada(parteSeleccionada);
 
-    if (!esParteDesbloqueada(parteSeleccionada)) {
-        const [y, m, d] = PARTES_UNLOCK[parteSeleccionada].split('-');
-        contenedor.innerHTML = `
-            <div class="text-center p-10 border border-dashed border-[#1F2D45] rounded-2xl">
-                <div class="text-5xl mb-4">🔒</div>
-                <p class="font-black text-gray-300 text-lg">Parte no disponible aún</p>
-                <p class="text-gray-500 text-sm mt-2">Se habilita el <strong class="text-blue-400">${d}/${m}/${y}</strong></p>
-            </div>`;
-        document.getElementById('banner-estado-parte').classList.add('hidden');
-        document.getElementById('btn-guardar').classList.add('hidden');
-        document.getElementById('picks-progress-wrap').classList.add('hidden');
-        return;
-    }
-
-    // Skeleton loading
-    contenedor.innerHTML = Array(4).fill(0).map(() =>
-        `<div class="skeleton h-24 rounded-xl"></div>`
-    ).join('');
-
-    // Leer picks de Firebase si db disponible (ya los tenemos en memoria)
-    // todosLosPicks ya está cargado al hacer login
+    contenedor.innerHTML = Array(3).fill(0).map(() => `<div class="skeleton h-24 rounded-xl"></div>`).join('');
 
     const partidosDeParte = calendario.filter(p => p.parte === parteSeleccionada);
-    const pendientes = partidosDeParte.filter(p => !esPartidoBloqueado(p.fechaBloqueo));
+    const pendientes = parteEsDesbloqueada
+        ? partidosDeParte.filter(p => !esPartidoBloqueado(p.fechaBloqueo))
+        : [];
 
     // Banner
     const banner = document.getElementById('banner-estado-parte');
-    if (pendientes.length === 0) {
+    if (!parteEsDesbloqueada) {
+        const [y, m, d] = PARTES_UNLOCK[parteSeleccionada].split('-');
+        banner.className = "mt-2 text-center text-[11px] font-bold py-2 px-4 rounded-lg bg-yellow-900/30 text-yellow-300 border border-yellow-800";
+        banner.innerHTML = `&#x1F512; Vista previa &mdash; picks disponibles desde el <strong>${d}/${m}/${y}</strong>`;
+        banner.classList.remove('hidden');
+    } else if (pendientes.length === 0) {
         banner.className = "mt-2 text-center text-[11px] font-bold py-2 px-4 rounded-lg bg-[#0D1526] text-gray-500 border border-[#1F2D45]";
-        banner.textContent = "🔒 Todos los partidos de esta parte ya comenzaron";
+        banner.textContent = "\uD83D\uDD12 Todos los partidos de esta parte ya comenzaron";
         banner.classList.remove('hidden');
     } else {
         banner.className = "mt-2 text-center text-[11px] font-bold py-2 px-4 rounded-lg bg-blue-900/30 text-blue-300 border border-blue-800";
-        banner.textContent = "✏️ Picks editables hasta las 00:00 del día de cada partido";
+        banner.textContent = "\u270F\uFE0F Picks editables hasta las 00:00 del d\u00eda de cada partido";
         banner.classList.remove('hidden');
     }
 
     // Progress bar
-    const picksDeParte = partidosDeParte.filter(p => todosLosPicks[p.id]);
     const progressWrap = document.getElementById('picks-progress-wrap');
     if (pendientes.length > 0) {
         progressWrap.classList.remove('hidden');
@@ -727,89 +638,92 @@ window.cargarPartidos = async function() {
         progressWrap.classList.add('hidden');
     }
 
-    // Render cards
-    await new Promise(r => setTimeout(r, 80)); // tiny delay para que skeleton se vea
+    await new Promise(r => setTimeout(r, 60));
     contenedor.innerHTML = "";
 
     partidosDeParte.forEach((partido, idx) => {
-        const bloqueado = esPartidoBloqueado(partido.fechaBloqueo);
+        const bloqueado = !parteEsDesbloqueada || esPartidoBloqueado(partido.fechaBloqueo);
         const pick = todosLosPicks[partido.id];
         const miRes = pick?.res ?? null;
         const miGL  = pick?.gL ?? "";
         const miGV  = pick?.gV ?? "";
         const esFinalizado = partido.resOficial !== null;
+        const esFinal = partido.id === "p_102";
+        const horario = HORARIOS[partido.id] || "";
 
-        const acierto    = esFinalizado && miRes === partido.resOficial;
-        const fallo      = esFinalizado && miRes !== null && miRes !== partido.resOficial;
-        const sinPick    = esFinalizado && miRes === null;
-        const tienePickBloqueado = bloqueado && !esFinalizado && miRes !== null;
-        const sinPickBloqueado   = bloqueado && !esFinalizado && miRes === null;
+        const acierto   = esFinalizado && miRes === partido.resOficial;
+        const fallo     = esFinalizado && miRes !== null && miRes !== partido.resOficial;
+        const sinPick   = esFinalizado && miRes === null;
+        const lockOk    = bloqueado && !esFinalizado && miRes !== null;
+        const lockNo    = bloqueado && !esFinalizado && miRes === null && parteEsDesbloqueada;
+        const preview   = !parteEsDesbloqueada;
 
         let bordeClase = "border-[#1F2D45]";
-        if (acierto)  bordeClase = "border-green-700 shadow-[0_0_12px_rgba(34,197,94,0.15)]";
-        if (fallo)    bordeClase = "border-red-900 opacity-60";
-        if (sinPick)  bordeClase = "border-gray-800 opacity-55";
+        if (acierto) bordeClase = "border-green-700 shadow-[0_0_12px_rgba(34,197,94,0.15)]";
+        if (fallo)   bordeClase = "border-red-900 opacity-60";
+        if (sinPick) bordeClase = "border-gray-800 opacity-55";
+        if (preview) bordeClase = "border-[#1F2D45] opacity-80";
 
-        let badgeHTML = "";
-        if (acierto)          badgeHTML = `<span class="badge badge-win">¡ACERTASTE! ✓</span>`;
-        else if (fallo)       badgeHTML = `<span class="badge badge-loss">✗ INCORRECTO</span>`;
-        else if (sinPick)     badgeHTML = `<span class="badge badge-miss">SIN PICK</span>`;
-        else if (tienePickBloqueado) badgeHTML = `<span class="badge badge-locked-pick">🔒 GUARDADO</span>`;
-        else if (sinPickBloqueado)   badgeHTML = `<span class="badge badge-locked-no">🔒 SIN PICK</span>`;
+        let badge = "";
+        if (acierto)      badge = `<span class="badge badge-win">\u2713 ACERTASTE</span>`;
+        else if (fallo)   badge = `<span class="badge badge-loss">\u2717 INCORRECTO</span>`;
+        else if (sinPick) badge = `<span class="badge badge-miss">SIN PICK</span>`;
+        else if (lockOk)  badge = `<span class="badge badge-locked-pick">\uD83D\uDD12 GUARDADO</span>`;
+        else if (lockNo)  badge = `<span class="badge badge-locked-no">\uD83D\uDD12 SIN PICK</span>`;
+        else if (preview) badge = `<span class="badge badge-preview">VISTA PREVIA</span>`;
 
-        const flagL = getFlag(partido.local.code);
-        const flagV = getFlag(partido.visitante.code);
-        const isTBDL = partido.local.code === "???";
-        const isTBDV = partido.visitante.code === "???";
-
-        const bloqueoPointer = bloqueado ? "pointer-events-none" : "";
-        const esFinaleOSemi = partido.id === "p_102" || partido.fase.includes("FINAL");
-        const cardBg = esFinaleOSemi ? "bg-gradient-to-b from-[#1A1A00] to-[#111827]" : "bg-[#111827]";
+        const flagL = getFlagHTML(partido.local.code);
+        const flagV = getFlagHTML(partido.visitante.code);
+        const disAttr = bloqueado ? "disabled" : "";
+        const interactClass = bloqueado ? (preview ? "parte-bloqueada" : "partido-jugado") : "";
+        const cardBg = esFinal ? "bg-gradient-to-b from-[#1A1500] to-[#111827]" : "bg-[#111827]";
 
         const card = `
-        <div class="${cardBg} border ${bordeClase} rounded-xl p-4 relative slide-up" style="animation-delay:${idx * 0.04}s">
-            ${badgeHTML}
-            <div class="flex justify-between items-center mb-3">
-                <span class="fase-label text-red-500">${partido.fase}</span>
-                ${esFinaleOSemi ? '<span class="text-yellow-400 text-xs font-black">🏆</span>' : ''}
+        <div class="${cardBg} border ${bordeClase} rounded-xl p-4 relative" style="animation:slideUp .35s ${idx*0.03}s cubic-bezier(.16,1,.3,1) both">
+            ${badge}
+            <!-- HEADER centrado con fecha, numero, horario -->
+            <div class="text-center mb-3">
+                <div class="flex items-center justify-center gap-2 flex-wrap">
+                    <span class="text-[9px] font-black text-red-500 tracking-widest uppercase">${partido.fase}</span>
+                    <span class="text-[9px] font-black text-gray-500">|</span>
+                    <span class="text-[9px] font-black text-yellow-400 tracking-widest uppercase">${partido.num}</span>
+                    ${horario ? `<span class="horario-badge">${horario} CDMX</span>` : ""}
+                    ${esFinal ? `<span class="text-yellow-400 text-xs font-black">\uD83C\uDFC6</span>` : ""}
+                </div>
             </div>
-            <div class="flex items-center gap-2 ${bloqueoPointer}">
-                <!-- LOCAL -->
+            <!-- PICKS -->
+            <div class="flex items-center gap-2 ${interactClass}">
                 <label class="pick-label flex-1">
                     <input type="radio" name="radio-${partido.id}" value="local" class="sr-only"
-                        ${miRes === 'local' ? 'checked' : ''} ${bloqueado ? 'disabled' : ''}>
+                        ${miRes === 'local' ? 'checked' : ''} ${disAttr}>
                     <div class="pick-box rounded-lg p-2.5 text-center">
-                        <span class="${isTBDL ? 'text-2xl' : 'text-3xl'} block leading-none mb-1">${isTBDL ? '🏳️' : flagL}</span>
+                        ${flagL}
                         <p class="text-[10px] font-bold text-gray-300 leading-tight truncate">${partido.local.nombre}</p>
                     </div>
                 </label>
-                <!-- MARCADOR -->
                 <div class="flex flex-col items-center gap-1.5 shrink-0">
                     <div class="flex items-center gap-1">
                         <input type="number" id="gl-${partido.id}" value="${miGL}"
                             class="score-input" placeholder="?" min="0" max="99"
-                            ${bloqueado ? 'disabled' : ''}
-                            oninput="autoGanador('${partido.id}')">
+                            ${disAttr} oninput="autoGanador('${partido.id}')">
                         <span class="text-gray-600 font-black text-sm">:</span>
                         <input type="number" id="gv-${partido.id}" value="${miGV}"
                             class="score-input" placeholder="?" min="0" max="99"
-                            ${bloqueado ? 'disabled' : ''}
-                            oninput="autoGanador('${partido.id}')">
+                            ${disAttr} oninput="autoGanador('${partido.id}')">
                     </div>
                     <label class="pick-label cursor-pointer">
                         <input type="radio" name="radio-${partido.id}" value="empate" class="sr-only"
-                            ${miRes === 'empate' ? 'checked' : ''} ${bloqueado ? 'disabled' : ''}>
+                            ${miRes === 'empate' ? 'checked' : ''} ${disAttr}>
                         <div class="pick-box rounded-md px-2 py-1">
                             <span class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Empate</span>
                         </div>
                     </label>
                 </div>
-                <!-- VISITANTE -->
                 <label class="pick-label flex-1">
                     <input type="radio" name="radio-${partido.id}" value="visitante" class="sr-only"
-                        ${miRes === 'visitante' ? 'checked' : ''} ${bloqueado ? 'disabled' : ''}>
+                        ${miRes === 'visitante' ? 'checked' : ''} ${disAttr}>
                     <div class="pick-box rounded-lg p-2.5 text-center">
-                        <span class="${isTBDV ? 'text-2xl' : 'text-3xl'} block leading-none mb-1">${isTBDV ? '🏳️' : flagV}</span>
+                        ${flagV}
                         <p class="text-[10px] font-bold text-gray-300 leading-tight truncate">${partido.visitante.nombre}</p>
                     </div>
                 </label>
@@ -818,24 +732,23 @@ window.cargarPartidos = async function() {
         contenedor.innerHTML += card;
     });
 
-    // Botón guardar
+    // Boton guardar: solo si parte desbloqueada y hay pendientes
     document.getElementById('btn-guardar').classList.toggle('hidden', pendientes.length === 0);
 
-    // Actualizar progress en tiempo real al cambiar picks
-    contenedor.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', actualizarProgressEnVivo);
+    contenedor.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', actualizarProgressEnVivo);
     });
 };
 
 function actualizarProgressEnVivo() {
-    const parteSeleccionada = parseInt(document.getElementById('filtro-fase').value);
-    const pendientes = calendario.filter(p => p.parte === parteSeleccionada && !esPartidoBloqueado(p.fechaBloqueo));
-    const seleccionados = pendientes.filter(p => document.querySelector(`input[name="radio-${p.id}"]:checked`));
-    document.getElementById('picks-progress-label').textContent = `${seleccionados.length} / ${pendientes.length}`;
-    document.getElementById('picks-progress-fill').style.width = `${(seleccionados.length / pendientes.length) * 100}%`;
+    const parte = parseInt(document.getElementById('filtro-fase').value);
+    if (!esParteDesbloqueada(parte)) return;
+    const pendientes = calendario.filter(p => p.parte === parte && !esPartidoBloqueado(p.fechaBloqueo));
+    const sel = pendientes.filter(p => document.querySelector(`input[name="radio-${p.id}"]:checked`));
+    document.getElementById('picks-progress-label').textContent = `${sel.length} / ${pendientes.length}`;
+    document.getElementById('picks-progress-fill').style.width = `${pendientes.length ? sel.length/pendientes.length*100 : 0}%`;
 }
 
-// ─── AUTO-GANADOR ─────────────────────────────────────────────────────────────
 window.autoGanador = function(id) {
     const gL = document.getElementById(`gl-${id}`)?.value;
     const gV = document.getElementById(`gv-${id}`)?.value;
@@ -847,65 +760,41 @@ window.autoGanador = function(id) {
     }
 };
 
-// ─── GUARDAR PICKS ────────────────────────────────────────────────────────────
-// FIX PRINCIPAL: usar merge en Firestore para no borrar picks de otras partes.
-// Los picks de la parte actual se recopilan del DOM; las otras partes viven en todosLosPicks.
 document.getElementById('btn-guardar').addEventListener('click', async (e) => {
-    const parteSeleccionada = parseInt(document.getElementById('filtro-fase').value);
-    const pendientes = calendario.filter(p => p.parte === parteSeleccionada && !esPartidoBloqueado(p.fechaBloqueo));
-
-    // Validar que todos los pendientes tengan pick
+    const parte = parseInt(document.getElementById('filtro-fase').value);
+    const pendientes = calendario.filter(p => p.parte === parte && !esPartidoBloqueado(p.fechaBloqueo));
     const sinPick = pendientes.filter(p => !document.querySelector(`input[name="radio-${p.id}"]:checked`));
     if (sinPick.length > 0) {
-        showToast(`⚠️ Faltan ${sinPick.length} resultado(s) por seleccionar.`, "error");
-        // Scroll al primero sin pick
-        const primerEl = document.querySelector(`input[name="radio-${sinPick[0].id}"]`)?.closest('.border');
-        primerEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        showToast(`Faltan ${sinPick.length} resultado(s) por seleccionar.`, "error");
+        document.querySelector(`input[name="radio-${sinPick[0].id}"]`)?.closest('.border')?.scrollIntoView({ behavior:'smooth', block:'center' });
         return;
     }
-
-    // Recopilar nuevos picks del DOM para esta parte
-    const nuevosPicksDeParte = {};
+    const nuevosPicks = {};
     pendientes.forEach(partido => {
         const elegido = document.querySelector(`input[name="radio-${partido.id}"]:checked`);
         const gL = document.getElementById(`gl-${partido.id}`)?.value || "0";
         const gV = document.getElementById(`gv-${partido.id}`)?.value || "0";
-        nuevosPicksDeParte[partido.id] = { res: elegido.value, gL, gV };
+        nuevosPicks[partido.id] = { res: elegido.value, gL, gV };
     });
-
-    // Merge con los picks ya existentes de otras partes (local)
-    const picksCompletos = { ...todosLosPicks, ...nuevosPicksDeParte };
-
-    const btn = e.target;
-    const textoOriginal = document.getElementById('texto-btn-guardar').textContent;
-    btn.disabled = true;
+    const picksCompletos = { ...todosLosPicks, ...nuevosPicks };
+    const btn = e.target; btn.disabled = true;
     document.getElementById('texto-btn-guardar').textContent = "GUARDANDO...";
-
     try {
         if (db) {
-            const docRef = doc(db, "pronosticos", usuarioLogueado.nomina);
-            // setDoc con merge: SOLO actualiza el campo selecciones, nunca sobreescribe otros campos
-            await setDoc(docRef, {
+            await setDoc(doc(db, "pronosticos", usuarioLogueado.nomina), {
                 nomina: usuarioLogueado.nomina,
-                selecciones: picksCompletos   // guardamos el objeto completo fusionado
+                selecciones: picksCompletos
             }, { merge: true });
         }
-        // Actualizar estado local
         todosLosPicks = picksCompletos;
         actualizarProgressEnVivo();
         actualizarStats();
         document.getElementById('modal-confirmacion').classList.remove('hidden');
-        // Confetti 🎉
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#0032A0','#FFFFFF','#FBBF24'] });
-    } catch (err) {
-        showToast("❌ Error al guardar: " + err.message, "error");
-    } finally {
-        btn.disabled = false;
-        document.getElementById('texto-btn-guardar').textContent = textoOriginal;
-    }
+        confetti({ particleCount: 120, spread: 80, origin:{ y:0.6 }, colors:['#0032A0','#FFFFFF','#FBBF24'] });
+    } catch(err) { showToast("Error al guardar: " + err.message, "error"); }
+    finally { btn.disabled = false; document.getElementById('texto-btn-guardar').textContent = "\uD83D\uDCBE GUARDAR PICKS"; }
 });
 
-// ─── RANKING ──────────────────────────────────────────────────────────────────
 function escucharRanking() {
     try {
         const q = query(collection(db, "usuarios"), orderBy("puntos", "desc"), limit(10));
@@ -915,15 +804,12 @@ function escucharRanking() {
             let idx = 0;
             snap.forEach(d => {
                 const u = d.data();
-                const medal = ["🥇","🥈","🥉"][idx] ?? `${idx+1}`;
+                const medal = ["\uD83E\uDD47","\uD83E\uDD48","\uD83E\uDD49"][idx] ?? `${idx+1}`;
                 const isMe = u.nomina === usuarioLogueado?.nomina;
-                tbody.innerHTML += `
-                <tr class="${idx===0 ? 'bg-blue-900/15' : ''} ${isMe ? 'ring-1 ring-inset ring-blue-600' : ''} hover:bg-[#1A2234] transition-colors">
+                tbody.innerHTML += `<tr class="${idx===0?'bg-blue-900/15':''} ${isMe?'ring-1 ring-inset ring-blue-600':''} hover:bg-[#1A2234] transition-colors">
                     <td class="px-4 py-3.5 text-lg text-center">${medal}</td>
-                    <td class="px-4 py-3.5 font-bold text-white text-sm">
-                        ${u.nombre} ${isMe ? '<span class="text-[9px] text-blue-400 font-black ml-1">TÚ</span>' : ''}
-                    </td>
-                    <td class="px-4 py-3.5 text-right font-black text-green-400">${u.puntos || 0}</td>
+                    <td class="px-4 py-3.5 font-bold text-white text-sm">${u.nombre}${isMe?'<span class="text-[9px] text-blue-400 font-black ml-1">T\u00dc</span>':''}</td>
+                    <td class="px-4 py-3.5 text-right font-black text-green-400">${u.puntos||0}</td>
                 </tr>`;
                 idx++;
             });
@@ -933,8 +819,8 @@ function escucharRanking() {
 
 function cargarRankingDemo() {
     const tbody = document.getElementById('tabla-ranking-body');
-    [{ n:"Salma Torres",p:45},{ n:"Alejandra Moya",p:42},{ n:"Gilberto Ayala",p:38}].forEach((u,i) => {
-        const medal = ["🥇","🥈","🥉"][i];
+    [{n:"Salma Torres",p:45},{n:"Alejandra Moya",p:42},{n:"Gilberto Ayala",p:38}].forEach((u,i) => {
+        const medal = ["\uD83E\uDD47","\uD83E\uDD48","\uD83E\uDD49"][i];
         tbody.innerHTML += `<tr class="${i===0?'bg-blue-900/15':''} hover:bg-[#1A2234] transition-colors">
             <td class="px-4 py-3.5 text-lg text-center">${medal}</td>
             <td class="px-4 py-3.5 font-bold text-white text-sm">${u.n}</td>
@@ -943,28 +829,18 @@ function cargarRankingDemo() {
     });
 }
 
-// ─── TABS ─────────────────────────────────────────────────────────────────────
 window.switchTab = function(tab) {
-    const isPartidos = tab === 'partidos';
-    document.getElementById('tab-partidos').classList.toggle('hidden', !isPartidos);
-    document.getElementById('tab-ranking').classList.toggle('hidden', isPartidos);
-    document.getElementById('tab-btn-partidos').className = `w-1/2 py-2.5 text-sm font-black rounded-lg transition-all ${isPartidos ? 'tab-active' : 'tab-inactive'}`;
-    document.getElementById('tab-btn-ranking').className  = `w-1/2 py-2.5 text-sm font-black rounded-lg transition-all ${!isPartidos ? 'tab-active' : 'tab-inactive'}`;
+    const isP = tab === 'partidos';
+    document.getElementById('tab-partidos').classList.toggle('hidden', !isP);
+    document.getElementById('tab-ranking').classList.toggle('hidden', isP);
+    document.getElementById('tab-btn-partidos').className = `w-1/2 py-2.5 text-sm font-black rounded-lg transition-all ${isP?'tab-active':'tab-inactive'}`;
+    document.getElementById('tab-btn-ranking').className  = `w-1/2 py-2.5 text-sm font-black rounded-lg transition-all ${!isP?'tab-active':'tab-inactive'}`;
 };
 
-// ─── MODALES ──────────────────────────────────────────────────────────────────
-window.cerrarModalReglas = function() {
-    document.getElementById('modal-reglas').classList.add('hidden');
-};
-window.cerrarModalConfirmacion = function() {
-    document.getElementById('modal-confirmacion').classList.add('hidden');
-};
-
-// Cerrar modales al click en backdrop
+window.cerrarModalReglas       = () => document.getElementById('modal-reglas').classList.add('hidden');
+window.cerrarModalConfirmacion = () => document.getElementById('modal-confirmacion').classList.add('hidden');
 ['modal-reglas','modal-confirmacion'].forEach(id => {
-    document.getElementById(id).addEventListener('click', function(e) {
-        if (e.target === this) this.classList.add('hidden');
-    });
+    document.getElementById(id).addEventListener('click', function(e){ if(e.target===this) this.classList.add('hidden'); });
 });
 </script>
 </body>
