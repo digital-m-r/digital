@@ -14,6 +14,33 @@
         .partido-finalizado { opacity: 0.85; filter: grayscale(15%); }
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* --- EFECTO PANINI --- */
+        @keyframes paniniSticker {
+            0% { transform: translateY(40px) scale(0.9) rotate(-3deg); opacity: 0; filter: blur(4px); }
+            100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; filter: blur(0); }
+        }
+        .animate-panini { 
+            animation: paniniSticker 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+            opacity: 0; 
+        }
+
+        /* --- EFECTO RED SACUDIDA --- */
+        @keyframes netShake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-10px) rotate(-1deg); }
+            40% { transform: translateX(10px) rotate(1deg); }
+            60% { transform: translateX(-10px) rotate(-1deg); }
+            80% { transform: translateX(10px) rotate(1deg); }
+            100% { transform: translateX(0); }
+        }
+        .animate-net-shake { 
+            animation: netShake 0.4s ease-in-out; 
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.1) 5px, rgba(255,255,255,0.1) 6px),
+                repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(255,255,255,0.1) 5px, rgba(255,255,255,0.1) 6px) !important;
+            background-color: #166534 !important;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-24 relative">
@@ -69,8 +96,8 @@
                 
                 <div id="contenedor-partidos" class="space-y-8"></div>
                 
-                <button id="btn-guardar" class="w-full bg-green-500 hover:bg-green-600 py-4 rounded-xl font-black text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] mt-6 disabled:opacity-50">
-                    GUARDAR PICKS PENDIENTES
+                <button id="btn-guardar" class="w-full bg-green-500 hover:bg-green-600 py-4 rounded-xl font-black text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] mt-6 disabled:opacity-50 relative overflow-hidden">
+                    <span class="relative z-10" id="texto-btn-guardar">GUARDAR PICKS PENDIENTES</span>
                 </button>
             </div>
 
@@ -167,22 +194,49 @@
 
         const svgCamiseta = `<svg viewBox="0 0 24 24" class="w-14 h-14 drop-shadow-md transition-transform duration-200"><path fill="currentColor" d="M15.3,2.4l4.8,2.7c0.4,0.2,0.6,0.7,0.5,1.2l-0.9,4.2c-0.1,0.5-0.6,0.8-1.1,0.6l-2-0.8v10.2c0,0.6-0.4,1-1,1H8.5c-0.6,0-1-0.4-1-1V10.4l-2,0.8c-0.5,0.2-1-0.1-1.1-0.6L3.5,6.3C3.4,5.8,3.6,5.3,4,5.1l4.8-2.7C9.5,2,10.3,1.6,11.2,1.6h1.7C13.8,1.6,14.6,2,15.3,2.4z"/></svg>`;
 
+        // CALENDARIO COMPLETO (32 Partidos de Eliminación Directa)
         const calendarioGrafico = [
-            { 
-                id: "octavos_1", fase: "Octavos - 11/06", estadoSimulado: "finalizado", resOficial: "local",
-                local: { nombre: "México", code: "MEX", color: "#006847", txtColor: "#FFFFFF" }, 
-                visitante: { nombre: "USA", code: "USA", color: "#FFFFFF", txtColor: "#B31942" }
-            },
-            { 
-                id: "octavos_2", fase: "Octavos - 12/06", estadoSimulado: "finalizado", resOficial: "empate",
-                local: { nombre: "Argentina", code: "ARG", color: "#75AADB", txtColor: "#FFFFFF" }, 
-                visitante: { nombre: "Alemania", code: "GER", color: "#000000", txtColor: "#FFFFFF" }
-            },
-            { 
-                id: "cuartos_1", fase: "Cuartos - PENDIENTE", estadoSimulado: "pendiente", resOficial: null,
-                local: { nombre: "España", code: "ESP", color: "#C60B1E", txtColor: "#FFC400" }, 
-                visitante: { nombre: "Francia", code: "FRA", color: "#002395", txtColor: "#FFFFFF" }
-            }
+            // --- ELIMINATORIA DE 32 ---
+            { id: "elim_1", fase: "16avos - 28/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_2", fase: "16avos - 29/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_3", fase: "16avos - 29/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_4", fase: "16avos - 29/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_5", fase: "16avos - 30/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_6", fase: "16avos - 30/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_7", fase: "16avos - 30/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_8", fase: "16avos - 01/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_9", fase: "16avos - 01/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_10", fase: "16avos - 01/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_11", fase: "16avos - 02/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_12", fase: "16avos - 02/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_13", fase: "16avos - 02/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_14", fase: "16avos - 03/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_15", fase: "16avos - 03/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "elim_16", fase: "16avos - 03/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+
+            // --- OCTAVOS DE FINAL ---
+            { id: "oct_1", fase: "Octavos - 04/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "oct_2", fase: "Octavos - 04/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "oct_3", fase: "Octavos - 05/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "oct_4", fase: "Octavos - 05/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "oct_5", fase: "Octavos - 06/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "oct_6", fase: "Octavos - 06/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "oct_7", fase: "Octavos - 07/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "oct_8", fase: "Octavos - 07/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+
+            // --- CUARTOS DE FINAL ---
+            { id: "cuartos_1", fase: "Cuartos - 09/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "cuartos_2", fase: "Cuartos - 10/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "cuartos_3", fase: "Cuartos - 10/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "cuartos_4", fase: "Cuartos - 11/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+
+            // --- SEMIFINALES Y TERCER LUGAR ---
+            { id: "semi_1", fase: "Semifinal - 14/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "semi_2", fase: "Semifinal - 15/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+            { id: "tercer_lugar", fase: "3er Lugar - 18/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
+
+            // --- GRAN FINAL ---
+            { id: "final", fase: "GRAN FINAL - 19/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }}
         ];
 
         let usuarioLogueado = null;
@@ -211,7 +265,6 @@
 
             if (!nomina || !nombre) return alert("⚠️ Por favor completa tu nómina y nombre completo.");
 
-            // Mostrar estado "Cargando"
             const btn = e.target;
             const originalText = btn.innerText;
             btn.innerText = "REGISTRANDO...";
@@ -239,7 +292,6 @@
                 
                 iniciarAppCentral();
             } catch (error) {
-                // AQUÍ ES DONDE TE AVISARÁ SI HAY ERROR DE FIREBASE
                 console.error("Firebase Error:", error);
                 alert("❌ Ocurrió un error con Firebase. Asegúrate de haber creado la 'Firestore Database' en tu consola de Firebase.\n\nDetalle: " + error.message);
             } finally {
@@ -309,13 +361,13 @@
                     const pronoSnap = await getDoc(pronoRef);
                     if(pronoSnap.exists()) misPicks = pronoSnap.data().selecciones;
                 } else {
-                    misPicks = { "octavos_1": { res: "local", gL: 2, gV: 1 } };
+                    misPicks = { "elim_1": { res: "local", gL: 2, gV: 1 } }; // Simulacion Demo
                 }
             } catch (error) {
                 console.error("Error al cargar picks:", error);
             }
 
-            calendarioGrafico.forEach(partido => {
+            calendarioGrafico.forEach((partido, index) => {
                 let esFinalizado = partido.estadoSimulado === "finalizado";
                 let bloqueoAttr = esFinalizado ? "disabled" : "";
                 let bloqueoClase = esFinalizado ? "partido-finalizado pointer-events-none" : "";
@@ -334,17 +386,29 @@
                                   noParticipo ? "border-gray-600 opacity-60" : "border-gray-700";
 
                 let badgeHTML = "";
-                if (acierto) badgeHTML = `<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10">¡ACERTASTE!</div>`;
+                let coloresConfeti = ['#0032A0', '#FFFFFF', '#FFD700']; 
+                if (acierto) {
+                    badgeHTML = `<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10">¡ACERTASTE!</div>`;
+                    if (partido.resOficial === 'local') coloresConfeti = [partido.local.color, partido.local.txtColor, '#FFD700'];
+                    else if (partido.resOficial === 'visitante') coloresConfeti = [partido.visitante.color, partido.visitante.txtColor, '#FFD700'];
+                    else if (partido.resOficial === 'empate') coloresConfeti = [partido.local.color, partido.visitante.color, '#FFFFFF'];
+                }
                 else if (fallo) badgeHTML = `<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-red-800 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10">INCORRECTO</div>`;
                 else if (noParticipo) badgeHTML = `<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gray-600 text-gray-200 text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10">TIEMPO AGOTADO</div>`;
 
+                const coloresJSON = JSON.stringify(coloresConfeti).replace(/"/g, '&quot;');
+
                 let htmlCard = `
-                    <div id="card-${partido.id}" class="card-bg p-5 rounded-2xl border ${bordeEstado} relative ${acierto ? 'tarjeta-ganadora' : ''}">
+                    <div id="card-${partido.id}" class="card-bg p-5 pt-8 rounded-2xl border ${bordeEstado} relative animate-panini ${acierto ? 'tarjeta-ganadora' : ''}" style="animation-delay: ${index * 150}ms" data-colores="${coloresJSON}">
                         ${badgeHTML}
-                        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#0032A0] to-transparent"></div>
-                        <div class="text-center text-xs font-bold text-gray-400 mb-4 uppercase tracking-widest">${partido.fase}</div>
                         
-                        <div class="flex justify-between items-start ${bloqueoClase}">
+                        <div class="absolute top-0 left-0">
+                            <div class="bg-gradient-to-r from-red-600 to-red-800 text-white font-black uppercase tracking-widest text-[10px] px-5 py-1.5 transform skew-x-[-15deg] shadow-lg border-l-4 border-yellow-400 -ml-2 rounded-br-lg">
+                                <span class="inline-block transform skew-x-[15deg]">${partido.fase}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-start mt-4 ${bloqueoClase}">
                             <div class="flex-1 flex flex-col items-center">
                                 <label class="cursor-pointer group relative w-full flex flex-col items-center">
                                     <input type="radio" name="radio-${partido.id}" value="local" class="peer sr-only" ${miRes === 'local' ? 'checked' : ''} ${bloqueoAttr}>
@@ -411,9 +475,13 @@
 
             if(faltaSeleccion) return alert("⚠️ Asegúrate de seleccionar el ganador o empate en los partidos pendientes.");
 
+            // Red Sacudida (Gooool Effect)
             const btn = e.target;
-            const originalText = btn.innerText;
-            btn.innerText = "GUARDANDO...";
+            const textoBtn = document.getElementById('texto-btn-guardar');
+            const originalText = textoBtn.innerText;
+            
+            btn.classList.add('animate-net-shake');
+            textoBtn.innerText = "¡GUARDANDO PICKS!";
             btn.disabled = true;
 
             try {
@@ -423,16 +491,26 @@
                         selecciones: selecciones
                     });
                 }
-                alert("✅ ¡Tus picks han sido guardados con éxito!");
+                
+                setTimeout(() => {
+                    btn.classList.remove('animate-net-shake');
+                    textoBtn.innerText = "¡GUARDADO CORRECTO!";
+                    setTimeout(() => {
+                        textoBtn.innerText = originalText;
+                        btn.disabled = false;
+                    }, 2000);
+                }, 1000);
+                
             } catch(error) {
                 console.error("Error guardando picks:", error);
                 alert("❌ Error al guardar en Firebase.\nDetalle: " + error.message);
-            } finally {
-                btn.innerText = originalText;
+                btn.classList.remove('animate-net-shake');
+                textoBtn.innerText = originalText;
                 btn.disabled = false;
-            }
+            } 
         });
 
+        // POKA-YOKE
         window.autoSeleccionarGanador = function(partidoId) {
             const golesL = document.getElementById(`marcador-local-${partidoId}`).value;
             const golesV = document.getElementById(`marcador-visitante-${partidoId}`).value;
@@ -489,17 +567,18 @@
             });
         }
 
+        // TABS NAVEGACIÓN DIRECTA
         window.switchTab = function(tab) {
             if (tab === 'partidos') {
                 document.getElementById('tab-partidos').classList.remove('hidden');
                 document.getElementById('tab-ranking').classList.add('hidden');
-                document.getElementById('tab-btn-partidos').className = "w-1/2 py-2.5 text-sm font-black rounded-lg bdf-blue text-white shadow transition-all";
+                document.getElementById('tab-btn-partidos').className = "w-1/2 py-2.5 text-sm font-black rounded-lg bdf-blue text-white shadow transition-all relative z-20";
                 document.getElementById('tab-btn-ranking').className = "w-1/2 py-2.5 text-sm font-black rounded-lg text-gray-500 hover:text-gray-300 transition-all";
             } else {
                 document.getElementById('tab-partidos').classList.add('hidden');
                 document.getElementById('tab-ranking').classList.remove('hidden');
                 document.getElementById('tab-btn-partidos').className = "w-1/2 py-2.5 text-sm font-black rounded-lg text-gray-500 hover:text-gray-300 transition-all";
-                document.getElementById('tab-btn-ranking').className = "w-1/2 py-2.5 text-sm font-black rounded-lg bdf-blue text-white shadow transition-all";
+                document.getElementById('tab-btn-ranking').className = "w-1/2 py-2.5 text-sm font-black rounded-lg bdf-blue text-white shadow transition-all relative z-20";
             }
         };
 
@@ -511,9 +590,14 @@
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             const rect = entry.target.getBoundingClientRect();
-                            const x = (rect.left + rect.width / 2) / window.innerWidth;
-                            const y = (rect.top + rect.height / 2) / window.innerHeight;
-                            confetti({ origin: { x, y }, particleCount: 80, spread: 70, colors: ['#0032A0', '#FFFFFF', '#FFD700', '#22C55E'], zIndex: 100 });
+                            const coloresTematicos = JSON.parse(entry.target.getAttribute('data-colores'));
+                            confetti({ 
+                                origin: { x: (rect.left + rect.width / 2) / window.innerWidth, y: (rect.top + rect.height / 2) / window.innerHeight }, 
+                                particleCount: 80, 
+                                spread: 70, 
+                                colors: coloresTematicos, 
+                                zIndex: 100 
+                            });
                             obs.unobserve(entry.target); 
                         }
                     });
