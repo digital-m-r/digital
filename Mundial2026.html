@@ -72,9 +72,24 @@
             </div>
 
             <div id="tab-partidos" class="space-y-5">
-                <div class="flex justify-between items-end mb-2">
+                <div class="flex justify-between items-end mb-4">
                     <h3 class="text-xl font-black text-white">Tus Pronósticos</h3>
                     <p class="text-xs font-bold text-green-400">Total: <span id="user-display-points" class="text-lg">0</span> PTS</p>
+                </div>
+
+                <div class="mb-6 relative">
+                    <label class="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-widest">Filtrar Partidos</label>
+                    <div class="relative">
+                        <select id="filtro-fase" onchange="cargarPartidos()" class="w-full p-4 rounded-xl bg-gray-900 text-white border border-gray-700 focus:border-[#0032A0] outline-none font-bold appearance-none cursor-pointer shadow-lg transition-colors">
+                            <option value="1">Parte 1 (Partidos 1 al 26)</option>
+                            <option value="2">Parte 2 (Próximamente)</option>
+                            <option value="3">Parte 3 (Próximamente)</option>
+                            <option value="4">Parte 4 (Próximamente)</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="contenedor-partidos" class="space-y-8"></div>
@@ -163,10 +178,8 @@
                     <path fill="currentColor" d="M12 4.5A7.5 7.5 0 1 0 19.5 12 7.5 7.5 0 0 0 12 4.5Zm0 13.5A6 6 0 1 1 18 12 6 6 0 0 1 12 18Z" opacity="0.3"/>
                 </svg>
             </div>
-            
             <h3 class="text-2xl font-black text-white mb-2 tracking-wider">¡GUARDADO EXITOSO!</h3>
             <p class="text-gray-400 text-sm mb-8 leading-relaxed">Tus pronósticos han sido registrados correctamente en la base de datos de BMM. ¡Mantente atento a los resultados reales para ver tu posición en el Ranking!</p>
-            
             <button onclick="cerrarModalConfirmacion()" class="w-full bdf-blue hover:bg-blue-800 py-3 rounded-xl font-black text-lg transition-all shadow-lg text-white">
                 ACEPTAR
             </button>
@@ -196,57 +209,43 @@
 
         const svgCamiseta = `<svg viewBox="0 0 24 24" class="w-14 h-14 drop-shadow-md transition-transform duration-200"><path fill="currentColor" d="M15.3,2.4l4.8,2.7c0.4,0.2,0.6,0.7,0.5,1.2l-0.9,4.2c-0.1,0.5-0.6,0.8-1.1,0.6l-2-0.8v10.2c0,0.6-0.4,1-1,1H8.5c-0.6,0-1-0.4-1-1V10.4l-2,0.8c-0.5,0.2-1-0.1-1.1-0.6L3.5,6.3C3.4,5.8,3.6,5.3,4,5.1l4.8-2.7C9.5,2,10.3,1.6,11.2,1.6h1.7C13.8,1.6,14.6,2,15.3,2.4z"/></svg>`;
 
-        // CALENDARIO COMPLETO (32 Partidos de Eliminación Directa)
+        // CALENDARIO - ORGANIZADO POR PARTES
         const calendarioGrafico = [
-            // --- ELIMINATORIA DE 32 ---
-            { id: "elim_1", fase: "16avos - 28/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_2", fase: "16avos - 29/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_3", fase: "16avos - 29/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_4", fase: "16avos - 29/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_5", fase: "16avos - 30/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_6", fase: "16avos - 30/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_7", fase: "16avos - 30/06", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_8", fase: "16avos - 01/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_9", fase: "16avos - 01/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_10", fase: "16avos - 01/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_11", fase: "16avos - 02/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_12", fase: "16avos - 02/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_13", fase: "16avos - 02/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_14", fase: "16avos - 03/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_15", fase: "16avos - 03/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "elim_16", fase: "16avos - 03/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-
-            // --- OCTAVOS DE FINAL ---
-            { id: "oct_1", fase: "Octavos - 04/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "oct_2", fase: "Octavos - 04/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "oct_3", fase: "Octavos - 05/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "oct_4", fase: "Octavos - 05/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "oct_5", fase: "Octavos - 06/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "oct_6", fase: "Octavos - 06/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "oct_7", fase: "Octavos - 07/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "oct_8", fase: "Octavos - 07/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-
-            // --- CUARTOS DE FINAL ---
-            { id: "cuartos_1", fase: "Cuartos - 09/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "cuartos_2", fase: "Cuartos - 10/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "cuartos_3", fase: "Cuartos - 10/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "cuartos_4", fase: "Cuartos - 11/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-
-            // --- SEMIFINALES Y TERCER LUGAR ---
-            { id: "semi_1", fase: "Semifinal - 14/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "semi_2", fase: "Semifinal - 15/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-            { id: "tercer_lugar", fase: "3er Lugar - 18/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }},
-
-            // --- GRAN FINAL ---
-            { id: "final", fase: "GRAN FINAL - 19/07", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }, visitante: { nombre: "A definir", code: "?", color: "#374151", txtColor: "#9CA3AF" }}
+            // ================= PARTE 1 (Fase de Grupos: 1 al 26) =================
+            { parte: 1, id: "p_1", fase: "Jue 11/06 - Partido 1", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "México", code: "MEX", color: "#006847", txtColor: "#FFFFFF" }, visitante: { nombre: "Sudáfrica", code: "RSA", color: "#007749", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_2", fase: "Jue 11/06 - Partido 2", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Corea del Sur", code: "KOR", color: "#C60C30", txtColor: "#FFFFFF" }, visitante: { nombre: "R. Checa", code: "CZE", color: "#D7141A", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_3", fase: "Vie 12/06 - Partido 3", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Canadá", code: "CAN", color: "#FF0000", txtColor: "#FFFFFF" }, visitante: { nombre: "Bosnia y H.", code: "BIH", color: "#002395", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_4", fase: "Vie 12/06 - Partido 4", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Estados Unidos", code: "USA", color: "#FFFFFF", txtColor: "#B31942" }, visitante: { nombre: "Paraguay", code: "PAR", color: "#D52B1E", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_5", fase: "Sáb 13/06 - Partido 5", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Brasil", code: "BRA", color: "#FFDF00", txtColor: "#009C3B" }, visitante: { nombre: "Marruecos", code: "MAR", color: "#C1272D", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_6", fase: "Sáb 13/06 - Partido 6", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Haití", code: "HAI", color: "#032868", txtColor: "#FFFFFF" }, visitante: { nombre: "Escocia", code: "SCO", color: "#0065BF", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_7", fase: "Sáb 13/06 - Partido 7", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Australia", code: "AUS", color: "#FFCD00", txtColor: "#008751" }, visitante: { nombre: "Turquía", code: "TUR", color: "#E30A17", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_8", fase: "Sáb 13/06 - Partido 8", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Inglaterra", code: "ENG", color: "#FFFFFF", txtColor: "#CE1124" }, visitante: { nombre: "Croacia", code: "CRO", color: "#FF0000", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_9", fase: "Dom 14/06 - Partido 9", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Alemania", code: "GER", color: "#000000", txtColor: "#FFFFFF" }, visitante: { nombre: "Curazao", code: "CUW", color: "#002B7F", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_10", fase: "Dom 14/06 - Partido 10", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "C. de Marfil", code: "CIV", color: "#FF8200", txtColor: "#FFFFFF" }, visitante: { nombre: "Ecuador", code: "ECU", color: "#FFDD00", txtColor: "#034EA2" }},
+            { parte: 1, id: "p_11", fase: "Dom 14/06 - Partido 11", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Países Bajos", code: "NED", color: "#F36C21", txtColor: "#FFFFFF" }, visitante: { nombre: "Japón", code: "JPN", color: "#000555", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_12", fase: "Dom 14/06 - Partido 12", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Suecia", code: "SWE", color: "#FECC00", txtColor: "#006AA7" }, visitante: { nombre: "Túnez", code: "TUN", color: "#E70013", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_13", fase: "Lun 15/06 - Partido 13", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Bélgica", code: "BEL", color: "#E30613", txtColor: "#FFD90F" }, visitante: { nombre: "Egipto", code: "EGY", color: "#CE1126", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_14", fase: "Lun 15/06 - Partido 14", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Irán", code: "IRN", color: "#239F40", txtColor: "#FFFFFF" }, visitante: { nombre: "N. Zelanda", code: "NZL", color: "#FFFFFF", txtColor: "#000000" }},
+            { parte: 1, id: "p_15", fase: "Lun 15/06 - Partido 15", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "España", code: "ESP", color: "#C60B1E", txtColor: "#FFC400" }, visitante: { nombre: "Cabo Verde", code: "CPV", color: "#003893", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_16", fase: "Lun 15/06 - Partido 16", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "A. Saudita", code: "KSA", color: "#006C35", txtColor: "#FFFFFF" }, visitante: { nombre: "Uruguay", code: "URU", color: "#0038A8", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_17", fase: "Mar 16/06 - Partido 17", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Francia", code: "FRA", color: "#002395", txtColor: "#FFFFFF" }, visitante: { nombre: "Senegal", code: "SEN", color: "#00853F", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_18", fase: "Mar 16/06 - Partido 18", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Irak", code: "IRQ", color: "#017B3D", txtColor: "#FFFFFF" }, visitante: { nombre: "Noruega", code: "NOR", color: "#BA0C2F", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_19", fase: "Mar 16/06 - Partido 19", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Argentina", code: "ARG", color: "#75AADB", txtColor: "#FFFFFF" }, visitante: { nombre: "Argelia", code: "ALG", color: "#006233", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_20", fase: "Mar 16/06 - Partido 20", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Austria", code: "AUT", color: "#ED2939", txtColor: "#FFFFFF" }, visitante: { nombre: "Jordania", code: "JOR", color: "#CE1126", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_21", fase: "Mié 17/06 - Partido 21", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Portugal", code: "POR", color: "#E42518", txtColor: "#FFFFFF" }, visitante: { nombre: "Congo", code: "COD", color: "#007FFF", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_22", fase: "Mié 17/06 - Partido 22", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Uzbekistán", code: "UZB", color: "#0099B5", txtColor: "#FFFFFF" }, visitante: { nombre: "Colombia", code: "COL", color: "#FCD116", txtColor: "#003893" }},
+            { parte: 1, id: "p_23", fase: "Mié 17/06 - Partido 23", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Ghana", code: "GHA", color: "#CE1126", txtColor: "#FFFFFF" }, visitante: { nombre: "Panamá", code: "PAN", color: "#DA121A", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_24", fase: "Mié 17/06 - Partido 24", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "Qatar", code: "QAT", color: "#8A1538", txtColor: "#FFFFFF" }, visitante: { nombre: "Suiza", code: "SUI", color: "#FF0000", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_25", fase: "Jue 18/06 - Partido 25", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "R. Checa", code: "CZE", color: "#D7141A", txtColor: "#FFFFFF" }, visitante: { nombre: "Sudáfrica", code: "RSA", color: "#007749", txtColor: "#FFFFFF" }},
+            { parte: 1, id: "p_26", fase: "Jue 18/06 - Partido 26", estadoSimulado: "pendiente", resOficial: null, local: { nombre: "México", code: "MEX", color: "#006847", txtColor: "#FFFFFF" }, visitante: { nombre: "Corea del Sur", code: "KOR", color: "#C60C30", txtColor: "#FFFFFF" }}
         ];
 
         let usuarioLogueado = null;
 
+        // AUTH LOGIC
         window.toggleAuthMode = function(mode) {
             const isLogin = mode === 'login';
             document.getElementById('auth-title').innerText = isLogin ? "Iniciar Sesión" : "Crear Nueva Cuenta";
-            
             if (isLogin) {
                 document.getElementById('campo-nombre').classList.add('hidden');
                 document.getElementById('btn-login').classList.remove('hidden');
@@ -260,13 +259,11 @@
             }
         };
 
-        // EVENTO REGISTRO CON MANEJO DE ERRORES (TRY/CATCH)
         document.getElementById('btn-register').addEventListener('click', async (e) => {
             const nomina = document.getElementById('auth-nomina').value.trim();
             const nombre = document.getElementById('auth-nombre').value.trim();
-
             if (!nomina || !nombre) return alert("⚠️ Por favor completa tu nómina y nombre completo.");
-
+            
             const btn = e.target;
             const originalText = btn.innerText;
             btn.innerText = "REGISTRANDO...";
@@ -276,14 +273,12 @@
                 if(db) {
                     const userRef = doc(db, "usuarios", nomina);
                     const userSnap = await getDoc(userRef);
-                    
                     if (userSnap.exists()) {
                         alert("⚠️ Esta nómina ya se encuentra registrada. Por favor ve a Iniciar Sesión.");
                         btn.innerText = originalText;
                         btn.disabled = false;
                         return;
                     }
-                    
                     await setDoc(userRef, { nombre: nombre, puntos: 0 });
                     usuarioLogueado = { nomina: nomina, nombre: nombre };
                     document.getElementById('user-display-points').innerText = "0";
@@ -291,22 +286,20 @@
                     usuarioLogueado = { nomina: nomina, nombre: nombre };
                     document.getElementById('user-display-points').innerText = "0";
                 }
-                
                 iniciarAppCentral();
             } catch (error) {
                 console.error("Firebase Error:", error);
-                alert("❌ Ocurrió un error con Firebase. Asegúrate de haber creado la 'Firestore Database' en tu consola de Firebase.\n\nDetalle: " + error.message);
+                alert("❌ Ocurrió un error con Firebase. Asegúrate de haber creado la 'Firestore Database'.\n\nDetalle: " + error.message);
             } finally {
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
         });
 
-        // EVENTO LOGIN CON MANEJO DE ERRORES (TRY/CATCH)
         document.getElementById('btn-login').addEventListener('click', async (e) => {
             const nomina = document.getElementById('auth-nomina').value.trim();
             if (!nomina) return alert("⚠️ Por favor ingresa tu número de nómina.");
-
+            
             const btn = e.target;
             const originalText = btn.innerText;
             btn.innerText = "CONECTANDO...";
@@ -316,21 +309,18 @@
                 if(db) {
                     const userRef = doc(db, "usuarios", nomina);
                     const userSnap = await getDoc(userRef);
-                    
                     if (!userSnap.exists()) {
                         alert("❌ Esta nómina no está registrada. Por favor, crea una cuenta primero.");
                         btn.innerText = originalText;
                         btn.disabled = false;
                         return;
                     }
-                    
                     usuarioLogueado = { nomina: nomina, nombre: userSnap.data().nombre };
                     document.getElementById('user-display-points').innerText = userSnap.data().puntos || 0;
                 } else {
                     usuarioLogueado = { nomina: nomina, nombre: "Usuario Demo" };
                     document.getElementById('user-display-points').innerText = "13";
                 }
-                
                 iniciarAppCentral();
             } catch (error) {
                 console.error("Firebase Error:", error);
@@ -344,32 +334,38 @@
         function iniciarAppCentral() {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            
-            cargarPartidos();
+            window.cargarPartidos(); // Carga la selección actual del combo (Parte 1 por default)
             document.getElementById('modal-reglas').classList.remove('hidden');
-            
             if(db) escucharRanking(); 
             else cargarRankingDemo();
         }
 
-        async function cargarPartidos() {
+        // CARGA DINÁMICA POR PARTES
+        window.cargarPartidos = async function() {
             const contenedor = document.getElementById('contenedor-partidos');
             contenedor.innerHTML = "";
+            const parteSeleccionada = parseInt(document.getElementById('filtro-fase').value);
 
             let misPicks = {};
             try {
                 if(db) {
                     const pronoRef = doc(db, "pronosticos", usuarioLogueado.nomina);
                     const pronoSnap = await getDoc(pronoRef);
-                    if(pronoSnap.exists()) misPicks = pronoSnap.data().selecciones;
-                } else {
-                    misPicks = { "elim_1": { res: "local", gL: 2, gV: 1 } }; // Simulacion Demo
+                    if(pronoSnap.exists()) misPicks = pronoSnap.data().selecciones || {};
                 }
             } catch (error) {
                 console.error("Error al cargar picks:", error);
             }
 
-            calendarioGrafico.forEach((partido, index) => {
+            // Filtrar y renderizar solo los partidos de la parte seleccionada
+            const partidosVisibles = calendarioGrafico.filter(p => p.parte === parteSeleccionada);
+
+            if(partidosVisibles.length === 0) {
+                contenedor.innerHTML = `<div class="text-center p-8 text-gray-500 font-bold border border-dashed border-gray-700 rounded-xl">Próximamente...</div>`;
+                return;
+            }
+
+            partidosVisibles.forEach((partido, index) => {
                 let esFinalizado = partido.estadoSimulado === "finalizado";
                 let bloqueoAttr = esFinalizado ? "disabled" : "";
                 let bloqueoClase = esFinalizado ? "partido-finalizado pointer-events-none" : "";
@@ -401,7 +397,7 @@
                 const coloresJSON = JSON.stringify(coloresConfeti).replace(/"/g, '&quot;');
 
                 let htmlCard = `
-                    <div id="card-${partido.id}" class="card-bg p-5 pt-8 rounded-2xl border ${bordeEstado} relative animate-panini ${acierto ? 'tarjeta-ganadora' : ''}" style="animation-delay: ${index * 150}ms" data-colores="${coloresJSON}">
+                    <div id="card-${partido.id}" class="card-bg p-5 pt-8 rounded-2xl border ${bordeEstado} relative animate-panini ${acierto ? 'tarjeta-ganadora' : ''}" style="animation-delay: ${index * 50}ms" data-colores="${coloresJSON}">
                         ${badgeHTML}
                         
                         <div class="absolute top-0 left-0">
@@ -419,7 +415,7 @@
                                             ${svgCamiseta}
                                             <span class="absolute text-[10px] font-black mt-2" style="color: ${partido.local.txtColor}">${partido.local.code}</span>
                                         </div>
-                                        <span class="block text-sm font-bold mt-2 text-center text-gray-400 peer-checked:text-white">${partido.local.nombre}</span>
+                                        <span class="block text-sm font-bold mt-2 text-center text-gray-400 peer-checked:text-white leading-tight">${partido.local.nombre}</span>
                                     </div>
                                 </label>
                                 <input type="number" id="marcador-local-${partido.id}" oninput="autoSeleccionarGanador('${partido.id}')" placeholder="-" min="0" max="20" class="mt-2 w-12 h-10 text-center bg-gray-900 border border-gray-600 rounded-lg text-white font-black text-lg focus:outline-none focus:border-[#0032A0] focus:ring-1 focus:ring-[#0032A0]" value="${miGL}" ${bloqueoAttr}>
@@ -445,7 +441,7 @@
                                             ${svgCamiseta}
                                             <span class="absolute text-[10px] font-black mt-2" style="color: ${partido.visitante.txtColor}">${partido.visitante.code}</span>
                                         </div>
-                                        <span class="block text-sm font-bold mt-2 text-center text-gray-400 peer-checked:text-white">${partido.visitante.nombre}</span>
+                                        <span class="block text-sm font-bold mt-2 text-center text-gray-400 peer-checked:text-white leading-tight">${partido.visitante.nombre}</span>
                                     </div>
                                 </label>
                                 <input type="number" id="marcador-visitante-${partido.id}" oninput="autoSeleccionarGanador('${partido.id}')" placeholder="-" min="0" max="20" class="mt-2 w-12 h-10 text-center bg-gray-900 border border-gray-600 rounded-lg text-white font-black text-lg focus:outline-none focus:border-[#0032A0] focus:ring-1 focus:ring-[#0032A0]" value="${miGV}" ${bloqueoAttr}>
@@ -455,14 +451,19 @@
                 `;
                 contenedor.innerHTML += htmlCard;
             });
-        }
+        };
 
-        // GUARDADO DE PICKS CON MODAL DE CONFIRMACIÓN
+        // GUARDADO DE PICKS (Filtrando por la vista actual)
         document.getElementById('btn-guardar').addEventListener('click', async (e) => {
-            let faltaSeleccion = false;
-            const selecciones = {};
+            const parteSeleccionada = parseInt(document.getElementById('filtro-fase').value);
+            const partidosVisibles = calendarioGrafico.filter(p => p.parte === parteSeleccionada);
+            
+            if(partidosVisibles.length === 0) return;
 
-            calendarioGrafico.forEach(partido => {
+            let faltaSeleccion = false;
+            let nuevasSelecciones = {}; // Lo que vamos a guardar/actualizar de la vista actual
+
+            partidosVisibles.forEach(partido => {
                 if(partido.estadoSimulado === "pendiente") {
                     const elegido = document.querySelector(`input[name="radio-${partido.id}"]:checked`);
                     const gL = document.getElementById(`marcador-local-${partido.id}`).value;
@@ -471,38 +472,47 @@
                     if (!elegido) {
                         faltaSeleccion = true;
                     } else {
-                        selecciones[partido.id] = { res: elegido.value, gL: gL, gV: gV };
+                        nuevasSelecciones[partido.id] = { res: elegido.value, gL: gL, gV: gV };
                     }
                 }
             });
 
-            if(faltaSeleccion) return alert("⚠️ Asegúrate de seleccionar el ganador o empate en los partidos pendientes.");
+            if(faltaSeleccion) return alert("⚠️ Asegúrate de seleccionar el ganador o empate en todos los partidos visibles que estén pendientes.");
 
             const btn = e.target;
             const textoBtn = document.getElementById('texto-btn-guardar');
             const originalText = textoBtn.innerText;
             
-            // Estado "Cargando" inhabilitado
             textoBtn.innerText = "GUARDANDO...";
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
 
             try {
                 if(db) {
-                    await setDoc(doc(db, "pronosticos", usuarioLogueado.nomina), {
+                    const docRef = doc(db, "pronosticos", usuarioLogueado.nomina);
+                    const docSnap = await getDoc(docRef);
+                    
+                    // Extraer picks anteriores para no sobreescribir partes pasadas
+                    let seleccionesPrevias = {};
+                    if(docSnap.exists()) {
+                        seleccionesPrevias = docSnap.data().selecciones || {};
+                    }
+                    
+                    // Mezclar historial con los nuevos guardados de esta vista
+                    const seleccionesConsolidadas = { ...seleccionesPrevias, ...nuevasSelecciones };
+
+                    await setDoc(docRef, {
                         nomina: usuarioLogueado.nomina,
-                        selecciones: selecciones
-                    });
+                        selecciones: seleccionesConsolidadas
+                    }, { merge: true });
                 }
                 
-                // Mostrar Modal Futbolero de Confirmación
                 document.getElementById('modal-confirmacion').classList.remove('hidden');
                 
             } catch(error) {
                 console.error("Error guardando picks:", error);
                 alert("❌ Error al guardar en Firebase.\nDetalle: " + error.message);
             } finally {
-                // Restaurar botón siempre
                 textoBtn.innerText = originalText;
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -523,6 +533,7 @@
             }
         };
 
+        // RANKING
         function escucharRanking() {
             try {
                 const q = query(collection(db, "usuarios"), orderBy("puntos", "desc"), limit(10));
