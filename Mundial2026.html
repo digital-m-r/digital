@@ -24,23 +24,6 @@
             animation: paniniSticker 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
             opacity: 0; 
         }
-
-        /* --- EFECTO RED SACUDIDA --- */
-        @keyframes netShake {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(-10px) rotate(-1deg); }
-            40% { transform: translateX(10px) rotate(1deg); }
-            60% { transform: translateX(-10px) rotate(-1deg); }
-            80% { transform: translateX(10px) rotate(1deg); }
-            100% { transform: translateX(0); }
-        }
-        .animate-net-shake { 
-            animation: netShake 0.4s ease-in-out; 
-            background-image: 
-                repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.1) 5px, rgba(255,255,255,0.1) 6px),
-                repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(255,255,255,0.1) 5px, rgba(255,255,255,0.1) 6px) !important;
-            background-color: #166534 !important;
-        }
     </style>
 </head>
 <body class="min-h-screen pb-24 relative">
@@ -168,6 +151,25 @@
                     ¡ENTENDIDO, A JUGAR!
                 </button>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-confirmacion" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/80 backdrop-blur-sm px-4 transition-opacity duration-300">
+        <div class="card-bg border border-green-500 rounded-3xl shadow-[0_0_40px_rgba(34,197,94,0.3)] max-w-sm w-full p-8 text-center relative overflow-hidden">
+            <div class="mx-auto w-24 h-24 mb-6 relative">
+                <div class="absolute inset-0 border-4 border-green-500 rounded-full border-dashed animate-[spin_10s_linear_infinite] opacity-30"></div>
+                <svg viewBox="0 0 24 24" class="w-full h-full text-green-400 drop-shadow-[0_0_15px_rgba(34,197,94,0.6)]">
+                    <path fill="currentColor" d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8A8 8 0 0 1 12 20Zm-3.5-5.5a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 8.5 14.5Zm7 0a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 15.5 14.5Zm-3.5-5a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 9.5Z"/>
+                    <path fill="currentColor" d="M12 4.5A7.5 7.5 0 1 0 19.5 12 7.5 7.5 0 0 0 12 4.5Zm0 13.5A6 6 0 1 1 18 12 6 6 0 0 1 12 18Z" opacity="0.3"/>
+                </svg>
+            </div>
+            
+            <h3 class="text-2xl font-black text-white mb-2 tracking-wider">¡GUARDADO EXITOSO!</h3>
+            <p class="text-gray-400 text-sm mb-8 leading-relaxed">Tus pronósticos han sido registrados correctamente en la base de datos de BMM. ¡Mantente atento a los resultados reales para ver tu posición en el Ranking!</p>
+            
+            <button onclick="cerrarModalConfirmacion()" class="w-full bdf-blue hover:bg-blue-800 py-3 rounded-xl font-black text-lg transition-all shadow-lg text-white">
+                ACEPTAR
+            </button>
         </div>
     </div>
 
@@ -455,6 +457,7 @@
             });
         }
 
+        // GUARDADO DE PICKS CON MODAL DE CONFIRMACIÓN
         document.getElementById('btn-guardar').addEventListener('click', async (e) => {
             let faltaSeleccion = false;
             const selecciones = {};
@@ -475,14 +478,14 @@
 
             if(faltaSeleccion) return alert("⚠️ Asegúrate de seleccionar el ganador o empate en los partidos pendientes.");
 
-            // Red Sacudida (Gooool Effect)
             const btn = e.target;
             const textoBtn = document.getElementById('texto-btn-guardar');
             const originalText = textoBtn.innerText;
             
-            btn.classList.add('animate-net-shake');
-            textoBtn.innerText = "¡GUARDANDO PICKS!";
+            // Estado "Cargando" inhabilitado
+            textoBtn.innerText = "GUARDANDO...";
             btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
 
             try {
                 if(db) {
@@ -492,22 +495,18 @@
                     });
                 }
                 
-                setTimeout(() => {
-                    btn.classList.remove('animate-net-shake');
-                    textoBtn.innerText = "¡GUARDADO CORRECTO!";
-                    setTimeout(() => {
-                        textoBtn.innerText = originalText;
-                        btn.disabled = false;
-                    }, 2000);
-                }, 1000);
+                // Mostrar Modal Futbolero de Confirmación
+                document.getElementById('modal-confirmacion').classList.remove('hidden');
                 
             } catch(error) {
                 console.error("Error guardando picks:", error);
                 alert("❌ Error al guardar en Firebase.\nDetalle: " + error.message);
-                btn.classList.remove('animate-net-shake');
+            } finally {
+                // Restaurar botón siempre
                 textoBtn.innerText = originalText;
                 btn.disabled = false;
-            } 
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         });
 
         // POKA-YOKE
@@ -604,6 +603,10 @@
                 }, { threshold: 0.5 });
                 tarjetasGanadoras.forEach(tarjeta => observer.observe(tarjeta));
             }, 500);
+        };
+
+        window.cerrarModalConfirmacion = function() {
+            document.getElementById('modal-confirmacion').classList.add('hidden');
         };
     </script>
 </body>
