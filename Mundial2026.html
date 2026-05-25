@@ -118,7 +118,7 @@
         /* Login mascots */
         .mascots-img { width: 100%; max-width: 420px; display: block; margin: 0 auto; border-radius: 16px; opacity: 0.92; }
         /* Logo BMM header */
-        .logo-bmm { height: 48px; width: auto; object-fit: contain; }
+        .logo-bmm { height: 38px; width: auto; object-fit: contain; }
         /* Logo FIFA login */
         .logo-fifa-login { height: 80px; width: auto; display: block; margin: 0 auto 12px; }
     </style>
@@ -131,8 +131,8 @@
         <div class="flex items-center gap-3">
             <span class="text-2xl">&#x26BD;</span>
             <div>
-                <h1 class="bebas text-2xl leading-none text-white tracking-widest">MUNDIAL 2026</h1>
-                <p class="text-[10px] text-blue-300 font-semibold tracking-widest mt-0.5">Quiniela BMM</p>
+                <h1 class="bebas text-2xl leading-none text-white tracking-widest">QUINIELA 2026</h1>
+                <p class="text-[10px] text-blue-300 font-semibold tracking-widest mt-0.5">BMM FASE FINAL</p>
             </div>
         </div>
         <div class="flex items-center gap-2">
@@ -201,7 +201,7 @@
                 <p id="user-display-points" class="text-2xl font-black text-white">0</p>
             </div>
             <div class="card-bg rounded-xl p-3 text-center">
-                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Aciertos</p>
+                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Aciertes</p>
                 <p id="stats-aciertos" class="text-2xl font-black text-green-400">0</p>
             </div>
             <div class="card-bg rounded-xl p-3 text-center">
@@ -496,6 +496,7 @@ const calendario = [
 
 let usuarioLogueado = null;
 let todosLosPicks = {};
+let resultadosAdmin = {}; // Resultados oficiales desde admin/resultados
 
 function showToast(msg, type = "info") {
     const t = document.getElementById('toast');
@@ -569,17 +570,44 @@ function iniciarApp() {
     document.getElementById('user-display-points').textContent = usuarioLogueado.puntos;
     actualizarStats();
     actualizarEstadoOpciones();
+    // Escuchar resultados oficiales en tiempo real desde admin/resultados
+    if (db) escucharResultadosAdmin();
     window.cargarPartidos();
     document.getElementById('modal-reglas').classList.remove('hidden');
     if (db) escucharRanking(); else cargarRankingDemo();
+}
+
+// ── LISTENER TIEMPO REAL: admin/resultados ──────────────────────────────
+// Cuando el admin cierra un partido, los usuarios ven el badge
+// de ACERTASTE / INCORRECTO automáticamente sin recargar la página.
+function escucharResultadosAdmin() {
+    onSnapshot(doc(db, "admin", "resultados"), (snap) => {
+        if (snap.exists()) {
+            resultadosAdmin = snap.data().partidos || {};
+        } else {
+            resultadosAdmin = {};
+        }
+        // Re-calcular stats y re-renderizar la parte actual
+        actualizarStats();
+        // Actualizar puntos del usuario desde Firebase (el admin los actualiza)
+        getDoc(doc(db, "usuarios", usuarioLogueado.nomina)).then(u => {
+            if (u.exists()) {
+                const pts = u.data().puntos || 0;
+                usuarioLogueado.puntos = pts;
+                document.getElementById('user-display-points').textContent = pts;
+            }
+        });
+        window.cargarPartidos();
+    });
 }
 
 function actualizarStats() {
     let aciertos = 0, picks = 0;
     for (const id in todosLosPicks) {
         picks++;
-        const partido = calendario.find(p => p.id === id);
-        if (partido?.resOficial && todosLosPicks[id].res === partido.resOficial) aciertos++;
+        // Usar resultadosAdmin (Firebase) en lugar de resOficial hardcodeado
+        const resReal = resultadosAdmin[id];
+        if (resReal && todosLosPicks[id].res === resReal.res) aciertos++;
     }
     document.getElementById('stats-aciertos').textContent = aciertos;
     document.getElementById('stats-picks').textContent = picks;
@@ -647,12 +675,14 @@ window.cargarPartidos = async function() {
         const miRes = pick?.res ?? null;
         const miGL  = pick?.gL ?? "";
         const miGV  = pick?.gV ?? "";
-        const esFinalizado = partido.resOficial !== null;
+        // Resultado oficial desde Firebase (admin/resultados), no del código estático
+        const resReal = resultadosAdmin[partido.id] ?? null;
+        const esFinalizado = resReal !== null;
         const esFinal = partido.id === "p_102";
         const horario = HORARIOS[partido.id] || "";
 
-        const acierto   = esFinalizado && miRes === partido.resOficial;
-        const fallo     = esFinalizado && miRes !== null && miRes !== partido.resOficial;
+        const acierto   = esFinalizado && miRes !== null && miRes === resReal.res;
+        const fallo     = esFinalizado && miRes !== null && miRes !== resReal.res;
         const sinPick   = esFinalizado && miRes === null;
         const lockOk    = bloqueado && !esFinalizado && miRes !== null;
         const lockNo    = bloqueado && !esFinalizado && miRes === null && parteEsDesbloqueada;
@@ -728,6 +758,15 @@ window.cargarPartidos = async function() {
                     </div>
                 </label>
             </div>
+        </div>
+        ${esFinalizado ? `
+        <div class="mt-3 pt-2 border-t border-[#1F2D45] flex items-center justify-center gap-3 text-[10px]">
+            <span class="text-gray-500 font-bold uppercase tracking-wide">Resultado oficial:</span>
+            <span class="font-black text-white">${resReal.gL} &ndash; ${resReal.gV}</span>
+            <span class="font-bold ${acierto ? 'text-green-400' : 'text-red-400'}">
+                ${acierto ? '&#x2713; Acertaste' : '&#x2717; Fallaste'}
+            </span>
+        </div>` : ''}
         </div>`;
         contenedor.innerHTML += card;
     });
