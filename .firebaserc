@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "reto-digital-bmm"
+  },
+  "targets": {
+    "reto-digital-bmm": {
+      "hosting": {
+        "feria-digital": ["feria-digital-bmm"]
+      }
+    }
+  }
+}
