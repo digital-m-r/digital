@@ -1,0 +1,7 @@
+{
+  "hosting": {
+    "target": "feria-digital",
+    "public": "feria-digital",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}
