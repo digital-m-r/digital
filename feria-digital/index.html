@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Atrapa la Digitalización — Feria Digital BMM</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="stage-wrapper">
+  <div id="stage">
+
+    <!-- ===================== PANTALLA 1: REGISTRO ===================== -->
+    <section id="screen-registro" class="screen active">
+      <div class="bg-grid"></div>
+      <div class="registro-panel">
+        <h1 class="titulo-juego">ATRAPA LA<br><span>DIGITALIZACIÓN</span></h1>
+        <p class="subtitulo">Feria Digital BMM</p>
+
+        <div class="campo">
+          <label for="input-nombre">Nombre</label>
+          <input type="text" id="input-nombre" placeholder="Tu nombre" autocomplete="off">
+        </div>
+        <div class="campo">
+          <label for="input-nomina">Número de nómina</label>
+          <input type="text" id="input-nomina" placeholder="Ej. 123456" autocomplete="off" inputmode="numeric">
+        </div>
+
+        <div class="campo">
+          <label>Elige tu avatar</label>
+          <div id="avatar-selector" class="avatar-selector">
+            <button class="avatar-opcion" data-avatar="assets/avatares/avatar1.png">
+              <img src="assets/avatares/avatar1.png" alt="Avatar 1">
+            </button>
+            <button class="avatar-opcion" data-avatar="assets/avatares/avatar2.png">
+              <img src="assets/avatares/avatar2.png" alt="Avatar 2">
+            </button>
+            <button class="avatar-opcion" data-avatar="assets/avatares/avatar3.png">
+              <img src="assets/avatares/avatar3.png" alt="Avatar 3">
+            </button>
+            <button class="avatar-opcion" data-avatar="assets/avatares/avatar4.png">
+              <img src="assets/avatares/avatar4.png" alt="Avatar 4">
+            </button>
+          </div>
+        </div>
+
+        <p id="registro-error" class="registro-error"></p>
+
+        <button id="btn-jugar" class="btn-primario" disabled>JUGAR</button>
+        <button id="btn-ver-top" class="btn-secundario">Ver Top 10</button>
+      </div>
+    </section>
+
+    <!-- ===================== PANTALLA 2: INSTRUCCIONES ===================== -->
+    <section id="screen-instrucciones" class="screen">
+      <div class="bg-grid"></div>
+      <div class="instrucciones-panel">
+        <h2>¿Cómo se juega?</h2>
+        <div class="instrucciones-lista">
+          <div class="instruccion-item">
+            <div class="instruccion-icono">👆</div>
+            <p>Arrastra tu dedo por la pantalla para mover tu avatar</p>
+          </div>
+          <div class="instruccion-item">
+            <div class="instruccion-icono good-glow">✓</div>
+            <p>Atrapa los íconos de aplicaciones — suman puntos</p>
+          </div>
+          <div class="instruccion-item">
+            <div class="instruccion-icono bad-glow">✕</div>
+            <p>Evita los íconos rojos — te quitan una vida</p>
+          </div>
+          <div class="instruccion-item">
+            <div class="instruccion-icono">❤️❤️</div>
+            <p>Tienes 2 vidas. ¡Consigue la mayor racha posible!</p>
+          </div>
+        </div>
+        <button id="btn-empezar" class="btn-primario">¡EMPEZAR!</button>
+      </div>
+    </section>
+
+    <!-- ===================== PANTALLA 3: JUEGO ===================== -->
+    <section id="screen-juego" class="screen">
+      <canvas id="game-canvas" width="1920" height="1080"></canvas>
+
+      <div id="hud">
+        <div class="hud-item hud-puntos">
+          <span class="hud-label">PUNTOS</span>
+          <span id="hud-puntos-valor">0</span>
+        </div>
+        <div id="hud-racha" class="hud-racha">
+          <span id="hud-racha-valor">🔥 x0</span>
+        </div>
+        <div class="hud-item hud-vidas">
+          <span id="hud-vida-1" class="corazon">❤️</span>
+          <span id="hud-vida-2" class="corazon">❤️</span>
+        </div>
+      </div>
+
+      <div id="countdown-overlay" class="countdown-overlay">
+        <span id="countdown-numero">3</span>
+      </div>
+    </section>
+
+    <!-- ===================== PANTALLA 4: RESULTADO ===================== -->
+    <section id="screen-resultado" class="screen">
+      <div class="bg-grid"></div>
+      <div class="resultado-panel">
+        <h2 id="resultado-titulo">¡Juego terminado!</h2>
+        <p class="resultado-nombre" id="resultado-nombre"></p>
+
+        <div class="resultado-puntaje">
+          <span class="resultado-puntaje-label">Puntaje final</span>
+          <span id="resultado-puntaje-valor">0</span>
+        </div>
+        <p class="resultado-racha" id="resultado-racha-max"></p>
+
+        <div class="resultado-botones">
+          <button id="btn-jugar-de-nuevo" class="btn-primario">JUGAR DE NUEVO</button>
+          <button id="btn-ir-top" class="btn-secundario">VER TOP 10</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PANTALLA 5: TOP 10 ===================== -->
+    <section id="screen-top10" class="screen">
+      <div class="bg-grid"></div>
+      <div class="top10-panel">
+        <h2>🏆 TOP 10</h2>
+        <div id="top10-lista" class="top10-lista">
+          <p class="top10-cargando">Cargando...</p>
+        </div>
+        <button id="btn-top-volver" class="btn-primario">REGRESAR</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script type="module" src="js/firebase-config.js"></script>
+<script type="module" src="js/game.js"></script>
+</body>
+</html>
