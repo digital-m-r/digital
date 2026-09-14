@@ -10,6 +10,20 @@ export const AVATARES = {
   china:   { nombre: "China Poblana",  img: "images/caballo-china.png",  cara: { xPct: 55.06, yPct: 22.52, rPct: 6.5 } }
 };
 
+// Coordenadas (en % del tablero) de cada hoyo numerado del skee-ball,
+// detectadas directamente sobre images/tablero-skeeball.png
+export const HOYOS_SKEEBALL = {
+  1: { xPct: 28.52, yPct: 37.50 },
+  2: { xPct: 36.98, yPct: 44.11 },
+  3: { xPct: 49.87, yPct: 43.24 },
+  4: { xPct: 62.89, yPct: 44.11 },
+  5: { xPct: 71.35, yPct: 37.35 },
+  6: { xPct: 38.67, yPct: 26.74 },
+  7: { xPct: 49.87, yPct: 31.25 },
+  8: { xPct: 61.20, yPct: 26.74 },
+  9: { xPct: 49.87, yPct: 21.44 }
+};
+
 // Genera un código corto de partida, fácil de leer/decir en voz alta
 export function generarCodigoPartida() {
   const letras = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // sin O/I para evitar confusión
