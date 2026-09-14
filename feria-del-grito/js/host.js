@@ -6,15 +6,28 @@ import {
   META_CASILLAS, COLORES, AVATARES,
   generarCodigoPartida, barajar, cargarBancoPreguntas
 } from "./juego-common.js";
+import {
+  sonarAcierto, sonarError, sonarVictoriaCorta,
+  iniciarMusicaCarrera, detenerMusicaCarrera, setSilenciado
+} from "./sonidos.js";
+import { lanzarConfeti } from "./confeti.js";
 
 let codigoPartida = null;
 let bancoPreguntas = [];
 let jugadoresCache = {}; // id -> data
 let partidaCache = null;
 let popupAbierto = false;
+let musicaSilenciada = false;
+let ganadorYaAnunciado = false;
 
 const $ = (id) => document.getElementById(id);
 const COLOR_HEX = { rojo: "#C8232A", azul: "#1668C9", amarillo: "#E8AE00", verde: "#0E7A3E" };
+
+$("btn-silenciar").addEventListener("click", () => {
+  musicaSilenciada = !musicaSilenciada;
+  setSilenciado(musicaSilenciada);
+  $("btn-silenciar").textContent = musicaSilenciada ? "🔇" : "🔊";
+});
 
 // ---------- Crear partida ----------
 $("btn-crear-partida").addEventListener("click", async () => {
@@ -102,6 +115,7 @@ async function iniciarNuevaRonda() {
   });
   $("panel-revelacion").style.display = "none";
   popupAbierto = false;
+  ganadorYaAnunciado = false;
 }
 
 // ---------- Fase 1: esperar a que todos lancen la bola ----------
@@ -142,8 +156,10 @@ async function verificarTodosRespondieron() {
 function mostrarPopupRevelacion() {
   const cont = $("grid-revelacion");
   cont.innerHTML = "";
+  let hayAcierto = false, hayError = false;
   Object.keys(jugadoresCache).forEach(id => {
     const j = jugadoresCache[id];
+    if (j.correcto) hayAcierto = true; else hayError = true;
     const avatarDiv = document.createElement("div");
     avatarDiv.className = `avatar-revelacion ${j.correcto ? "correcto" : "incorrecto"}`;
     avatarDiv.innerHTML = `
@@ -153,8 +169,17 @@ function mostrarPopupRevelacion() {
     `;
     cont.appendChild(avatarDiv);
   });
+
+  const p = partidaCache.preguntaActual;
+  $("respuesta-correcta-texto").textContent = p
+    ? `✅ La respuesta correcta era: ${p.opciones[p.correcta]}`
+    : "";
+
   $("panel-pregunta").style.display = "none";
   $("panel-revelacion").style.display = "flex";
+
+  if (hayAcierto) sonarAcierto();
+  if (hayError) setTimeout(() => sonarError(), hayAcierto ? 550 : 0);
 }
 
 // ---------- El anfitrión cierra el popup: aplica avances y vibra a los que fallaron ----------
@@ -163,6 +188,8 @@ $("btn-cerrar-revelacion").addEventListener("click", async () => {
   popupAbierto = false;
 
   const ids = Object.keys(jugadoresCache);
+  const huboAlgunAcierto = ids.some(id => jugadoresCache[id].correcto);
+  if (huboAlgunAcierto) iniciarMusicaCarrera();
 
   // Vibra a los que fallaron (efecto local, no se guarda en Firestore)
   ids.forEach(id => {
@@ -185,12 +212,14 @@ $("btn-cerrar-revelacion").addEventListener("click", async () => {
     }
   }
 
+  setTimeout(() => detenerMusicaCarrera(), 1400);
+
   if (ganador) {
     await updateDoc(doc(db, "partidas", codigoPartida), { estado: "terminado", ganadorId: ganador });
     return;
   }
 
-  setTimeout(() => { iniciarNuevaRonda(); }, 900);
+  setTimeout(() => { iniciarNuevaRonda(); }, 1500);
 });
 
 // ---------- Render de la pista ----------
@@ -259,6 +288,9 @@ function renderPreguntaEnPantalla() {
 }
 
 function mostrarGanador() {
+  if (ganadorYaAnunciado) return;
+  ganadorYaAnunciado = true;
+
   $("panel-pregunta").style.display = "none";
   $("panel-revelacion").style.display = "none";
   const panel = $("panel-ganador");
@@ -268,6 +300,10 @@ function mostrarGanador() {
     $("foto-ganador").src = g.foto;
     $("texto-ganador").textContent = `¡${g.nombre} ganó la carrera! 🏆🐎`;
   }
+
+  detenerMusicaCarrera();
+  sonarVictoriaCorta();
+  lanzarConfeti(panel, 4500);
 }
 
 // Redibuja la pista periódicamente para animaciones suaves de posición
