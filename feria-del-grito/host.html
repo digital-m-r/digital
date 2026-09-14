@@ -34,7 +34,7 @@
   <div class="host-header">
     <div class="host-codigo" id="codigo-header"></div>
     <h1 class="host-titulo titulo">🐎 La Feria del Grito 🌵</h1>
-    <div style="width:120px;"></div>
+    <button id="btn-silenciar" class="btn-silenciar" title="Silenciar música">🔊</button>
   </div>
   <div class="pista" id="contenedor-pista"></div>
 
@@ -49,6 +49,7 @@
   <!-- Overlay de revelación: quién contestó bien / mal -->
   <div class="host-panel-revelacion" id="panel-revelacion" style="display:none;">
     <h2 class="titulo" style="color:white; font-size:2rem;">¡Resultados de la ronda! 🎉</h2>
+    <p class="host-respuesta-correcta" id="respuesta-correcta-texto"></p>
     <div class="grid-revelacion" id="grid-revelacion"></div>
     <button class="btn-grande verde" id="btn-cerrar-revelacion" style="max-width:320px;">Cerrar y ver avance 🐎</button>
   </div>
