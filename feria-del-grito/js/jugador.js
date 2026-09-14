@@ -172,7 +172,8 @@ function ocultarTodosLosBloques() {
 // ---------- Tiro al Blanco: 5 blancos que flotan y rebotan solos ----------
 let tiroListo = false;
 let animacionBlancosId = null;
-let estadosBlancos = {}; // numero -> {x, y, vx, vy, resuelto}
+let cambioNumerosId = null;
+let estadosBlancos = {}; // slot(1-5) -> {x, y, vx, vy, resuelto, valor}
 let ultimoTiempoFrame = null;
 
 function inicializarSkeeball(partida) {
@@ -180,8 +181,10 @@ function inicializarSkeeball(partida) {
   tiroListo = true;
 
   document.querySelectorAll(".blanco").forEach((el) => {
-    const numero = parseInt(el.dataset.numero);
-    el.addEventListener("click", () => manejarToqueBlanco(numero));
+    const slot = parseInt(el.dataset.slot);
+    // Lee el número en el momento exacto del toque (no uno capturado antes),
+    // porque el número mostrado cambia solo con el tiempo.
+    el.addEventListener("click", () => manejarToqueBlanco(slot));
   });
 }
 
@@ -191,8 +194,8 @@ function velocidadAleatoria() {
   return signo * (14 + Math.random() * 12);
 }
 
-// Prepara los 5 blancos en posiciones y velocidades nuevas, y arranca el
-// ciclo de animación que los hace rebotar solos por todo el campo.
+// Prepara los 5 blancos en posiciones, velocidades y números nuevos, y
+// arranca tanto el rebote como el cambio aleatorio de números.
 function reiniciarBola() {
   const bala = $("bola-lanzable");
   if (bala) {
@@ -204,25 +207,51 @@ function reiniciarBola() {
 
   const { xMin, xMax, yMin, yMax } = LIMITES_CAMPO_TIRO;
   estadosBlancos = {};
-  for (let n = 1; n <= 5; n++) {
-    estadosBlancos[n] = {
+  for (let slot = 1; slot <= 5; slot++) {
+    estadosBlancos[slot] = {
       x: xMin + Math.random() * (xMax - xMin),
       y: yMin + Math.random() * (yMax - yMin),
       vx: velocidadAleatoria(),
       vy: velocidadAleatoria(),
-      resuelto: false
+      resuelto: false,
+      valor: 1 + Math.floor(Math.random() * 5)
     };
-    const el = document.querySelector(`.blanco[data-numero="${n}"]`);
+    const el = document.querySelector(`.blanco[data-slot="${slot}"]`);
     if (el) {
-      el.classList.remove("impactado", "rechazado", "resuelto");
-      el.style.left = `${estadosBlancos[n].x}%`;
-      el.style.top = `${estadosBlancos[n].y}%`;
+      el.classList.remove("impactado", "resuelto");
+      el.style.left = `${estadosBlancos[slot].x}%`;
+      el.style.top = `${estadosBlancos[slot].y}%`;
+      el.textContent = estadosBlancos[slot].valor;
+      el.dataset.numero = estadosBlancos[slot].valor;
     }
   }
+
+  $("texto-swipe").textContent = "Toca el número al que le quieres disparar antes de que se te escape 🎯";
 
   if (animacionBlancosId) cancelAnimationFrame(animacionBlancosId);
   ultimoTiempoFrame = null;
   animacionBlancosId = requestAnimationFrame(animarBlancosFlotando);
+
+  if (cambioNumerosId) clearInterval(cambioNumerosId);
+  cambioNumerosId = setInterval(cambiarNumerosAlAzar, 700);
+}
+
+// Cada cierto tiempo, cada blanco que siga activo cambia a un número nuevo
+// al azar (1-5) — así no basta con perseguir el blanco, también hay que
+// fijarse qué número tiene EN ESE INSTANTE antes de disparar.
+function cambiarNumerosAlAzar() {
+  for (let slot = 1; slot <= 5; slot++) {
+    const s = estadosBlancos[slot];
+    if (!s || s.resuelto) continue;
+    s.valor = 1 + Math.floor(Math.random() * 5);
+    const el = document.querySelector(`.blanco[data-slot="${slot}"]`);
+    if (el) {
+      el.textContent = s.valor;
+      el.dataset.numero = s.valor;
+      el.classList.add("numero-cambia");
+      setTimeout(() => el.classList.remove("numero-cambia"), 220);
+    }
+  }
 }
 
 function animarBlancosFlotando(t) {
@@ -231,23 +260,24 @@ function animarBlancosFlotando(t) {
   ultimoTiempoFrame = t;
   const { xMin, xMax, yMin, yMax } = LIMITES_CAMPO_TIRO;
 
-  for (let n = 1; n <= 5; n++) {
-    const s = estadosBlancos[n];
+  for (let slot = 1; slot <= 5; slot++) {
+    const s = estadosBlancos[slot];
     if (!s || s.resuelto) continue;
     s.x += s.vx * dt;
     s.y += s.vy * dt;
     if (s.x <= xMin || s.x >= xMax) { s.vx *= -1; s.x = Math.max(xMin, Math.min(xMax, s.x)); }
     if (s.y <= yMin || s.y >= yMax) { s.vy *= -1; s.y = Math.max(yMin, Math.min(yMax, s.y)); }
-    const el = document.querySelector(`.blanco[data-numero="${n}"]`);
+    const el = document.querySelector(`.blanco[data-slot="${slot}"]`);
     if (el) { el.style.left = `${s.x}%`; el.style.top = `${s.y}%`; }
   }
   animacionBlancosId = requestAnimationFrame(animarBlancosFlotando);
 }
 
-async function manejarToqueBlanco(numero) {
-  const s = estadosBlancos[numero];
+async function manejarToqueBlanco(slot) {
+  const s = estadosBlancos[slot];
   if (!s || s.resuelto) return;
-  s.resuelto = true; // se congela mientras se resuelve el disparo, no sigue rebotando
+  s.resuelto = true; // se congela mientras se resuelve el disparo: ya no rebota ni cambia de número
+  const valorElegido = s.valor; // el número que tenía justo en el instante del toque
 
   const bala = $("bola-lanzable");
   const rifle = document.querySelector(".rifle-icono");
@@ -258,7 +288,7 @@ async function manejarToqueBlanco(numero) {
   if (Math.random() < 0.08) {
     await animarBalaAlAire(bala, s.x);
     $("texto-swipe").textContent = "¡Fallaste el tiro! La bala se fue de largo, intenta de nuevo 🎯";
-    s.resuelto = false; // se puede volver a intentar, sigue flotando
+    s.resuelto = false; // se puede volver a intentar, sigue flotando y cambiando de número
     return;
   }
 
@@ -266,12 +296,18 @@ async function manejarToqueBlanco(numero) {
     // Cada jugador dispara de forma independiente — no hay "blancos ocupados"
     // entre jugadores, así que con 11 jugadores y 5 blancos nadie se queda sin
     // número al que dispararle.
-    await animarImpacto(bala, numero, s.x, s.y);
+    await animarImpacto(bala, slot, s.x, s.y);
+
+    // Pausa para que el jugador confirme bien qué número le tocó antes de
+    // que la pantalla cambie a "esperando a los demás".
+    $("texto-swipe").textContent = `🎯 ¡Le diste al número ${valorElegido}!`;
+    await new Promise((r) => setTimeout(r, 1400));
 
     if (animacionBlancosId) cancelAnimationFrame(animacionBlancosId);
+    if (cambioNumerosId) clearInterval(cambioNumerosId);
 
     await updateDoc(doc(db, "partidas", codigoPartida, "jugadores", miId), {
-      bolaValor: numero, listo: true
+      bolaValor: valorElegido, listo: true
     });
   } catch (e) {
     $("texto-swipe").textContent = "Algo falló, intenta disparar de nuevo.";
@@ -301,10 +337,10 @@ function moverBalaA(bala, xPct, yPct, duracionMs) {
 
 // La bala le da justo al blanco (en la posición donde estaba al tocarlo):
 // impacto con tambaleo, y el blanco queda marcado como resuelto.
-async function animarImpacto(bala, numero, x, y) {
+async function animarImpacto(bala, slot, x, y) {
   await moverBalaA(bala, x, y, 160);
   bala.classList.remove("volando");
-  const el = document.querySelector(`.blanco[data-numero="${numero}"]`);
+  const el = document.querySelector(`.blanco[data-slot="${slot}"]`);
   el?.classList.add("impactado");
   setTimeout(() => el?.classList.add("resuelto"), 500);
 }
