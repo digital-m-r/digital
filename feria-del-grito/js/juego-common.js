@@ -10,19 +10,16 @@ export const AVATARES = {
   china:   { nombre: "China Poblana",  img: "images/caballo-china.png",  cara: { xPct: 55.06, yPct: 22.52, rPct: 6.5 } }
 };
 
-// Coordenadas (% del tablero) y valor de cada uno de los 5 hoyos del skee-ball,
-// dibujado 100% con CSS/JS (sin imagen de fondo). Forma en diamante:
-//        [5]
-//   [2] [3] [4]
-//        [1]
-export const HOYOS_SKEEBALL = {
-  5: { xPct: 50, yPct: 16 },   // arriba (el más difícil, vale más)
-  2: { xPct: 24, yPct: 44 },   // medio-izquierda
-  3: { xPct: 50, yPct: 44 },   // medio-centro
-  4: { xPct: 76, yPct: 44 },   // medio-derecha
-  1: { xPct: 50, yPct: 70 }    // abajo (el más fácil, vale menos)
+// Coordenadas (% del campo) y valor de cada uno de los 5 blancos del
+// Tiro al Blanco, en fila horizontal, de izquierda a derecha (1 a 5).
+export const BLANCOS_TIRO = {
+  1: { xPct: 12 },
+  2: { xPct: 31 },
+  3: { xPct: 50 },
+  4: { xPct: 69 },
+  5: { xPct: 88 }
 };
-export const POSICION_SALIDA_BOLA = { xPct: 50, yPct: 92 };
+export const BLANCOS_Y_PCT = 34; // altura fija de la fila de blancos dentro del campo
 
 // Genera un código corto de partida, fácil de leer/decir en voz alta
 export function generarCodigoPartida() {
