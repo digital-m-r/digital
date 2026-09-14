@@ -424,10 +424,25 @@ async function manejarRespuesta(colorIdx, partida) {
   if (yaEnviadoEstaVuelta) return;
   yaEnviadoEstaVuelta = true;
 
+  // Retroalimentación inmediata: no esperamos a que Firestore confirme el
+  // guardado para avisarle al jugador que su clic ya se registró — así
+  // nunca se siente "colgado" aunque la red esté lenta en ese momento.
+  $("bloque-pregunta").style.display = "none";
+  $("bloque-espera-ronda").style.display = "block";
+  $("texto-espera-ronda").textContent = "¡Ya respondiste! Esperando a los demás jugadores...";
+
   const esCorrecta = colorIdx === partida.preguntaActual.correcta;
-  await updateDoc(doc(db, "partidas", codigoPartida, "jugadores", miId), {
-    respuestaColor: colorIdx,
-    respondido: true,
-    correcto: esCorrecta
-  });
+  try {
+    await updateDoc(doc(db, "partidas", codigoPartida, "jugadores", miId), {
+      respuestaColor: colorIdx,
+      respondido: true,
+      correcto: esCorrecta
+    });
+  } catch (e) {
+    // Si de plano no hay red en ese instante, avisamos y dejamos reintentar.
+    $("texto-espera-ronda").textContent = "No se pudo guardar tu respuesta, revisa tu conexión e intenta de nuevo.";
+    $("bloque-espera-ronda").style.display = "none";
+    $("bloque-pregunta").style.display = "flex";
+    yaEnviadoEstaVuelta = false;
+  }
 }
