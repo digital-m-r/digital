@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>La Feria del Grito 🐎</title>
-  
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -73,9 +72,13 @@
 
     <!-- Skee-ball -->
     <div id="bloque-skeeball" style="display:none; width:100%; align-items:center; flex-direction:column;">
-      <div class="tablero-wrap" id="tablero-wrap">
-        <img src="images/tablero-skeeball.png" class="tablero-img" alt="Tablero" />
-        <img src="images/bola.png" class="bola-lanzable" id="bola-lanzable" alt="Bola" />
+      <div class="tablero-skeeball" id="tablero-wrap">
+        <div class="hoyo" data-numero="5" style="left:50%; top:16%;">5</div>
+        <div class="hoyo" data-numero="2" style="left:24%; top:44%;">2</div>
+        <div class="hoyo" data-numero="3" style="left:50%; top:44%;">3</div>
+        <div class="hoyo" data-numero="4" style="left:76%; top:44%;">4</div>
+        <div class="hoyo" data-numero="1" style="left:50%; top:70%;">1</div>
+        <div class="bola-fisica" id="bola-lanzable"></div>
       </div>
       <p class="instruccion-swipe" id="texto-swipe">Desliza el dedo hacia arriba para lanzar la bola 👆</p>
     </div>
