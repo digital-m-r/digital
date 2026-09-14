@@ -245,6 +245,8 @@ input[type="text"] {
 
 .blanco {
   position: absolute;
+  left: 50%;
+  top: 40%;
   width: 15%;
   aspect-ratio: 1 / 1;
   transform: translate(-50%, -50%);
@@ -263,8 +265,9 @@ input[type="text"] {
   font-family: 'Baloo 2', cursive;
   font-weight: 800;
   font-size: clamp(14px, 5vw, 20px);
-  pointer-events: none;
-  transition: transform .15s ease;
+  cursor: pointer;
+  touch-action: manipulation;
+  z-index: 3;
 }
 @keyframes blanco-impacto {
   0%   { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
@@ -273,32 +276,13 @@ input[type="text"] {
   100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
 }
 .blanco.impactado { animation: blanco-impacto .5s ease; }
+.blanco.resuelto { opacity: 0.25; pointer-events: none; filter: grayscale(1); }
 @keyframes blanco-rechazo {
   0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
   25% { transform: translate(-50%, -50%) rotate(-10deg); }
   75% { transform: translate(-50%, -50%) rotate(10deg); }
 }
 .blanco.rechazado { animation: blanco-rechazo .3s ease; }
-
-.mira {
-  position: absolute;
-  top: 34%;
-  width: 12%;
-  aspect-ratio: 1 / 1;
-  transform: translate(-50%, -50%);
-  border: 3px solid #ff3b30;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 4;
-  box-shadow: 0 0 10px rgba(255,59,48,.6);
-}
-.mira::before, .mira::after {
-  content: '';
-  position: absolute;
-  background: #ff3b30;
-}
-.mira::before { left: 50%; top: -30%; width: 2px; height: 22%; transform: translateX(-50%); }
-.mira::after { left: -30%; top: 50%; width: 22%; height: 2px; transform: translateY(-50%); }
 
 .rifle-icono {
   position: absolute;
