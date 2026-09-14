@@ -70,17 +70,20 @@
 <section id="pantalla-juego" class="pantalla" style="display:none;">
   <div id="zona-juego" style="width:100%; max-width:460px; display:flex; flex-direction:column; align-items:center;">
 
-    <!-- Skee-ball -->
+    <!-- Tiro al Blanco -->
     <div id="bloque-skeeball" style="display:none; width:100%; align-items:center; flex-direction:column;">
-      <div class="tablero-skeeball" id="tablero-wrap">
-        <div class="hoyo" data-numero="5" style="left:50%; top:16%;">5</div>
-        <div class="hoyo" data-numero="2" style="left:24%; top:44%;">2</div>
-        <div class="hoyo" data-numero="3" style="left:50%; top:44%;">3</div>
-        <div class="hoyo" data-numero="4" style="left:76%; top:44%;">4</div>
-        <div class="hoyo" data-numero="1" style="left:50%; top:70%;">1</div>
-        <div class="bola-fisica" id="bola-lanzable"></div>
+      <div class="campo-tiro" id="campo-tiro">
+        <div class="blanco" data-numero="1" style="left:12%; top:34%;">1</div>
+        <div class="blanco" data-numero="2" style="left:31%; top:34%;">2</div>
+        <div class="blanco" data-numero="3" style="left:50%; top:34%;">3</div>
+        <div class="blanco" data-numero="4" style="left:69%; top:34%;">4</div>
+        <div class="blanco" data-numero="5" style="left:88%; top:34%;">5</div>
+        <div class="mira" id="mira"></div>
+        <div class="bala" id="bola-lanzable"></div>
+        <div class="rifle-icono">🔫</div>
       </div>
-      <p class="instruccion-swipe" id="texto-swipe">Desliza el dedo hacia arriba para lanzar la bola 👆</p>
+      <button class="btn-grande" id="btn-disparar" style="margin-top:16px;">🔫 ¡Fuego!</button>
+      <p class="instruccion-swipe" id="texto-swipe">Espera a que la mira pase sobre tu número y dispara</p>
     </div>
 
     <!-- Espera de otros jugadores -->
