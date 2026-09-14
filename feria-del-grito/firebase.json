@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "target": "feria-del-grito-bmm",
+    "target": "feria-del-grito",
     "public": ".",
     "ignore": [
       "firebase.json",
