@@ -1,6 +1,6 @@
 // Configuración general del juego, compartida entre jugador.js y host.js
 
-export const META_CASILLAS = 40;      // casillas totales de la pista
+export const META_CASILLAS = 24;      // casillas totales de la pista (bajó de 40: ahora el máximo tiro vale 5, no 9)
 
 export const COLORES = ["rojo", "azul", "amarillo", "verde"];
 export const FORMAS = { rojo: "▲", azul: "◆", amarillo: "●", verde: "■" };
@@ -10,19 +10,19 @@ export const AVATARES = {
   china:   { nombre: "China Poblana",  img: "images/caballo-china.png",  cara: { xPct: 55.06, yPct: 22.52, rPct: 6.5 } }
 };
 
-// Coordenadas (en % del tablero) de cada hoyo numerado del skee-ball,
-// detectadas directamente sobre images/tablero-skeeball.png
+// Coordenadas (% del tablero) y valor de cada uno de los 5 hoyos del skee-ball,
+// dibujado 100% con CSS/JS (sin imagen de fondo). Forma en diamante:
+//        [5]
+//   [2] [3] [4]
+//        [1]
 export const HOYOS_SKEEBALL = {
-  1: { xPct: 28.52, yPct: 37.50 },
-  2: { xPct: 36.98, yPct: 44.11 },
-  3: { xPct: 49.87, yPct: 43.24 },
-  4: { xPct: 62.89, yPct: 44.11 },
-  5: { xPct: 71.35, yPct: 37.35 },
-  6: { xPct: 38.67, yPct: 26.74 },
-  7: { xPct: 49.87, yPct: 31.25 },
-  8: { xPct: 61.20, yPct: 26.74 },
-  9: { xPct: 49.87, yPct: 21.44 }
+  5: { xPct: 50, yPct: 16 },   // arriba (el más difícil, vale más)
+  2: { xPct: 24, yPct: 44 },   // medio-izquierda
+  3: { xPct: 50, yPct: 44 },   // medio-centro
+  4: { xPct: 76, yPct: 44 },   // medio-derecha
+  1: { xPct: 50, yPct: 70 }    // abajo (el más fácil, vale menos)
 };
+export const POSICION_SALIDA_BOLA = { xPct: 50, yPct: 92 };
 
 // Genera un código corto de partida, fácil de leer/decir en voz alta
 export function generarCodigoPartida() {
