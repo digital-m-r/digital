@@ -48,9 +48,21 @@ function revisarHabilitarSiguiente() {
 
 $("btn-a-camara").addEventListener("click", async () => {
   mostrar("pantalla-camara");
+  $("btn-tomar-foto").disabled = true; // se habilita solo cuando la cámara ya tiene imagen real
   try {
     streamCamara = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
-    $("video-camara").srcObject = streamCamara;
+    const video = $("video-camara");
+    video.srcObject = streamCamara;
+    // Espera a que el video tenga dimensiones reales antes de dejar tomar la foto
+    // (si se toma antes de tiempo, sale una imagen en blanco sin avisar del error).
+    const habilitarCuandoListo = () => {
+      if (video.videoWidth > 0 && video.videoHeight > 0) {
+        $("btn-tomar-foto").disabled = false;
+      } else {
+        requestAnimationFrame(habilitarCuandoListo);
+      }
+    };
+    habilitarCuandoListo();
   } catch (e) {
     $("error-camara").style.display = "block";
   }
@@ -59,7 +71,12 @@ $("btn-a-camara").addEventListener("click", async () => {
 // ---------- Paso 2: selfie ----------
 $("btn-tomar-foto").addEventListener("click", () => {
   const video = $("video-camara");
-  miFotoDataUrl = recortarFotoACuadro(video, 240);
+  const foto = recortarFotoACuadro(video, 240);
+  if (!foto) {
+    // Salvavidas extra por si el botón se alcanzó a presionar antes de tiempo
+    return;
+  }
+  miFotoDataUrl = foto;
   $("preview-foto").src = miFotoDataUrl;
   $("preview-foto").style.display = "block";
   video.style.display = "none";
@@ -93,7 +110,26 @@ $("btn-confirmar-foto").addEventListener("click", async () => {
   mostrar("pantalla-espera");
   escucharMiJugador();
   escucharPartida();
+  activarRefrescoAlVolver();
 });
+
+// En iOS/Safari, cuando el celular se bloquea o el usuario cambia de app,
+// la conexión en tiempo real con Firestore se pausa. Al volver a la pestaña,
+// en vez de esperar a que se reconecte sola (puede tardar unos segundos),
+// forzamos una lectura fresca de inmediato para ponerse al día al instante.
+function activarRefrescoAlVolver() {
+  document.addEventListener("visibilitychange", async () => {
+    if (document.visibilityState !== "visible" || !codigoPartida || !miId) return;
+    try {
+      const [snapPartida, snapJugador] = await Promise.all([
+        getDoc(doc(db, "partidas", codigoPartida)),
+        getDoc(doc(db, "partidas", codigoPartida, "jugadores", miId))
+      ]);
+      if (snapJugador.exists()) miJugadorCache = snapJugador.data();
+      if (snapPartida.exists()) renderSegunEstado(snapPartida.data());
+    } catch (e) { /* si falla, el listener normal se pondrá al día de todas formas */ }
+  });
+}
 
 function escucharMiJugador() {
   onSnapshot(doc(db, "partidas", codigoPartida, "jugadores", miId), (snapJ) => {
