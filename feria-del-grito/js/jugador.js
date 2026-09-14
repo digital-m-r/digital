@@ -121,7 +121,8 @@ function renderSegunEstado(partida) {
 
   mostrar("pantalla-juego");
 
-  if (partida.estado !== ultimoEstadoRenderizado) {
+  const esNuevoEstado = partida.estado !== ultimoEstadoRenderizado;
+  if (esNuevoEstado) {
     yaEnviadoEstaVuelta = false;
     ultimoEstadoRenderizado = partida.estado;
   }
@@ -135,6 +136,7 @@ function renderSegunEstado(partida) {
       $("texto-espera-ronda").textContent = `¡Ya lanzaste! Sacaste el ${j.bolaValor}. Esperando a los demás...`;
     } else {
       $("bloque-skeeball").style.display = "flex";
+      if (esNuevoEstado) reiniciarBola();
       inicializarSkeeball(partida);
     }
     return;
@@ -203,18 +205,29 @@ function inicializarSkeeball(partida) {
   }, { passive: true });
 }
 
-async function ejecutarLanzamiento(velocidad, bola) {
-  // Mapea la velocidad del swipe a un número base 1-9, con algo de imprecisión "de feria"
-  const base = Math.max(1, Math.min(9, Math.round(velocidad * 4.2)));
-  const jitter = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
-  const valorIntentado = Math.max(1, Math.min(9, base + jitter));
+// Restaura la bola a la posición de salida (se llama al empezar cada ronda nueva)
+function reiniciarBola() {
+  const bola = $("bola-lanzable");
+  if (!bola) return;
+  bola.classList.remove("cayendo");
+  bola.style.transition = "none";
+  bola.style.left = "50%";
+  bola.style.top = "92%";
+  bola.style.opacity = "1";
+}
 
-  // 12% de probabilidad de que la bola no atine a ningún hoyo (rebote real de feria)
-  const noAtina = Math.random() < 0.12;
+async function ejecutarLanzamiento(velocidad, bola) {
+  // Mapea la velocidad del swipe a un número base 1-5, con algo de imprecisión "de feria"
+  const base = Math.max(1, Math.min(5, Math.round(velocidad * 2.3)));
+  const jitter = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
+  const valorIntentado = Math.max(1, Math.min(5, base + jitter));
+
+  // 15% de probabilidad de que la bola no atine a ningún hoyo (rebote real de feria)
+  const noAtina = Math.random() < 0.15;
 
   if (noAtina) {
-    await animarViajeYRebote(bola, valorIntentado);
-    $("texto-swipe").textContent = "¡Uy, no atinaste! La bola regresó, intenta de nuevo 🎯";
+    await animarRebote(bola, valorIntentado);
+    $("texto-swipe").textContent = "¡Uy, no atinaste! La bola rebotó y regresó, intenta de nuevo 🎯";
     return;
   }
 
@@ -231,12 +244,11 @@ async function ejecutarLanzamiento(velocidad, bola) {
     });
 
     if (!exito) {
-      await animarViajeYRebote(bola, valorIntentado);
+      await animarRebote(bola, valorIntentado);
       $("texto-swipe").textContent = `¡El hoyo ${valorIntentado} ya estaba ocupado! La bola rebotó, intenta de nuevo 🎯`;
       return;
     }
 
-    // Anima la bola cayendo de verdad en el hoyo antes de confirmar
     await animarCaidaEnHoyo(bola, valorIntentado);
 
     await updateDoc(doc(db, "partidas", codigoPartida, "jugadores", miId), {
@@ -247,49 +259,46 @@ async function ejecutarLanzamiento(velocidad, bola) {
   }
 }
 
-// Mueve la bola desde la posición de lanzamiento hasta las coordenadas reales
-// del hoyo (detectadas sobre la imagen del tablero) y la "mete" achicándola.
-function animarCaidaEnHoyo(bola, numero) {
+// Mueve la bola con una pequeña animación de tween (JS puro, sin motor de
+// físicas) de un punto (%,%) a otro dentro del tablero.
+function moverBolaA(bola, xPct, yPct, duracionMs) {
   return new Promise((resolve) => {
-    const hoyo = HOYOS_SKEEBALL[numero];
-    const wrap = $("tablero-wrap");
-    const rect = wrap.getBoundingClientRect();
-    const destinoX = (hoyo.xPct / 100) * rect.width;
-    const destinoY = (hoyo.yPct / 100) * rect.height;
-    const origenX = rect.width / 2;
-    const origenY = rect.height * 0.96;
-
-    bola.style.transition = "transform 0.5s cubic-bezier(.2,.8,.3,1), opacity 0.15s ease-in 0.4s";
-    bola.style.transform = `translate(${destinoX - origenX}px, ${destinoY - origenY}px) scale(0.35)`;
-    bola.style.opacity = "0";
-
-    setTimeout(() => {
-      bola.style.transition = "none";
-      bola.style.transform = "translate(-50%, 0) scale(1)";
-      bola.style.opacity = "1";
-      resolve();
-    }, 620);
+    const inicioX = parseFloat(bola.style.left) || 50;
+    const inicioY = parseFloat(bola.style.top) || 92;
+    bola.style.transition = "none";
+    const t0 = performance.now();
+    function cuadro(t) {
+      const p = Math.min(1, (t - t0) / duracionMs);
+      const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; // easeInOutQuad
+      bola.style.left = `${inicioX + (xPct - inicioX) * ease}%`;
+      bola.style.top = `${inicioY + (yPct - inicioY) * ease}%`;
+      if (p < 1) requestAnimationFrame(cuadro);
+      else resolve();
+    }
+    requestAnimationFrame(cuadro);
   });
 }
 
-// Sube hacia el número intentado pero no logra caer: rebota y vuelve a la salida.
-function animarViajeYRebote(bola, numeroIntentado) {
-  return new Promise((resolve) => {
-    const hoyo = HOYOS_SKEEBALL[numeroIntentado];
-    const wrap = $("tablero-wrap");
-    const rect = wrap.getBoundingClientRect();
-    const destinoX = (hoyo.xPct / 100) * rect.width - rect.width / 2;
-    const destinoY = (hoyo.yPct / 100) * rect.height - rect.height * 0.96;
+// La bola viaja al hoyo correcto y "cae" adentro (se achica y se desvanece
+// un instante, como si entrara al hoyo), luego se restaura para el próximo lanzamiento.
+async function animarCaidaEnHoyo(bola, numero) {
+  const hoyo = HOYOS_SKEEBALL[numero];
+  await moverBolaA(bola, hoyo.xPct, hoyo.yPct - 3, 380);
+  await moverBolaA(bola, hoyo.xPct, hoyo.yPct, 130);
+  bola.classList.add("cayendo");
+  await new Promise((r) => setTimeout(r, 260));
+  reiniciarBola();
+}
 
-    bola.style.setProperty("--bx", `${destinoX}px`);
-    bola.style.setProperty("--by", `${destinoY}px`);
-    bola.classList.add("rebotando");
-
-    setTimeout(() => {
-      bola.classList.remove("rebotando");
-      resolve();
-    }, 900);
-  });
+// La bola sube hacia el hoyo pero no logra entrar: rebota contra el borde
+// hacia un lado, pierde impulso y regresa rodando a la salida.
+async function animarRebote(bola, numeroIntentado) {
+  const hoyo = HOYOS_SKEEBALL[numeroIntentado];
+  const ladoAleatorio = Math.random() < 0.5 ? -1 : 1;
+  await moverBolaA(bola, hoyo.xPct, hoyo.yPct - 2, 340);
+  await moverBolaA(bola, hoyo.xPct + ladoAleatorio * 16, hoyo.yPct - 10, 180);
+  await moverBolaA(bola, 50 + ladoAleatorio * 8, 58, 220);
+  await moverBolaA(bola, 50, 92, 260);
 }
 
 // ---------- Preguntas: colores tipo Kahoot (todos responden a su ritmo) ----------
