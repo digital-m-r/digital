@@ -1,6 +1,5 @@
 import {
-  db, doc, getDoc, setDoc, updateDoc, onSnapshot,
-  collection, runTransaction, deleteField
+  db, doc, setDoc, updateDoc, onSnapshot, collection
 } from "./firebase-config.js";
 import {
   META_CASILLAS, COLORES, AVATARES,
@@ -41,7 +40,6 @@ $("btn-crear-partida").addEventListener("click", async () => {
     rondaActual: 0,
     ordenPreguntas,
     preguntaIndexActual: -1,
-    hoyosOcupados: {},
     preguntaActual: null,
     ganadorId: null,
     creadaEn: Date.now()
@@ -109,7 +107,6 @@ async function iniciarNuevaRonda() {
   }
   await updateDoc(doc(db, "partidas", codigoPartida), {
     estado: "lanzando",
-    hoyosOcupados: {},
     preguntaActual: null,
     rondaActual: (partidaCache?.rondaActual || 0) + 1
   });
