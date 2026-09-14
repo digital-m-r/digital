@@ -1,6 +1,6 @@
 // Configuración general del juego, compartida entre jugador.js y host.js
 
-export const META_CASILLAS = 24;      // casillas totales de la pista (bajó de 40: ahora el máximo tiro vale 5, no 9)
+export const META_CASILLAS = 60;      // con 11 jugadores reales esto da partidas de ~24-33 rondas (ver cálculo)
 
 export const COLORES = ["rojo", "azul", "amarillo", "verde"];
 export const FORMAS = { rojo: "▲", azul: "◆", amarillo: "●", verde: "■" };
@@ -10,16 +10,9 @@ export const AVATARES = {
   china:   { nombre: "China Poblana",  img: "images/caballo-china.png",  cara: { xPct: 55.06, yPct: 22.52, rPct: 6.5 } }
 };
 
-// Coordenadas (% del campo) y valor de cada uno de los 5 blancos del
-// Tiro al Blanco, en fila horizontal, de izquierda a derecha (1 a 5).
-export const BLANCOS_TIRO = {
-  1: { xPct: 12 },
-  2: { xPct: 31 },
-  3: { xPct: 50 },
-  4: { xPct: 69 },
-  5: { xPct: 88 }
-};
-export const BLANCOS_Y_PCT = 34; // altura fija de la fila de blancos dentro del campo
+// Límites (en % del campo) dentro de los cuales rebotan los 5 blancos del
+// Tiro al Blanco — ahora se mueven solos por todo el campo, no están fijos.
+export const LIMITES_CAMPO_TIRO = { xMin: 11, xMax: 89, yMin: 13, yMax: 60 };
 
 // Genera un código corto de partida, fácil de leer/decir en voz alta
 export function generarCodigoPartida() {
