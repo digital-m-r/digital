@@ -2,7 +2,7 @@ import {
   db, doc, getDoc, setDoc, updateDoc, onSnapshot,
   collection, addDoc, runTransaction
 } from "./firebase-config.js";
-import { AVATARES, recortarFotoACuadro } from "./juego-common.js";
+import { AVATARES, HOYOS_SKEEBALL, recortarFotoACuadro } from "./juego-common.js";
 // nota: runTransaction se sigue usando en el lanzamiento del skee-ball
 // para reservar el hoyo de forma atómica (ver intentarLanzamiento)
 
@@ -181,6 +181,7 @@ function inicializarSkeeball(partida) {
   let procesando = false;
 
   wrap.addEventListener("touchstart", (e) => {
+    if (procesando) return;
     y0 = e.touches[0].clientY;
     t0 = Date.now();
   }, { passive: true });
@@ -189,37 +190,30 @@ function inicializarSkeeball(partida) {
     if (y0 == null || procesando) return;
     const y1 = e.changedTouches[0].clientY;
     const t1 = Date.now();
-    const dy = y0 - y1;               // positivo = deslizó hacia arriba
+    const dy = y0 - y1;
     const dt = Math.max(t1 - t0, 40);
-    const velocidad = dy / dt;         // px/ms
+    const velocidad = dy / dt;
 
     y0 = null;
-    if (velocidad < 0.15) return;      // swipe muy débil, no lanza
+    if (velocidad < 0.15) return; // swipe muy débil, no lanza
 
     procesando = true;
-    bola.style.transition = "transform 0.35s ease-out, opacity 0.35s ease-out";
-    bola.style.transform = `translate(-50%, -${Math.min(velocidad, 2.2) * 140}px)`;
-    bola.style.opacity = "0";
-
-    await intentarLanzamiento(velocidad);
-
-    setTimeout(() => {
-      bola.style.transition = "none";
-      bola.style.transform = "translateX(-50%)";
-      bola.style.opacity = "1";
-      procesando = false;
-    }, 500);
+    await ejecutarLanzamiento(velocidad, bola);
+    procesando = false;
   }, { passive: true });
 }
 
-async function intentarLanzamiento(velocidad) {
+async function ejecutarLanzamiento(velocidad, bola) {
   // Mapea la velocidad del swipe a un número base 1-9, con algo de imprecisión "de feria"
   const base = Math.max(1, Math.min(9, Math.round(velocidad * 4.2)));
   const jitter = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
-  let valor = Math.max(1, Math.min(9, base + jitter));
+  const valorIntentado = Math.max(1, Math.min(9, base + jitter));
 
   // 12% de probabilidad de que la bola no atine a ningún hoyo (rebote real de feria)
-  if (Math.random() < 0.12) {
+  const noAtina = Math.random() < 0.12;
+
+  if (noAtina) {
+    await animarViajeYRebote(bola, valorIntentado);
     $("texto-swipe").textContent = "¡Uy, no atinaste! La bola regresó, intenta de nuevo 🎯";
     return;
   }
@@ -230,23 +224,72 @@ async function intentarLanzamiento(velocidad) {
       const snap = await tx.get(ref);
       const partida = snap.data();
       const hoyos = partida.hoyosOcupados || {};
-      if (hoyos[valor]) return false; // hoyo ocupado por otro jugador
-      hoyos[valor] = miId;
+      if (hoyos[valorIntentado]) return false; // hoyo ocupado por otro jugador
+      hoyos[valorIntentado] = miId;
       tx.update(ref, { hoyosOcupados: hoyos });
       return true;
     });
 
     if (!exito) {
-      $("texto-swipe").textContent = `¡El hoyo ${valor} ya estaba ocupado! La bola rebotó, intenta de nuevo 🎯`;
+      await animarViajeYRebote(bola, valorIntentado);
+      $("texto-swipe").textContent = `¡El hoyo ${valorIntentado} ya estaba ocupado! La bola rebotó, intenta de nuevo 🎯`;
       return;
     }
 
+    // Anima la bola cayendo de verdad en el hoyo antes de confirmar
+    await animarCaidaEnHoyo(bola, valorIntentado);
+
     await updateDoc(doc(db, "partidas", codigoPartida, "jugadores", miId), {
-      bolaValor: valor, listo: true
+      bolaValor: valorIntentado, listo: true
     });
   } catch (e) {
     $("texto-swipe").textContent = "Algo falló, intenta lanzar de nuevo.";
   }
+}
+
+// Mueve la bola desde la posición de lanzamiento hasta las coordenadas reales
+// del hoyo (detectadas sobre la imagen del tablero) y la "mete" achicándola.
+function animarCaidaEnHoyo(bola, numero) {
+  return new Promise((resolve) => {
+    const hoyo = HOYOS_SKEEBALL[numero];
+    const wrap = $("tablero-wrap");
+    const rect = wrap.getBoundingClientRect();
+    const destinoX = (hoyo.xPct / 100) * rect.width;
+    const destinoY = (hoyo.yPct / 100) * rect.height;
+    const origenX = rect.width / 2;
+    const origenY = rect.height * 0.96;
+
+    bola.style.transition = "transform 0.5s cubic-bezier(.2,.8,.3,1), opacity 0.15s ease-in 0.4s";
+    bola.style.transform = `translate(${destinoX - origenX}px, ${destinoY - origenY}px) scale(0.35)`;
+    bola.style.opacity = "0";
+
+    setTimeout(() => {
+      bola.style.transition = "none";
+      bola.style.transform = "translate(-50%, 0) scale(1)";
+      bola.style.opacity = "1";
+      resolve();
+    }, 620);
+  });
+}
+
+// Sube hacia el número intentado pero no logra caer: rebota y vuelve a la salida.
+function animarViajeYRebote(bola, numeroIntentado) {
+  return new Promise((resolve) => {
+    const hoyo = HOYOS_SKEEBALL[numeroIntentado];
+    const wrap = $("tablero-wrap");
+    const rect = wrap.getBoundingClientRect();
+    const destinoX = (hoyo.xPct / 100) * rect.width - rect.width / 2;
+    const destinoY = (hoyo.yPct / 100) * rect.height - rect.height * 0.96;
+
+    bola.style.setProperty("--bx", `${destinoX}px`);
+    bola.style.setProperty("--by", `${destinoY}px`);
+    bola.classList.add("rebotando");
+
+    setTimeout(() => {
+      bola.classList.remove("rebotando");
+      resolve();
+    }, 900);
+  });
 }
 
 // ---------- Preguntas: colores tipo Kahoot (todos responden a su ritmo) ----------
