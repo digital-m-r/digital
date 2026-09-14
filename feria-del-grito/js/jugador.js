@@ -152,7 +152,11 @@ function activarRefrescoAlVolver() {
 function escucharMiJugador() {
   onSnapshot(doc(db, "partidas", codigoPartida, "jugadores", miId), (snapJ) => {
     miJugadorCache = snapJ.data();
-    if (ultimaPartidaCache && ultimaPartidaCache.estado === "lanzando") {
+    // Vuelve a dibujar la pantalla cada vez que cambia algo de MI propio
+    // jugador (ya lancé, ya respondí, etc.), sin importar en qué fase esté
+    // la partida — así el jugador siempre ve de inmediato el efecto de lo
+    // que acaba de tocar, en vez de quedarse viendo botones que ya no hacen nada.
+    if (ultimaPartidaCache) {
       renderSegunEstado(ultimaPartidaCache);
     }
   });
