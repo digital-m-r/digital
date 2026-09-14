@@ -199,6 +199,8 @@ function renderPista() {
   const ids = Object.keys(jugadoresCache);
   cont.innerHTML = "";
   const alturaCarril = 100 / Math.max(ids.length, 1);
+  // El caballo se hace más chico entre más jugadores haya, para que quepan sin encimarse
+  const anchoCarril = Math.max(4.5, Math.min(9.5, 62 / Math.max(ids.length, 1)));
 
   ids.forEach((id, i) => {
     const j = jugadoresCache[id];
@@ -211,6 +213,7 @@ function renderPista() {
     carril.dataset.id = id;
     carril.style.top = `${i * alturaCarril}%`;
     carril.style.left = `${leftPct}%`;
+    carril.style.width = `${anchoCarril}%`;
 
     const caraSize = 100 * (avatar.cara.rPct * 2 / 100);
     carril.innerHTML = `
