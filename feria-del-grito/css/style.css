@@ -90,6 +90,16 @@ button {
   pointer-events: none;
 }
 
+/* Fondo patriótico para la pantalla del juego (tiro al blanco / preguntas).
+   Si aún no subiste images/fondo-patriotico.jpg, se queda con el degradado
+   de respaldo — no truena nada mientras tanto. */
+#pantalla-juego {
+  background:
+    linear-gradient(rgba(10,30,28,.55), rgba(10,30,28,.7)),
+    url('images/fondo-patriotico.jpg') center / cover no-repeat,
+    linear-gradient(180deg, var(--cielo-teal) 0%, #164a48 100%);
+}
+
 .tarjeta {
   width: 100%;
   max-width: 460px;
@@ -215,7 +225,7 @@ input[type="text"] {
 .campo-tiro {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 560px;
   aspect-ratio: 4 / 3;
   touch-action: none;
   user-select: none;
@@ -283,6 +293,13 @@ input[type="text"] {
   75% { transform: translate(-50%, -50%) rotate(10deg); }
 }
 .blanco.rechazado { animation: blanco-rechazo .3s ease; }
+
+@keyframes numero-cambia-pulso {
+  0%   { transform: translate(-50%, -50%) scale(1); }
+  50%  { transform: translate(-50%, -50%) scale(1.18); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+.blanco.numero-cambia { animation: numero-cambia-pulso .22s ease; }
 
 .rifle-icono {
   position: absolute;
