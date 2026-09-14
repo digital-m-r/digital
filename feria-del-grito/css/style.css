@@ -245,6 +245,7 @@ input[type="text"] {
 .host-fondo {
   min-height: 100dvh;
   width: 100%;
+  background-image: url('../images/fondo-pista.jpg');
   background-size: cover;
   background-position: center bottom;
   position: relative;
