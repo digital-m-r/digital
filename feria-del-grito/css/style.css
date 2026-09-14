@@ -174,29 +174,89 @@ input[type="text"] {
 }
 .marco-camara img.foto-preview { transform: scaleX(-1); }
 
-/* Skee-ball */
-.tablero-wrap {
+/* Skee-ball — dibujado 100% con CSS, sin imagen de fondo */
+.tablero-skeeball {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
+  aspect-ratio: 3 / 4;
   touch-action: none;
   user-select: none;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #f3e3c3 0%, #e6d0a4 55%, #d8bd8c 100%);
+  box-shadow:
+    inset 0 0 0 10px #fff8ec,
+    0 10px 26px rgba(0,0,0,.4);
+  border: 10px solid transparent;
+  background-clip: padding-box;
+  overflow: visible;
 }
-.tablero-img {
-  width: 100%;
-  display: block;
-  pointer-events: none;
-}
-.bola-lanzable {
+.tablero-skeeball::before {
+  content: '';
   position: absolute;
-  width: 15%;
-  left: 50%;
-  bottom: 4%;
-  transform: translate(-50%, 0);
-  pointer-events: none;
-  filter: drop-shadow(0 6px 6px rgba(0,0,0,.35));
-  transition: none;
+  inset: -10px;
+  border-radius: 26px;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--atardecer) 0 16px,
+    var(--cielo-teal) 16px 32px,
+    var(--papel-rosa) 32px 48px,
+    var(--marigold) 48px 64px
+  );
 }
+.tablero-skeeball::after {
+  /* la "canaleta" de salida, puramente decorativa */
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 3%;
+  width: 34%;
+  height: 8%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.18), transparent 70%);
+}
+
+.hoyo {
+  position: absolute;
+  width: 22%;
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #3f2c1d, #140c07 72%);
+  box-shadow: inset 0 6px 10px rgba(0,0,0,.75), 0 2px 0 rgba(255,255,255,.18);
+  border: 3px solid #f4e3c1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff6a3d;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 800;
+  font-size: clamp(15px, 5.5vw, 24px);
+  text-shadow: 0 0 6px rgba(255,90,50,.6);
+  pointer-events: none;
+}
+
+.bola-fisica {
+  position: absolute;
+  width: 11%;
+  aspect-ratio: 1 / 1;
+  left: 50%;
+  top: 92%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #e2a86a, #7a4a24 78%);
+  box-shadow: 0 4px 7px rgba(0,0,0,.45), inset -3px -3px 5px rgba(0,0,0,.25);
+  pointer-events: none;
+  z-index: 5;
+}
+.bola-fisica.cayendo {
+  transition: transform .22s ease-in, opacity .22s ease-in .08s;
+  transform: translate(-50%, -50%) scale(0.25);
+  opacity: 0;
+}
+
 .instruccion-swipe {
   color: white;
   font-family: 'Baloo 2', cursive;
@@ -204,16 +264,6 @@ input[type="text"] {
   text-align: center;
   margin-top: 14px;
 }
-
-/* Rebote de la bola cuando no atina o el hoyo está ocupado */
-@keyframes rebote-bola {
-  0%   { transform: translate(-50%, 0) scale(1); }
-  35%  { transform: translate(var(--bx, 0), var(--by, -60%)) scale(0.92); }
-  55%  { transform: translate(calc(var(--bx, 0) * 0.6), calc(var(--by, -60%) * 0.35)) scale(0.97); }
-  75%  { transform: translate(calc(var(--bx, 0) * 0.3), calc(var(--by, -60%) * 0.6)) scale(0.95); }
-  100% { transform: translate(-50%, 0) scale(1); }
-}
-.bola-lanzable.rebotando { animation: rebote-bola 0.85s ease-in-out; }
 
 /* Kahoot-style colores */
 .grid-colores {
@@ -280,6 +330,18 @@ input[type="text"] {
   font-weight: 800;
   letter-spacing: 4px;
 }
+.btn-silenciar {
+  background: rgba(255,255,255,0.92);
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 rgba(0,0,0,.2);
+}
+.btn-silenciar:active { transform: translateY(3px); box-shadow: none; }
 .host-titulo {
   color: white;
   font-size: 2rem;
@@ -398,6 +460,16 @@ input[type="text"] {
   justify-content: center;
   gap: 26px;
   padding: 40px;
+}
+.host-respuesta-correcta {
+  color: var(--marigold);
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.4rem;
+  text-align: center;
+  background: rgba(0,0,0,.3);
+  padding: 10px 24px;
+  border-radius: 14px;
+  margin-top: -14px;
 }
 .grid-revelacion {
   display: grid;
