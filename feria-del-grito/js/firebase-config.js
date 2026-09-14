@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot,
-  collection, addDoc, runTransaction, serverTimestamp, deleteField
+  collection, addDoc, runTransaction, serverTimestamp, deleteField, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -18,5 +18,5 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export {
   doc, getDoc, setDoc, updateDoc, onSnapshot,
-  collection, addDoc, runTransaction, serverTimestamp, deleteField
+  collection, addDoc, runTransaction, serverTimestamp, deleteField, writeBatch
 };
