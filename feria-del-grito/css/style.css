@@ -53,6 +53,43 @@ button {
   background: linear-gradient(180deg, var(--cielo-teal) 0%, #164a48 100%);
 }
 
+/* Fondo decorativo mexicano para las pantallas de host antes de la carrera
+   (crear partida / lobby). Solo son capas de color detrás de la tarjeta,
+   así que nunca estorban con los botones ni el texto. */
+#pantalla-crear, #pantalla-lobby {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(242,183,5,0.22) 0%, transparent 16%),
+    radial-gradient(circle at 88% 14%, rgba(214,51,122,0.20) 0%, transparent 18%),
+    radial-gradient(circle at 18% 86%, rgba(14,122,62,0.20) 0%, transparent 20%),
+    radial-gradient(circle at 84% 82%, rgba(232,103,43,0.20) 0%, transparent 18%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0 22px, transparent 22px 44px),
+    linear-gradient(180deg, var(--cielo-teal) 0%, #164a48 100%);
+}
+#pantalla-crear::before, #pantalla-lobby::before {
+  /* banderines de papel picado colgando arriba, dibujados con CSS */
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 46px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--marigold) 0 34px,
+    var(--papel-rosa) 34px 68px,
+    var(--atardecer) 68px 102px,
+    var(--verde-bandera) 102px 136px
+  );
+  clip-path: polygon(
+    0% 0%, 100% 0%, 100% 55%,
+    93% 100%, 86% 55%, 79% 100%, 72% 55%, 65% 100%, 58% 55%, 51% 100%,
+    44% 55%, 37% 100%, 30% 55%, 23% 100%, 16% 55%, 9% 100%, 2% 55%, 0% 100%
+  );
+  opacity: 0.85;
+  pointer-events: none;
+}
+
 .tarjeta {
   width: 100%;
   max-width: 460px;
@@ -174,24 +211,24 @@ input[type="text"] {
 }
 .marco-camara img.foto-preview { transform: scaleX(-1); }
 
-/* Skee-ball — dibujado 100% con CSS, sin imagen de fondo */
-.tablero-skeeball {
+/* Tiro al Blanco — dibujado 100% con CSS, sin imagen de fondo */
+.campo-tiro {
   position: relative;
   width: 100%;
-  max-width: 380px;
-  aspect-ratio: 3 / 4;
+  max-width: 420px;
+  aspect-ratio: 4 / 3;
   touch-action: none;
   user-select: none;
   border-radius: 20px;
-  background: linear-gradient(180deg, #f3e3c3 0%, #e6d0a4 55%, #d8bd8c 100%);
+  background: linear-gradient(180deg, #f7c7a3 0%, #e8a56e 55%, #d88c4c 100%);
   box-shadow:
     inset 0 0 0 10px #fff8ec,
     0 10px 26px rgba(0,0,0,.4);
   border: 10px solid transparent;
   background-clip: padding-box;
-  overflow: visible;
+  overflow: hidden;
 }
-.tablero-skeeball::before {
+.campo-tiro::before {
   content: '';
   position: absolute;
   inset: -10px;
@@ -205,57 +242,90 @@ input[type="text"] {
     var(--marigold) 48px 64px
   );
 }
-.tablero-skeeball::after {
-  /* la "canaleta" de salida, puramente decorativa */
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 3%;
-  width: 34%;
-  height: 8%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,.18), transparent 70%);
-}
 
-.hoyo {
+.blanco {
   position: absolute;
-  width: 22%;
+  width: 15%;
   aspect-ratio: 1 / 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #3f2c1d, #140c07 72%);
-  box-shadow: inset 0 6px 10px rgba(0,0,0,.75), 0 2px 0 rgba(255,255,255,.18);
-  border: 3px solid #f4e3c1;
+  background:
+    radial-gradient(circle, #fff 0 16%, transparent 16.5%),
+    radial-gradient(circle, var(--rojo-bandera) 0 34%, transparent 34.5%),
+    radial-gradient(circle, #fff 0 52%, transparent 52.5%),
+    radial-gradient(circle, var(--rojo-bandera) 0 70%, transparent 70.5%),
+    radial-gradient(circle, #fff8ec 0 100%);
+  box-shadow: 0 4px 8px rgba(0,0,0,.35), inset 0 0 0 3px #fff8ec;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ff6a3d;
+  color: var(--tinta);
   font-family: 'Baloo 2', cursive;
   font-weight: 800;
-  font-size: clamp(15px, 5.5vw, 24px);
-  text-shadow: 0 0 6px rgba(255,90,50,.6);
+  font-size: clamp(14px, 5vw, 20px);
   pointer-events: none;
+  transition: transform .15s ease;
 }
+@keyframes blanco-impacto {
+  0%   { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  30%  { transform: translate(-50%, -50%) scale(1.25) rotate(-8deg); }
+  60%  { transform: translate(-50%, -50%) scale(0.9) rotate(6deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+}
+.blanco.impactado { animation: blanco-impacto .5s ease; }
+@keyframes blanco-rechazo {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) rotate(-10deg); }
+  75% { transform: translate(-50%, -50%) rotate(10deg); }
+}
+.blanco.rechazado { animation: blanco-rechazo .3s ease; }
 
-.bola-fisica {
+.mira {
   position: absolute;
-  width: 11%;
+  top: 34%;
+  width: 12%;
   aspect-ratio: 1 / 1;
-  left: 50%;
-  top: 92%;
   transform: translate(-50%, -50%);
+  border: 3px solid #ff3b30;
   border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, #e2a86a, #7a4a24 78%);
-  box-shadow: 0 4px 7px rgba(0,0,0,.45), inset -3px -3px 5px rgba(0,0,0,.25);
+  pointer-events: none;
+  z-index: 4;
+  box-shadow: 0 0 10px rgba(255,59,48,.6);
+}
+.mira::before, .mira::after {
+  content: '';
+  position: absolute;
+  background: #ff3b30;
+}
+.mira::before { left: 50%; top: -30%; width: 2px; height: 22%; transform: translateX(-50%); }
+.mira::after { left: -30%; top: 50%; width: 22%; height: 2px; transform: translateY(-50%); }
+
+.rifle-icono {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(1.8rem, 8vw, 2.6rem);
+  filter: drop-shadow(0 4px 4px rgba(0,0,0,.4));
+  transition: transform .12s ease;
+}
+.rifle-icono.retroceso { transform: translateX(-50%) translateY(6px) rotate(-8deg); }
+
+.bala {
+  position: absolute;
+  width: 3.2%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, #b5811a 75%);
+  box-shadow: 0 0 6px rgba(255,200,60,.8);
+  left: 50%;
+  top: 88%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
   pointer-events: none;
   z-index: 5;
 }
-.bola-fisica.cayendo {
-  transition: transform .22s ease-in, opacity .22s ease-in .08s;
-  transform: translate(-50%, -50%) scale(0.25);
-  opacity: 0;
-}
+.bala.volando { opacity: 1; }
 
 .instruccion-swipe {
   color: white;
