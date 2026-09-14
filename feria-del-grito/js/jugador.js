@@ -1,10 +1,8 @@
 import {
   db, doc, getDoc, setDoc, updateDoc, onSnapshot,
-  collection, addDoc, runTransaction
+  collection, addDoc
 } from "./firebase-config.js";
-import { AVATARES, BLANCOS_TIRO, BLANCOS_Y_PCT, recortarFotoACuadro } from "./juego-common.js";
-// nota: runTransaction se sigue usando al disparar, para reservar el
-// blanco de forma atómica (ver ejecutarDisparo)
+import { AVATARES, LIMITES_CAMPO_TIRO, recortarFotoACuadro } from "./juego-common.js";
 
 const $ = (id) => document.getElementById(id);
 const mostrar = (id) => { document.querySelectorAll(".pantalla").forEach(s => s.style.display = "none"); $(id).style.display = "flex"; };
@@ -171,46 +169,30 @@ function ocultarTodosLosBloques() {
     .forEach(id => { $(id).style.display = "none"; });
 }
 
-// ---------- Tiro al Blanco: mira que se mueve sola + botón de disparo ----------
+// ---------- Tiro al Blanco: 5 blancos que flotan y rebotan solos ----------
 let tiroListo = false;
-let miraAnimacionId = null;
-let miraXActual = 50;
+let animacionBlancosId = null;
+let estadosBlancos = {}; // numero -> {x, y, vx, vy, resuelto}
+let ultimoTiempoFrame = null;
 
 function inicializarSkeeball(partida) {
   if (tiroListo) return; // solo engancha los listeners una vez
   tiroListo = true;
 
-  const btn = $("btn-disparar");
-  let disparando = false;
-
-  btn.addEventListener("click", async () => {
-    if (disparando) return;
-    disparando = true;
-    btn.disabled = true;
-    await ejecutarDisparo();
-    btn.disabled = false;
-    disparando = false;
+  document.querySelectorAll(".blanco").forEach((el) => {
+    const numero = parseInt(el.dataset.numero);
+    el.addEventListener("click", () => manejarToqueBlanco(numero));
   });
 }
 
-// La mira oscila de un lado a otro sola, sin parar, sobre la fila de blancos.
-function moverMiraContinuo() {
-  if (miraAnimacionId) cancelAnimationFrame(miraAnimacionId);
-  const mira = $("mira");
-  if (!mira) return;
-  const t0 = performance.now();
-  function cuadro(t) {
-    const seg = (t - t0) / 1000;
-    // va y viene entre 8% y 92% del campo, con velocidad ligeramente variable
-    miraXActual = 50 + 42 * Math.sin(seg * 1.7);
-    mira.style.left = `${miraXActual}%`;
-    miraAnimacionId = requestAnimationFrame(cuadro);
-  }
-  miraAnimacionId = requestAnimationFrame(cuadro);
+// Crea una velocidad aleatoria (en %/segundo) dentro de un rango parejo
+function velocidadAleatoria() {
+  const signo = Math.random() < 0.5 ? -1 : 1;
+  return signo * (14 + Math.random() * 12);
 }
 
-// Reinicia bala/blancos visualmente y vuelve a arrancar la mira
-// (se llama al empezar cada ronda nueva)
+// Prepara los 5 blancos en posiciones y velocidades nuevas, y arranca el
+// ciclo de animación que los hace rebotar solos por todo el campo.
 function reiniciarBola() {
   const bala = $("bola-lanzable");
   if (bala) {
@@ -219,66 +201,81 @@ function reiniciarBola() {
     bala.style.left = "50%";
     bala.style.top = "88%";
   }
-  document.querySelectorAll(".blanco").forEach(b => b.classList.remove("impactado", "rechazado"));
-  moverMiraContinuo();
+
+  const { xMin, xMax, yMin, yMax } = LIMITES_CAMPO_TIRO;
+  estadosBlancos = {};
+  for (let n = 1; n <= 5; n++) {
+    estadosBlancos[n] = {
+      x: xMin + Math.random() * (xMax - xMin),
+      y: yMin + Math.random() * (yMax - yMin),
+      vx: velocidadAleatoria(),
+      vy: velocidadAleatoria(),
+      resuelto: false
+    };
+    const el = document.querySelector(`.blanco[data-numero="${n}"]`);
+    if (el) {
+      el.classList.remove("impactado", "rechazado", "resuelto");
+      el.style.left = `${estadosBlancos[n].x}%`;
+      el.style.top = `${estadosBlancos[n].y}%`;
+    }
+  }
+
+  if (animacionBlancosId) cancelAnimationFrame(animacionBlancosId);
+  ultimoTiempoFrame = null;
+  animacionBlancosId = requestAnimationFrame(animarBlancosFlotando);
 }
 
-async function ejecutarDisparo() {
+function animarBlancosFlotando(t) {
+  if (ultimoTiempoFrame == null) ultimoTiempoFrame = t;
+  const dt = Math.min((t - ultimoTiempoFrame) / 1000, 0.05); // segundos, con tope por si hay lag
+  ultimoTiempoFrame = t;
+  const { xMin, xMax, yMin, yMax } = LIMITES_CAMPO_TIRO;
+
+  for (let n = 1; n <= 5; n++) {
+    const s = estadosBlancos[n];
+    if (!s || s.resuelto) continue;
+    s.x += s.vx * dt;
+    s.y += s.vy * dt;
+    if (s.x <= xMin || s.x >= xMax) { s.vx *= -1; s.x = Math.max(xMin, Math.min(xMax, s.x)); }
+    if (s.y <= yMin || s.y >= yMax) { s.vy *= -1; s.y = Math.max(yMin, Math.min(yMax, s.y)); }
+    const el = document.querySelector(`.blanco[data-numero="${n}"]`);
+    if (el) { el.style.left = `${s.x}%`; el.style.top = `${s.y}%`; }
+  }
+  animacionBlancosId = requestAnimationFrame(animarBlancosFlotando);
+}
+
+async function manejarToqueBlanco(numero) {
+  const s = estadosBlancos[numero];
+  if (!s || s.resuelto) return;
+  s.resuelto = true; // se congela mientras se resuelve el disparo, no sigue rebotando
+
   const bala = $("bola-lanzable");
   const rifle = document.querySelector(".rifle-icono");
   rifle?.classList.add("retroceso");
   setTimeout(() => rifle?.classList.remove("retroceso"), 140);
 
-  // ¿A qué número apuntaba la mira en el momento del disparo?
-  let numeroApuntado = 1;
-  let mejorDistancia = Infinity;
-  for (const [num, pos] of Object.entries(BLANCOS_TIRO)) {
-    const d = Math.abs(pos.xPct - miraXActual);
-    if (d < mejorDistancia) { mejorDistancia = d; numeroApuntado = parseInt(num); }
-  }
-
-  // Un poco de imprecisión "de feria": a veces el rifle se desvía al número vecino
-  if (Math.random() < 0.22) {
-    const vecino = numeroApuntado + (Math.random() < 0.5 ? -1 : 1);
-    if (vecino >= 1 && vecino <= 5) numeroApuntado = vecino;
-  }
-
-  // 12% de probabilidad de fallar el tiro por completo (el rifle se movió)
-  const noAtina = Math.random() < 0.12;
-
-  if (noAtina) {
-    await animarBalaAlAire(bala);
+  // 8% de probabilidad de que el disparo salga desviado por completo
+  if (Math.random() < 0.08) {
+    await animarBalaAlAire(bala, s.x);
     $("texto-swipe").textContent = "¡Fallaste el tiro! La bala se fue de largo, intenta de nuevo 🎯";
+    s.resuelto = false; // se puede volver a intentar, sigue flotando
     return;
   }
 
   try {
-    const exito = await runTransaction(db, async (tx) => {
-      const ref = doc(db, "partidas", codigoPartida);
-      const snap = await tx.get(ref);
-      const partida = snap.data();
-      const blancos = partida.hoyosOcupados || {};
-      if (blancos[numeroApuntado]) return false; // blanco ocupado por otro jugador
-      blancos[numeroApuntado] = miId;
-      tx.update(ref, { hoyosOcupados: blancos });
-      return true;
-    });
+    // Cada jugador dispara de forma independiente — no hay "blancos ocupados"
+    // entre jugadores, así que con 11 jugadores y 5 blancos nadie se queda sin
+    // número al que dispararle.
+    await animarImpacto(bala, numero, s.x, s.y);
 
-    if (!exito) {
-      await animarRechazo(bala, numeroApuntado);
-      $("texto-swipe").textContent = `¡El blanco ${numeroApuntado} ya estaba tomado! La bala rebotó, intenta de nuevo 🎯`;
-      return;
-    }
-
-    await animarImpacto(bala, numeroApuntado);
-
-    if (miraAnimacionId) cancelAnimationFrame(miraAnimacionId);
+    if (animacionBlancosId) cancelAnimationFrame(animacionBlancosId);
 
     await updateDoc(doc(db, "partidas", codigoPartida, "jugadores", miId), {
-      bolaValor: numeroApuntado, listo: true
+      bolaValor: numero, listo: true
     });
   } catch (e) {
     $("texto-swipe").textContent = "Algo falló, intenta disparar de nuevo.";
+    s.resuelto = false;
   }
 }
 
@@ -302,35 +299,23 @@ function moverBalaA(bala, xPct, yPct, duracionMs) {
   });
 }
 
-// La bala le da justo al blanco: impacto con tambaleo y luego desaparece.
-async function animarImpacto(bala, numero) {
-  const pos = BLANCOS_TIRO[numero];
-  await moverBalaA(bala, pos.xPct, BLANCOS_Y_PCT, 180);
+// La bala le da justo al blanco (en la posición donde estaba al tocarlo):
+// impacto con tambaleo, y el blanco queda marcado como resuelto.
+async function animarImpacto(bala, numero, x, y) {
+  await moverBalaA(bala, x, y, 160);
   bala.classList.remove("volando");
   const el = document.querySelector(`.blanco[data-numero="${numero}"]`);
   el?.classList.add("impactado");
-  setTimeout(() => el?.classList.remove("impactado"), 500);
-}
-
-// El blanco ya estaba tomado: la bala pega y rebota (rechazo).
-async function animarRechazo(bala, numero) {
-  const pos = BLANCOS_TIRO[numero];
-  await moverBalaA(bala, pos.xPct, BLANCOS_Y_PCT, 180);
-  const el = document.querySelector(`.blanco[data-numero="${numero}"]`);
-  el?.classList.add("rechazado");
-  setTimeout(() => el?.classList.remove("rechazado"), 300);
-  await moverBalaA(bala, 50, 88, 220);
-  bala.classList.remove("volando");
+  setTimeout(() => el?.classList.add("resuelto"), 500);
 }
 
 // Tiro totalmente errado: la bala se va de largo hacia arriba y desaparece.
-async function animarBalaAlAire(bala) {
-  await moverBalaA(bala, 50 + (Math.random() < 0.5 ? -1 : 1) * (20 + Math.random() * 20), -10, 220);
+async function animarBalaAlAire(bala, xAprox) {
+  await moverBalaA(bala, xAprox, -10, 220);
   bala.classList.remove("volando");
   bala.style.left = "50%";
   bala.style.top = "88%";
 }
-
 
 // ---------- Preguntas: colores tipo Kahoot (todos responden a su ritmo) ----------
 function activarColores(contenedorId, partida) {
