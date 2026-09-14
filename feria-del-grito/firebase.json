@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "target": "feria-del-grito-bmm",
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "README.md",
+      ".github/**"
+    ]
+  }
+}

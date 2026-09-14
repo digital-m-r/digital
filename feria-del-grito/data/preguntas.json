@@ -1,0 +1,784 @@
+{
+  "preguntas": [
+    {
+      "id": 1,
+      "categoria": "Independencia",
+      "dificultad": "facil",
+      "pregunta": "¿En qué año inició la Independencia de México?",
+      "opciones": [
+        "1910",
+        "1821",
+        "1776",
+        "1810"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 2,
+      "categoria": "Independencia",
+      "dificultad": "facil",
+      "pregunta": "¿Quién dio el Grito de Dolores?",
+      "opciones": [
+        "Agustín de Iturbide",
+        "Vicente Guerrero",
+        "Miguel Hidalgo",
+        "José María Morelos"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 3,
+      "categoria": "Independencia",
+      "dificultad": "facil",
+      "pregunta": "¿En qué fecha se conmemora el Grito de Independencia?",
+      "opciones": [
+        "16 de septiembre",
+        "20 de noviembre",
+        "5 de mayo",
+        "15 de septiembre"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 4,
+      "categoria": "Independencia",
+      "dificultad": "facil",
+      "pregunta": "¿En qué pueblo se dio el Grito de Dolores?",
+      "opciones": [
+        "Querétaro",
+        "San Miguel de Allende",
+        "Dolores Hidalgo",
+        "Guanajuato"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 5,
+      "categoria": "Cultura",
+      "dificultad": "facil",
+      "pregunta": "¿Cuáles son los colores de la bandera mexicana en orden (de izquierda a derecha)?",
+      "opciones": [
+        "Rojo, blanco, verde",
+        "Blanco, verde, rojo",
+        "Verde, rojo, blanco",
+        "Verde, blanco, rojo"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 6,
+      "categoria": "Cultura",
+      "dificultad": "facil",
+      "pregunta": "¿Qué animal aparece en el escudo nacional devorando una serpiente?",
+      "opciones": [
+        "Halcón",
+        "Cóndor",
+        "Jaguar",
+        "Águila"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 7,
+      "categoria": "Geografia",
+      "dificultad": "facil",
+      "pregunta": "¿Cuál es la capital de México?",
+      "opciones": [
+        "Monterrey",
+        "Guadalajara",
+        "Ciudad de México",
+        "Puebla"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 8,
+      "categoria": "Comida",
+      "dificultad": "facil",
+      "pregunta": "¿Cuál es el ingrediente principal de la cochinita pibil?",
+      "opciones": [
+        "Res",
+        "Pescado",
+        "Cerdo",
+        "Pollo"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 9,
+      "categoria": "Tradiciones",
+      "dificultad": "facil",
+      "pregunta": "¿Qué se celebra el 2 de noviembre en México?",
+      "opciones": [
+        "Día de Muertos",
+        "Día de la Revolución",
+        "Día de la Independencia",
+        "Día de la Constitución"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 10,
+      "categoria": "Tradiciones",
+      "dificultad": "facil",
+      "pregunta": "¿Qué figura religiosa se celebra el 12 de diciembre en México?",
+      "opciones": [
+        "Santo Niño de Atocha",
+        "San Judas Tadeo",
+        "Virgen de Guadalupe",
+        "San Juan Diego"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 11,
+      "categoria": "Tradiciones",
+      "dificultad": "facil",
+      "pregunta": "¿Qué se rompe tradicionalmente en las posadas navideñas, lleno de dulces?",
+      "opciones": [
+        "Olla",
+        "Cántaro",
+        "Calabaza",
+        "Piñata"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 12,
+      "categoria": "Musica",
+      "dificultad": "facil",
+      "pregunta": "¿Quién interpretó 'El Rey' y es considerado ídolo de la música ranchera?",
+      "opciones": [
+        "Antonio Aguilar",
+        "Javier Solís",
+        "Pedro Infante",
+        "Vicente Fernández"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 13,
+      "categoria": "Musica",
+      "dificultad": "facil",
+      "pregunta": "¿De qué estado es originario el mariachi tradicional?",
+      "opciones": [
+        "Durango",
+        "Sinaloa",
+        "Jalisco",
+        "Veracruz"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 14,
+      "categoria": "Geografia",
+      "dificultad": "facil",
+      "pregunta": "¿Qué península alberga a Cancún y las ruinas mayas de Chichén Itzá?",
+      "opciones": [
+        "Península de Coahuila",
+        "Península de Guerrero",
+        "Península de Baja California",
+        "Península de Yucatán"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 15,
+      "categoria": "Historia general",
+      "dificultad": "facil",
+      "pregunta": "¿Qué presidente mexicano nacionalizó el petróleo en 1938?",
+      "opciones": [
+        "Lázaro Cárdenas",
+        "Benito Juárez",
+        "Adolfo Ruiz Cortines",
+        "Plutarco Elías Calles"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 16,
+      "categoria": "Independencia",
+      "dificultad": "facil",
+      "pregunta": "¿Con qué otro nombre se conoce a Miguel Hidalgo?",
+      "opciones": [
+        "Águila Azteca",
+        "Padre de la Patria",
+        "Benemérito de las Américas",
+        "Siervo de la Nación"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 17,
+      "categoria": "Comida",
+      "dificultad": "facil",
+      "pregunta": "¿De qué estado es típico el pozole?",
+      "opciones": [
+        "Yucatán",
+        "Sonora",
+        "Chihuahua",
+        "Jalisco/Guerrero"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 18,
+      "categoria": "Comida",
+      "dificultad": "facil",
+      "pregunta": "¿Qué bebida caliente de maíz se toma tradicionalmente en las posadas?",
+      "opciones": [
+        "Pulque",
+        "Charanda",
+        "Atole",
+        "Tejate"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 19,
+      "categoria": "Tradiciones",
+      "dificultad": "facil",
+      "pregunta": "¿Qué se conmemora el 20 de noviembre en México?",
+      "opciones": [
+        "Promulgación de la Constitución",
+        "Batalla de Puebla",
+        "Fin de la Independencia",
+        "Inicio de la Revolución Mexicana"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 20,
+      "categoria": "Geografia",
+      "dificultad": "facil",
+      "pregunta": "¿Cuántos estados tiene México (incluyendo Ciudad de México)?",
+      "opciones": [
+        "32",
+        "31",
+        "30",
+        "33"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 21,
+      "categoria": "Independencia",
+      "dificultad": "medio",
+      "pregunta": "¿En qué año se consumó (terminó) la Independencia de México?",
+      "opciones": [
+        "1821",
+        "1815",
+        "1824",
+        "1810"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 22,
+      "categoria": "Independencia",
+      "dificultad": "medio",
+      "pregunta": "¿Quién es conocida como 'La Corregidora'?",
+      "opciones": [
+        "Josefa Ortiz de Domínguez",
+        "Rita Pérez de Moreno",
+        "Gertrudis Bocanegra",
+        "Leona Vicario"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 23,
+      "categoria": "Independencia",
+      "dificultad": "medio",
+      "pregunta": "¿Cuál de estos personajes fue conocido como 'El Siervo de la Nación'?",
+      "opciones": [
+        "Miguel Hidalgo",
+        "Guadalupe Victoria",
+        "Ignacio Allende",
+        "José María Morelos"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 24,
+      "categoria": "Independencia",
+      "dificultad": "medio",
+      "pregunta": "¿Quién fue el primer presidente de México?",
+      "opciones": [
+        "Antonio López de Santa Anna",
+        "Agustín de Iturbide",
+        "Guadalupe Victoria",
+        "Benito Juárez"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 25,
+      "categoria": "Independencia",
+      "dificultad": "medio",
+      "pregunta": "¿Qué documento consumó la Independencia en 1821?",
+      "opciones": [
+        "Constitución de Apatzingán",
+        "Plan de Iguala",
+        "Acta de Independencia",
+        "Plan de Ayutla"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 26,
+      "categoria": "Independencia",
+      "dificultad": "medio",
+      "pregunta": "¿Quién fue Ignacio Allende?",
+      "opciones": [
+        "Sacerdote que dio el Grito",
+        "Autor de la Constitución de 1824",
+        "Militar insurgente, compañero de Hidalgo",
+        "Primer emperador de México"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 27,
+      "categoria": "Independencia",
+      "dificultad": "medio",
+      "pregunta": "¿Qué eran 'Los Niños Héroes'?",
+      "opciones": [
+        "Firmantes del Plan de Iguala",
+        "Héroes de la Revolución de 1910",
+        "Insurgentes de 1810",
+        "Cadetes que defendieron Chapultepec en 1847"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 28,
+      "categoria": "Cultura",
+      "dificultad": "medio",
+      "pregunta": "¿Quién escribió la letra del Himno Nacional Mexicano?",
+      "opciones": [
+        "Jaime Nunó",
+        "Ramón López Velarde",
+        "Francisco González Bocanegra",
+        "Amado Nervo"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 29,
+      "categoria": "Cultura",
+      "dificultad": "medio",
+      "pregunta": "¿Quién compuso la música del Himno Nacional Mexicano?",
+      "opciones": [
+        "Silvestre Revueltas",
+        "Francisco González Bocanegra",
+        "Jaime Nunó",
+        "Agustín Lara"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 30,
+      "categoria": "Comida",
+      "dificultad": "medio",
+      "pregunta": "El mole poblano es originario de qué estado?",
+      "opciones": [
+        "Puebla",
+        "Oaxaca",
+        "Michoacán",
+        "Veracruz"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 31,
+      "categoria": "Comida",
+      "dificultad": "medio",
+      "pregunta": "¿De qué estado son típicos los tacos al pastor, influenciados por inmigrantes libaneses?",
+      "opciones": [
+        "Baja California",
+        "Ciudad de México/Puebla",
+        "Chiapas",
+        "Yucatán"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 32,
+      "categoria": "Comida",
+      "dificultad": "medio",
+      "pregunta": "¿Qué fruta les da el color rojo a los chiles en nogada?",
+      "opciones": [
+        "Granada",
+        "Tuna roja",
+        "Jitomate",
+        "Fresa"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 33,
+      "categoria": "Comida",
+      "dificultad": "medio",
+      "pregunta": "¿Qué estado es famoso por los tlayudas?",
+      "opciones": [
+        "Oaxaca",
+        "Guerrero",
+        "Morelos",
+        "Tlaxcala"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 34,
+      "categoria": "Comida",
+      "dificultad": "medio",
+      "pregunta": "¿Qué flor se usa para el agua fresca de jamaica?",
+      "opciones": [
+        "Guayaba",
+        "Piña",
+        "Flor de jamaica",
+        "Tamarindo"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 35,
+      "categoria": "Musica",
+      "dificultad": "medio",
+      "pregunta": "¿Cuál de estos compositores escribió 'Querida' y 'Amor Eterno'?",
+      "opciones": [
+        "José Alfredo Jiménez",
+        "Armando Manzanero",
+        "Juan Gabriel",
+        "Marco Antonio Solís"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 36,
+      "categoria": "Musica",
+      "dificultad": "medio",
+      "pregunta": "¿Cuál es el instrumento característico del mariachi que suena grave y grande?",
+      "opciones": [
+        "Bajo sexto",
+        "Jarana",
+        "Requinto",
+        "Guitarrón"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 37,
+      "categoria": "Musica",
+      "dificultad": "medio",
+      "pregunta": "¿Quién compuso 'Cielito Lindo'?",
+      "opciones": [
+        "José Alfredo Jiménez",
+        "Quirino Mendoza y Cortés",
+        "Agustín Lara",
+        "Consuelo Velázquez"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 38,
+      "categoria": "Geografia",
+      "dificultad": "medio",
+      "pregunta": "¿Con qué países hace frontera México al sur?",
+      "opciones": [
+        "Guatemala y Belice",
+        "Belice y Honduras",
+        "Guatemala y Honduras",
+        "Guatemala solamente"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 39,
+      "categoria": "Tradiciones",
+      "dificultad": "medio",
+      "pregunta": "¿Qué flor es característica de las ofrendas de Día de Muertos?",
+      "opciones": [
+        "Nochebuena",
+        "Cempasúchil",
+        "Bugambilia",
+        "Dalia"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 40,
+      "categoria": "Historia general",
+      "dificultad": "medio",
+      "pregunta": "¿Quién fue el presidente mexicano conocido como el 'Benemérito de las Américas'?",
+      "opciones": [
+        "Venustiano Carranza",
+        "Porfirio Díaz",
+        "Lázaro Cárdenas",
+        "Benito Juárez"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 41,
+      "categoria": "Independencia",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué virrey gobernaba Nueva España cuando inició la guerra de Independencia en 1810?",
+      "opciones": [
+        "Antonio María de Bucareli",
+        "Juan O'Donojú",
+        "Francisco Javier Venegas",
+        "Félix María Calleja"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 42,
+      "categoria": "Independencia",
+      "dificultad": "dificil",
+      "pregunta": "¿Quién es Leona Vicario?",
+      "opciones": [
+        "Emperatriz de México",
+        "Esposa de Hidalgo",
+        "Insurgente e informante clave del movimiento",
+        "Autora del Himno Nacional"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 43,
+      "categoria": "Independencia",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué virrey firmó los Tratados de Córdoba reconociendo la Independencia?",
+      "opciones": [
+        "Juan Ruiz de Apodaca",
+        "Félix María Calleja",
+        "Francisco Javier Venegas",
+        "Juan O'Donojú"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 44,
+      "categoria": "Independencia",
+      "dificultad": "dificil",
+      "pregunta": "¿En qué año fue fusilado Miguel Hidalgo?",
+      "opciones": [
+        "1821",
+        "1811",
+        "1815",
+        "1810"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 45,
+      "categoria": "Independencia",
+      "dificultad": "dificil",
+      "pregunta": "¿Cómo se llamó el periódico insurgente fundado por José María Morelos y otros durante la guerra?",
+      "opciones": [
+        "El Correo del Sur",
+        "El Despertador Americano",
+        "El Grito del Pueblo",
+        "La Gaceta Insurgente"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 46,
+      "categoria": "Independencia",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué congreso, convocado por Morelos en 1813, declaró la independencia de la América Septentrional?",
+      "opciones": [
+        "Congreso de Iguala",
+        "Congreso de Chilpancingo",
+        "Congreso de Querétaro",
+        "Congreso de Apatzingán"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 47,
+      "categoria": "Independencia",
+      "dificultad": "dificil",
+      "pregunta": "¿Quién fue Vicente Guerrero?",
+      "opciones": [
+        "Primer emperador de México",
+        "Virrey de Nueva España",
+        "Autor del Plan de Iguala junto con Iturbide únicamente",
+        "Insurgente que continuó la lucha tras la muerte de Morelos y luego fue presidente"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 48,
+      "categoria": "Cultura",
+      "dificultad": "dificil",
+      "pregunta": "¿En qué año se adoptó oficialmente el actual escudo nacional en la bandera?",
+      "opciones": [
+        "1821",
+        "1917",
+        "1968",
+        "1934"
+      ],
+      "correcta": 2
+    },
+    {
+      "id": 49,
+      "categoria": "Cultura",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué códice narra la leyenda de la fundación de Tenochtitlán con el águila y la serpiente?",
+      "opciones": [
+        "Códice Dresde",
+        "Códice Mendoza",
+        "Códice Florentino",
+        "Códice Borgia"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 50,
+      "categoria": "Geografia",
+      "dificultad": "dificil",
+      "pregunta": "¿Cuál es el volcán activo más alto de México?",
+      "opciones": [
+        "Popocatépetl",
+        "Iztaccíhuatl",
+        "Nevado de Toluca",
+        "Pico de Orizaba"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 51,
+      "categoria": "Comida",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué bebida tradicional se hace fermentando el aguamiel del maguey?",
+      "opciones": [
+        "Horchata",
+        "Tepache",
+        "Atole",
+        "Pulque"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 52,
+      "categoria": "Comida",
+      "dificultad": "dificil",
+      "pregunta": "¿De qué estado es típica la barbacoa tradicional cocinada bajo tierra en un horno de piedra?",
+      "opciones": [
+        "Colima",
+        "Nayarit",
+        "Tabasco",
+        "Hidalgo"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 53,
+      "categoria": "Musica",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué compositor yucateco es autor de 'Sabor a Mí' y otras canciones románticas clásicas?",
+      "opciones": [
+        "Álvaro Carrillo",
+        "Armando Manzanero",
+        "José Alfredo Jiménez",
+        "Agustín Lara"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 54,
+      "categoria": "Musica",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué género musical del norte de México se caracteriza por el uso del acordeón y el bajo sexto?",
+      "opciones": [
+        "Norteño",
+        "Huapango",
+        "Banda sinaloense",
+        "Son jarocho"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 55,
+      "categoria": "Tradiciones",
+      "dificultad": "dificil",
+      "pregunta": "¿En qué año la UNESCO declaró al Día de Muertos como Patrimonio Cultural Inmaterial de la Humanidad?",
+      "opciones": [
+        "2003",
+        "2008",
+        "2015",
+        "1998"
+      ],
+      "correcta": 1
+    },
+    {
+      "id": 56,
+      "categoria": "Dichos",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué significa el dicho 'echar la casa por la ventana'?",
+      "opciones": [
+        "Gastar mucho para celebrar algo en grande",
+        "Hacer una fiesta pequeña",
+        "Mudarse de repente",
+        "Perder todo el dinero"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 57,
+      "categoria": "Dichos",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué significa 'no hay que ahogarse en un vaso de agua'?",
+      "opciones": [
+        "No preocuparse tanto por problemas pequeños",
+        "No tomar mucha agua",
+        "No nadar en lugares peligrosos",
+        "No mezclar bebidas"
+      ],
+      "correcta": 0
+    },
+    {
+      "id": 58,
+      "categoria": "Historia general",
+      "dificultad": "dificil",
+      "pregunta": "¿Qué presidente mexicano gobernó durante más de tres décadas antes de la Revolución (el 'Porfiriato')?",
+      "opciones": [
+        "Benito Juárez",
+        "Sebastián Lerdo de Tejada",
+        "Manuel González",
+        "Porfirio Díaz"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 59,
+      "categoria": "Historia general",
+      "dificultad": "dificil",
+      "pregunta": "¿En qué año se promulgó la Constitución Mexicana actualmente vigente?",
+      "opciones": [
+        "1824",
+        "1821",
+        "1857",
+        "1917"
+      ],
+      "correcta": 3
+    },
+    {
+      "id": 60,
+      "categoria": "Independencia",
+      "dificultad": "dificil",
+      "pregunta": "¿Cuál de estos NO fue uno de los llamados 'Cuatro Grandes' insurgentes originales de la conspiración de Querétaro?",
+      "opciones": [
+        "Josefa Ortiz de Domínguez",
+        "Agustín de Iturbide",
+        "Ignacio Allende",
+        "Miguel Hidalgo"
+      ],
+      "correcta": 1
+    }
+  ]
+}

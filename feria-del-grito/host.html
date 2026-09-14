@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>La Feria del Grito — Pantalla Host</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Pantalla de crear partida (antes de proyectar) -->
+<section id="pantalla-crear" class="pantalla">
+  <div class="tarjeta" style="text-align:center;">
+    <span class="etiqueta-fiesta">Pantalla del anfitrión</span>
+    <h1 class="titulo" style="font-size:1.8rem;">La Feria del Grito</h1>
+    <p>Presiona el botón para crear una partida nueva y proyectar el código para tus invitados.</p>
+    <button class="btn-grande" id="btn-crear-partida">Crear partida</button>
+  </div>
+</section>
+
+<!-- Lobby: muestra el código, espera jugadores -->
+<section id="pantalla-lobby" class="pantalla" style="display:none;">
+  <div class="tarjeta" style="text-align:center; max-width:600px;">
+    <span class="etiqueta-fiesta">Código de partida</span>
+    <h1 class="titulo" style="font-size:3.2rem; letter-spacing:8px;" id="codigo-grande"></h1>
+    <p>Los jugadores entran desde su celular y escriben este código.</p>
+    <div id="lista-jugadores-lobby" style="text-align:left; margin:18px 0; display:flex; flex-direction:column; gap:8px;"></div>
+    <button class="btn-grande verde" id="btn-iniciar-partida" disabled>Iniciar carrera 🏁</button>
+  </div>
+</section>
+
+<!-- Pista de carreras -->
+<section id="pantalla-pista" class="host-fondo" style="display:none;">
+  <div class="host-header">
+    <div class="host-codigo" id="codigo-header"></div>
+    <h1 class="host-titulo titulo">🐎 La Feria del Grito 🌵</h1>
+    <div style="width:120px;"></div>
+  </div>
+  <div class="pista" id="contenedor-pista"></div>
+
+  <!-- Overlay de pregunta -->
+  <div class="host-panel-pregunta" id="panel-pregunta" style="display:none;">
+    <p class="host-turno-aviso" id="aviso-turno"></p>
+    <p class="host-pregunta-texto" id="texto-pregunta"></p>
+    <div class="host-grid-opciones" id="opciones-pregunta"></div>
+    <p class="host-contador-respondidos" id="contador-respondidos"></p>
+  </div>
+
+  <!-- Overlay de revelación: quién contestó bien / mal -->
+  <div class="host-panel-revelacion" id="panel-revelacion" style="display:none;">
+    <h2 class="titulo" style="color:white; font-size:2rem;">¡Resultados de la ronda! 🎉</h2>
+    <div class="grid-revelacion" id="grid-revelacion"></div>
+    <button class="btn-grande verde" id="btn-cerrar-revelacion" style="max-width:320px;">Cerrar y ver avance 🐎</button>
+  </div>
+
+  <!-- Overlay de ganador -->
+  <div class="host-ganador" id="panel-ganador" style="display:none;">
+    <img src="images/trofeo.png" alt="Trofeo" />
+    <img class="foto-ganador" id="foto-ganador" alt="" />
+    <h1 id="texto-ganador"></h1>
+  </div>
+</section>
+
+<script type="module" src="js/host.js"></script>
+</body>
+</html>

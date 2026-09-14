@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>La Feria del Grito 🐎</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- PASO 0: entrar con código de partida -->
+<section id="pantalla-entrar" class="pantalla">
+  <div class="tarjeta">
+    <span class="etiqueta-fiesta">¡Viva México! 🇲🇽</span>
+    <h1 class="titulo" style="font-size:1.8rem; margin-bottom:18px;">La Feria del Grito</h1>
+    <p style="margin-top:0;">Escribe el código de la partida que ves en la pantalla grande.</p>
+    <input type="text" id="input-codigo" placeholder="Código (ej. TQXR)" maxlength="4" style="text-transform:uppercase; text-align:center; font-family:'Baloo 2',cursive; font-size:1.4rem; letter-spacing:4px;" />
+    <button class="btn-grande" id="btn-unirse">Entrar a la partida</button>
+    <p id="error-codigo" style="color:#c8232a; font-weight:800; text-align:center; display:none;">No encontramos esa partida, revisa el código.</p>
+  </div>
+</section>
+
+<!-- PASO 1: registro (nombre + avatar) -->
+<section id="pantalla-registro" class="pantalla" style="display:none;">
+  <div class="tarjeta">
+    <span class="etiqueta-fiesta">Registro</span>
+    <h2 class="titulo" style="margin-bottom:14px;">¿Cómo te llamas?</h2>
+    <input type="text" id="input-nombre" placeholder="Tu nombre" maxlength="18" />
+    <h3 class="titulo" style="font-size:1.1rem; margin-bottom:10px;">Elige tu jinete</h3>
+    <div class="opciones-avatar">
+      <div class="opcion-avatar" data-avatar="charro">
+        <img src="images/caballo-charro.png" alt="Charro" />
+        <span>Charro</span>
+      </div>
+      <div class="opcion-avatar" data-avatar="china">
+        <img src="images/caballo-china.png" alt="China Poblana" />
+        <span>China Poblana</span>
+      </div>
+    </div>
+    <button class="btn-grande" id="btn-a-camara" disabled>Siguiente: tomar mi foto</button>
+  </div>
+</section>
+
+<!-- PASO 2: selfie -->
+<section id="pantalla-camara" class="pantalla" style="display:none;">
+  <div class="tarjeta">
+    <span class="etiqueta-fiesta">Tu carita en el caballo</span>
+    <h2 class="titulo" style="margin-bottom:14px; font-size:1.3rem;">Tómate una selfie</h2>
+    <div class="marco-camara">
+      <video id="video-camara" autoplay playsinline></video>
+      <img id="preview-foto" class="foto-preview" style="display:none;" />
+    </div>
+    <button class="btn-grande" id="btn-tomar-foto">📸 Tomar foto</button>
+    <button class="btn-grande secundario" id="btn-repetir-foto" style="display:none; margin-top:10px;">Repetir foto</button>
+    <button class="btn-grande verde" id="btn-confirmar-foto" style="display:none; margin-top:10px;">¡Listo, a jugar!</button>
+    <p id="error-camara" style="color:#c8232a; font-weight:800; text-align:center; display:none;">No pudimos acceder a tu cámara. Revisa los permisos del navegador.</p>
+  </div>
+</section>
+
+<!-- PASO 3: sala de espera -->
+<section id="pantalla-espera" class="pantalla" style="display:none;">
+  <div class="tarjeta" style="text-align:center;">
+    <span class="etiqueta-fiesta">Sala de espera</span>
+    <h2 class="titulo" style="font-size:1.3rem;">¡Ya estás dentro, <span id="nombre-espera"></span>!</h2>
+    <p>Voltea a ver la pantalla grande. La partida empieza cuando el anfitrión dé la señal.</p>
+  </div>
+</section>
+
+<!-- PASO 4: juego (skee-ball / preguntas / espera de ronda) -->
+<section id="pantalla-juego" class="pantalla" style="display:none;">
+  <div id="zona-juego" style="width:100%; max-width:460px; display:flex; flex-direction:column; align-items:center;">
+
+    <!-- Skee-ball -->
+    <div id="bloque-skeeball" style="display:none; width:100%; align-items:center; flex-direction:column;">
+      <div class="tablero-wrap" id="tablero-wrap">
+        <img src="images/tablero-skeeball.png" class="tablero-img" alt="Tablero" />
+        <img src="images/bola.png" class="bola-lanzable" id="bola-lanzable" alt="Bola" />
+      </div>
+      <p class="instruccion-swipe" id="texto-swipe">Desliza el dedo hacia arriba para lanzar la bola 👆</p>
+    </div>
+
+    <!-- Espera de otros jugadores -->
+    <div id="bloque-espera-ronda" style="display:none;">
+      <p class="estado-espera" id="texto-espera-ronda">Esperando a los demás jugadores...</p>
+    </div>
+
+    <!-- Pregunta: todos responden a su ritmo -->
+    <div id="bloque-pregunta" style="display:none; width:100%; flex-direction:column; align-items:center;">
+      <p class="estado-espera">Mira la pregunta en la pantalla grande y toca el color correcto 🙋</p>
+      <div class="grid-colores" id="colores-pregunta">
+        <div class="color-btn rojo" data-color="0">▲</div>
+        <div class="color-btn azul" data-color="1">◆</div>
+        <div class="color-btn amarillo" data-color="2">●</div>
+        <div class="color-btn verde" data-color="3">■</div>
+      </div>
+    </div>
+
+    <!-- Fin de la partida -->
+    <div id="bloque-fin" style="display:none; text-align:center;">
+      <img src="images/trofeo.png" style="width:180px;" alt="Trofeo" />
+      <h2 class="titulo" style="color:white;" id="texto-fin">¡Partida terminada!</h2>
+    </div>
+
+  </div>
+</section>
+
+<script type="module" src="js/jugador.js"></script>
+</body>
+</html>
