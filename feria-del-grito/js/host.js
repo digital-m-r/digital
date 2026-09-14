@@ -1,5 +1,5 @@
 import {
-  db, doc, setDoc, updateDoc, onSnapshot, collection
+  db, doc, setDoc, updateDoc, onSnapshot, collection, writeBatch
 } from "./firebase-config.js";
 import {
   META_CASILLAS, COLORES, AVATARES,
@@ -99,17 +99,21 @@ function escucharPartida() {
 // ---------- Nueva ronda ----------
 async function iniciarNuevaRonda() {
   const ids = Object.keys(jugadoresCache);
-  for (const id of ids) {
-    await updateDoc(doc(db, "partidas", codigoPartida, "jugadores", id), {
+  // Un solo lote en vez de una escritura por jugador: todo viaja junto en
+  // una sola ida y vuelta a Firestore, así no se siente lento con varios jugadores.
+  const lote = writeBatch(db);
+  ids.forEach(id => {
+    lote.update(doc(db, "partidas", codigoPartida, "jugadores", id), {
       bolaValor: null, listo: false,
       respuestaColor: null, respondido: false, correcto: null
     });
-  }
-  await updateDoc(doc(db, "partidas", codigoPartida), {
+  });
+  lote.update(doc(db, "partidas", codigoPartida), {
     estado: "lanzando",
     preguntaActual: null,
     rondaActual: (partidaCache?.rondaActual || 0) + 1
   });
+  await lote.commit();
   $("panel-revelacion").style.display = "none";
   popupAbierto = false;
   ganadorYaAnunciado = false;
@@ -200,14 +204,16 @@ $("btn-cerrar-revelacion").addEventListener("click", async () => {
   });
 
   let ganador = null;
-  for (const id of ids) {
+  const lote = writeBatch(db);
+  ids.forEach(id => {
     const j = jugadoresCache[id];
     if (j.correcto) {
       const nuevaPos = Math.min(META_CASILLAS, (j.posicion || 0) + (j.bolaValor || 0));
-      await updateDoc(doc(db, "partidas", codigoPartida, "jugadores", id), { posicion: nuevaPos });
+      lote.update(doc(db, "partidas", codigoPartida, "jugadores", id), { posicion: nuevaPos });
       if (nuevaPos >= META_CASILLAS) ganador = id;
     }
-  }
+  });
+  await lote.commit();
 
   setTimeout(() => detenerMusicaCarrera(), 1400);
 
