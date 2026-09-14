@@ -275,13 +275,16 @@ input[type="text"] {
   text-shadow: 0 3px 0 rgba(0,0,0,.35);
 }
 .pista {
-  position: relative;
-  flex: 1;
-  margin: 0 24px 24px 24px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 36%;
+  margin: 0 28px 26px 28px;
 }
 .carril {
   position: absolute;
-  width: 12%;
+  width: 9.5%;
   transition: left 1.1s cubic-bezier(.34,1.4,.5,1);
 }
 .carril img.caballo-sprite { width: 100%; display: block; filter: drop-shadow(0 6px 8px rgba(0,0,0,.4)); }
