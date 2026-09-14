@@ -192,9 +192,10 @@ input[type="text"] {
   width: 15%;
   left: 50%;
   bottom: 4%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
   pointer-events: none;
   filter: drop-shadow(0 6px 6px rgba(0,0,0,.35));
+  transition: none;
 }
 .instruccion-swipe {
   color: white;
@@ -203,6 +204,16 @@ input[type="text"] {
   text-align: center;
   margin-top: 14px;
 }
+
+/* Rebote de la bola cuando no atina o el hoyo está ocupado */
+@keyframes rebote-bola {
+  0%   { transform: translate(-50%, 0) scale(1); }
+  35%  { transform: translate(var(--bx, 0), var(--by, -60%)) scale(0.92); }
+  55%  { transform: translate(calc(var(--bx, 0) * 0.6), calc(var(--by, -60%) * 0.35)) scale(0.97); }
+  75%  { transform: translate(calc(var(--bx, 0) * 0.3), calc(var(--by, -60%) * 0.6)) scale(0.95); }
+  100% { transform: translate(-50%, 0) scale(1); }
+}
+.bola-lanzable.rebotando { animation: rebote-bola 0.85s ease-in-out; }
 
 /* Kahoot-style colores */
 .grid-colores {
@@ -279,8 +290,8 @@ input[type="text"] {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 42%;
-  margin: 0 28px 22px 28px;
+  height: 64%;
+  margin: 0 26px 10px 26px;
 }
 .carril {
   position: absolute;
