@@ -111,7 +111,20 @@ $("btn-confirmar-foto").addEventListener("click", async () => {
   escucharMiJugador();
   escucharPartida();
   activarRefrescoAlVolver();
+  activarPantallaSiempreEncendida();
 });
+
+// Evita que el celular se bloquee solo mientras el jugador tiene la partida
+// abierta — así Safari nunca pausa la conexión en tiempo real de por sí.
+// (Wake Lock API: soportada en iOS 16.4+ y Chrome/Android recientes; en
+// navegadores que no la soportan, simplemente no hace nada, sin errores.)
+let wakeLockActivo = null;
+async function activarPantallaSiempreEncendida() {
+  if (!("wakeLock" in navigator)) return;
+  try {
+    wakeLockActivo = await navigator.wakeLock.request("screen");
+  } catch (e) { /* el navegador lo negó (poca batería, etc.) — seguimos sin él */ }
+}
 
 // En iOS/Safari, cuando el celular se bloquea o el usuario cambia de app,
 // la conexión en tiempo real con Firestore se pausa. Al volver a la pestaña,
@@ -120,6 +133,11 @@ $("btn-confirmar-foto").addEventListener("click", async () => {
 function activarRefrescoAlVolver() {
   document.addEventListener("visibilitychange", async () => {
     if (document.visibilityState !== "visible" || !codigoPartida || !miId) return;
+
+    // El wake lock se libera solo cuando la pestaña se oculta; hay que
+    // volver a pedirlo al regresar.
+    activarPantallaSiempreEncendida();
+
     try {
       const [snapPartida, snapJugador] = await Promise.all([
         getDoc(doc(db, "partidas", codigoPartida)),
