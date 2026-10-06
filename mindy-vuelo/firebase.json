@@ -1,0 +1,7 @@
+{
+  "hosting": {
+    "site": "mindy-vuelo-bmm",
+    "public": ".",
+    "ignore": ["firebase.json", ".firebaserc", "README.md", "**/.*"]
+  }
+}
