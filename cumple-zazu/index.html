@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feliz cumpleaños, Zazu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#1A0F1F; --plum:#3A1C3F; --champagne:#F1D9B5; --blush:#E7B7B0; --gold:#C9A15B;
+  --ink:#EFE3D6; --muted:rgba(239,227,214,.64); --glass:rgba(26,15,31,.55);
+  --light:1;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* Un cuarto iluminado con velas es oscuro en ambos temas */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --night:#1A0F1F; --ink:#EFE3D6; --glass:rgba(26,15,31,.55); }
+}
+:root[data-theme="dark"]{ --night:#1A0F1F; --ink:#EFE3D6; --glass:rgba(26,15,31,.55); }
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--night);color:var(--ink);
+  font-family:"Jost",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;
+  -webkit-tap-highlight-color:transparent}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:manipulation;cursor:pointer}
+.stage{position:relative;height:100%;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
+header{text-align:center;padding:clamp(18px,5vh,56px) 20px 0}
+.kicker{margin:0;font-weight:300;font-size:clamp(15px,1.8vw,18px);letter-spacing:.06em;color:var(--muted)}
+h1{margin:.04em 0 0;font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;font-style:italic;font-weight:300;
+  font-size:clamp(76px,15vw,170px);line-height:.92;color:var(--champagne);
+  opacity:calc(.5 + .5*var(--light));
+  text-shadow:0 0 calc(46px*var(--light)) rgba(255,186,110,calc(.38*var(--light)));
+  transition:opacity .6s}
+.wish{margin:.5em auto 0;max-width:30ch;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-weight:400;
+  font-size:clamp(19px,2.6vw,26px);line-height:1.4;color:var(--ink);opacity:0;transform:translateY(6px);
+  transition:opacity 1.8s ease .4s, transform 1.8s ease .4s}
+body.done h1{opacity:1;color:transparent;
+  background:linear-gradient(100deg,#B8914E 0%,#F6E2B3 30%,#C9A15B 50%,#FFF1D2 68%,#B8914E 100%);
+  background-size:220% 100%;-webkit-background-clip:text;background-clip:text;
+  text-shadow:none;animation:shimmer 6s ease-in-out infinite alternate}
+body.done .wish{opacity:1;transform:none}
+@keyframes shimmer{from{background-position:0% 50%}to{background-position:100% 50%}}
+footer{pointer-events:auto;padding:0 16px clamp(14px,3.5vh,32px);text-align:center}
+.hint{margin:0 auto 12px;max-width:44ch;font-size:15px;font-weight:300;line-height:1.5;color:var(--muted);min-height:1.5em}
+.controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+button{font:inherit;font-size:15px;font-weight:400;color:var(--ink);background:var(--glass);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border:1px solid rgba(201,161,91,.45);border-radius:999px;padding:10px 18px;cursor:pointer;
+  transition:border-color .2s, background-color .2s}
+button:hover{border-color:rgba(241,217,181,.85)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+button[aria-pressed="true"]{background:rgba(201,161,91,.22);border-color:var(--gold)}
+button:disabled{opacity:.55;cursor:default}
+.stepper{display:inline-flex;align-items:center;gap:4px;background:var(--glass);border:1px solid rgba(201,161,91,.45);
+  border-radius:999px;padding:3px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.stepper button{border:none;background:transparent;width:36px;height:36px;padding:0;font-size:19px;line-height:1}
+.stepper span{min-width:72px;font-size:15px}
+@media (prefers-reduced-motion: reduce){ body.done h1{animation:none} .wish{transition:opacity .6s} }
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Pastel con velas encendidas. Toca una flama para apagarla."></canvas>
+<div class="stage">
+  <header>
+    <p class="kicker">Feliz cumpleaños</p>
+    <h1>Zazu</h1>
+    <p class="wish">Que este nuevo año te encuentre rodeada de cosas bonitas. Con cariño, de todo el equipo CI.</p>
+  </header>
+  <footer>
+    <p class="hint" id="hint" aria-live="polite">Pide un deseo. Después sopla hacia el micrófono o toca cada flama.</p>
+    <div class="controls">
+      <button id="mic" aria-pressed="false">Soplar con el micrófono</button>
+      <div class="stepper" role="group" aria-label="Número de velas">
+        <button id="less" aria-label="Quitar una vela">−</button>
+        <span id="count">25 velas</span>
+        <button id="more" aria-label="Agregar una vela">+</button>
+      </div>
+      <button id="song">Tocar Cumpleaños feliz</button>
+      <button id="relight">Encender de nuevo</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(() => {
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const hintEl = document.getElementById('hint');
+const micBtn = document.getElementById('mic');
+const songBtn = document.getElementById('song');
+const countEl = document.getElementById('count');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let W = 0, H = 0, DPR = 1, geo = {};
+let N = 25, candles = [], order = [], smoke = [], leaves = [];
+let wind = 0, windTarget = 0, light = 1, lastLight = -1, done = false, celebrateTimer = null;
+let audio = null, master = null, analyser = null, micData = null, micStream = null, micOn = false, floor = 0.01;
+let musicUntil = 0;
+
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+// Gotas de ganache, fijas para que no cambien al redimensionar
+const drips = Array.from({ length: 15 }, (_, i) => ({
+  u: -1 + 2 * i / 14 + rand(-0.04, 0.04),
+  len: rand(0.12, 0.55),
+  w: rand(0.045, 0.075)
+}));
+
+const PALETTES = [
+  ['#A8875F', '#F2DFC2', '#FFF6E8', '#E6CCA9', '#8E7252'],
+  ['#9E6A66', '#ECC2BC', '#FBE5E0', '#D9A49D', '#80524F']
+];
+
+function resize() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = window.innerWidth; H = window.innerHeight;
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const rx = Math.min(W * 0.36, 250);
+  geo = {
+    cx: W / 2,
+    top: H * (W < 600 ? 0.57 : 0.6),
+    rx, ry: rx * 0.3,
+    ch: Math.min(H * 0.13, rx * 0.5),
+    cakeH: Math.min(H * 0.16, rx * 0.55),
+    cwBase: Math.max(8, rx * 0.06), cw: Math.max(8, rx * 0.06)
+  };
+  placeCandles(false);
+}
+
+function newCandle(i, lit) {
+  return {
+    i, x: 0, y: 0, lit, s: lit ? 1 : 0,
+    seed: [rand(0, 10), rand(0, 10), rand(0, 10)],
+    resist: 0, limit: rand(0.25, 1.1), ember: 0, smokeT: 0, puff: 0,
+    pal: PALETTES[i % 2]
+  };
+}
+
+function placeCandles(rebuild) {
+  if (rebuild || candles.length !== N) {
+    candles = Array.from({ length: N }, (_, i) => newCandle(i, true));
+  }
+  geo.cw = geo.cwBase * (N > 15 ? 0.82 : 1);
+  const { cx, top, rx, ry } = geo;
+  const outerN = N > 12 ? Math.ceil(N * 0.6) : N;
+  const innerN = N - outerN;
+  candles.forEach((c, i) => {
+    if (N === 1) { c.x = cx; c.y = top; }
+    else if (N <= 4) { const t = i / (N - 1) - 0.5; c.x = cx + t * rx * 1.0; c.y = top; }
+    else if (i < outerN) {
+      const a = Math.PI / 2 + i / outerN * Math.PI * 2;
+      const k = N > 12 ? 0.8 : 0.64;
+      c.x = cx + Math.cos(a) * rx * k;
+      c.y = top + Math.sin(a) * ry * k;
+    } else {
+      const j = i - outerN;
+      const a = Math.PI / 2 + (j + 0.5) / innerN * Math.PI * 2;
+      c.x = cx + Math.cos(a) * rx * 0.44;
+      c.y = top + Math.sin(a) * ry * 0.44;
+    }
+  });
+  order = candles.slice().sort((a, b) => a.y - b.y);
+}
+
+function setHint(text) { if (hintEl.textContent !== text) hintEl.textContent = text; }
+
+function litCount() { return candles.filter(c => c.lit).length; }
+
+function extinguish(c, dir) {
+  if (!c.lit) return;
+  c.lit = false; c.ember = 1; c.smokeT = 2.4; c.puff = 0.9 * dir;
+  const left = litCount();
+  if (left === 0) {
+    clearTimeout(celebrateTimer);
+    celebrateTimer = setTimeout(celebrate, 900);
+  } else {
+    setHint(left === 1 ? 'Queda una vela encendida.' : `Quedan ${left} velas encendidas.`);
+  }
+}
+
+function relightAll() {
+  clearTimeout(celebrateTimer);
+  done = false;
+  document.body.classList.remove('done');
+  candles.forEach((c, i) => {
+    setTimeout(() => {
+      c.lit = true; c.resist = 0; c.limit = rand(0.25, 1.1); c.ember = 0; c.puff = 0;
+    }, i * 140);
+  });
+  setHint(micOn ? 'Te escucho. Pide un deseo y sopla hacia el micrófono.'
+                : 'Pide un deseo. Después sopla hacia el micrófono o toca cada flama.');
+}
+
+function celebrate() {
+  if (litCount() > 0) return;
+  done = true;
+  document.body.classList.add('done');
+  setHint('Deseo pedido. Que se cumpla.');
+  const n = reduce ? 40 : 170;
+  for (let i = 0; i < n; i++) {
+    leaves.push({
+      x: rand(0, W), y: rand(-H * 0.9, -10),
+      w: rand(4, 9), h: rand(7, 15),
+      rot: rand(0, Math.PI * 2), vr: rand(-2, 2),
+      vy: rand(28, 70), sway: rand(10, 40), ph: rand(0, 6), f: rand(0.8, 2),
+      flip: rand(2, 6),
+      col: ['#E8C98A', '#C9A15B', '#F6E2B3', '#B8914E'][i % 4]
+    });
+  }
+  chime();
+}
+
+/* ---------- Audio ---------- */
+function ac() {
+  if (!audio) {
+    audio = new (window.AudioContext || window.webkitAudioContext)();
+    master = audio.createGain(); master.gain.value = 0.22;
+    const d = audio.createDelay(); d.delayTime.value = 0.24;
+    const fb = audio.createGain(); fb.gain.value = 0.28;
+    master.connect(audio.destination);
+    master.connect(d); d.connect(fb); fb.connect(d); d.connect(audio.destination);
+  }
+  if (audio.state === 'suspended') audio.resume();
+  return audio;
+}
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+function note(m, when, dur, vol = 1) {
+  const a = ac();
+  [[1, 0.5], [2, 0.16], [3.01, 0.05]].forEach(([mul, v]) => {
+    const o = a.createOscillator(); o.type = 'sine'; o.frequency.value = mtof(m) * mul;
+    const g = a.createGain();
+    const end = when + Math.max(0.6, dur * 1.6);
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(v * vol, when + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, end);
+    o.connect(g); g.connect(master); o.start(when); o.stop(end + 0.05);
+  });
+}
+const MELODY = [[67,.75],[67,.25],[69,1],[67,1],[72,1],[71,2],
+  [67,.75],[67,.25],[69,1],[67,1],[74,1],[72,2],
+  [67,.75],[67,.25],[79,1],[76,1],[72,1],[71,1],[69,2],
+  [77,.75],[77,.25],[76,1],[72,1],[74,1],[72,3]];
+function playSong() {
+  const a = ac(); const beat = 0.46; let t = a.currentTime + 0.1;
+  MELODY.forEach(([m, d]) => { note(m, t, d * beat); t += d * beat; });
+  const total = t - a.currentTime;
+  musicUntil = performance.now() + (total + 1.5) * 1000; // el micrófono ignora la música
+  songBtn.disabled = true; songBtn.textContent = 'Sonando…';
+  setTimeout(() => { songBtn.disabled = false; songBtn.textContent = 'Tocar Cumpleaños feliz'; }, (total + 0.4) * 1000);
+}
+function chime() {
+  if (!audio) return;
+  const t = audio.currentTime + 0.05;
+  [72, 76, 79, 84, 88].forEach((m, i) => note(m, t + i * 0.09, 0.6, 0.55));
+  musicUntil = performance.now() + 2000;
+}
+
+/* ---------- Micrófono ---------- */
+async function startMic() {
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('sin soporte');
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+    });
+    const a = ac();
+    const src = a.createMediaStreamSource(stream);
+    analyser = a.createAnalyser(); analyser.fftSize = 1024;
+    src.connect(analyser);
+    micData = new Float32Array(analyser.fftSize);
+    micStream = stream; micOn = true; floor = 0.01;
+    micBtn.textContent = 'Apagar micrófono'; micBtn.setAttribute('aria-pressed', 'true');
+    setHint(done ? 'Deseo pedido. Que se cumpla.' : 'Te escucho. Pide un deseo y sopla hacia el micrófono.');
+  } catch (e) {
+    setHint('El micrófono no está disponible aquí. Toca cada flama para apagarla.');
+  }
+}
+function stopMic() {
+  if (micStream) micStream.getTracks().forEach(t => t.stop());
+  micOn = false; analyser = null; windTarget = 0;
+  micBtn.textContent = 'Soplar con el micrófono'; micBtn.setAttribute('aria-pressed', 'false');
+}
+
+/* ---------- Simulación ---------- */
+function update(dt, t, now) {
+  if (micOn && analyser) {
+    analyser.getFloatTimeDomainData(micData);
+    let sum = 0; for (let i = 0; i < micData.length; i++) sum += micData[i] * micData[i];
+    let rms = Math.sqrt(sum / micData.length);
+    if (now < musicUntil) rms = floor;
+    floor = rms < floor ? floor * 0.9 + rms * 0.1 : floor * 0.998 + rms * 0.002;
+    windTarget = clamp((rms - floor - 0.015) / 0.11, 0, 1);
+  } else windTarget = 0;
+  wind += (windTarget - wind) * Math.min(1, dt * 8);
+
+  let sTotal = 0;
+  for (const c of candles) {
+    if (c.lit) c.s += (1 - c.s) * Math.min(1, dt * 5);
+    else c.s = Math.max(0, c.s - dt * 7);
+    sTotal += c.s;
+    if (c.lit && wind > 0.3) {
+      c.resist += dt * wind * rand(0.6, 1.4);
+      if (c.resist > c.limit) extinguish(c, 1);
+    } else c.resist = Math.max(0, c.resist - dt * 0.5);
+    c.ember = Math.max(0, c.ember - dt * 0.55);
+    c.puff *= Math.exp(-dt * 3);
+    if (c.smokeT > 0) {
+      c.smokeT -= dt;
+      const rate = 34 * (c.smokeT / 2.4);
+      if (Math.random() < rate * dt * (reduce ? 0.4 : 1)) {
+        smoke.push({
+          x: c.x + rand(-1, 1), y: c.y - geo.ch - geo.cw * 0.8,
+          r: geo.cw * 0.3, a: 0.3, vy: rand(28, 48), ph: rand(0, 6), f: rand(1.5, 3),
+          amp: rand(10, 22), gr: geo.cw * rand(0.8, 1.3)
+        });
+      }
+    }
+  }
+  const target = candles.length ? sTotal / candles.length : 0;
+  light += (target - light) * Math.min(1, dt * 3);
+  if (Math.abs(light - lastLight) > 0.01) {
+    document.documentElement.style.setProperty('--light', light.toFixed(2));
+    lastLight = light;
+  }
+
+  for (const p of smoke) {
+    p.y -= p.vy * dt;
+    p.x += Math.sin(t * p.f + p.ph) * p.amp * dt + wind * 40 * dt;
+    p.r += p.gr * dt; p.a -= dt * 0.13;
+  }
+  smoke = smoke.filter(p => p.a > 0);
+
+  for (const l of leaves) {
+    l.y += l.vy * dt;
+    l.x += Math.sin(t * l.f + l.ph) * l.sway * dt;
+    l.rot += l.vr * dt;
+  }
+  leaves = leaves.filter(l => l.y < H + 30);
+}
+
+/* ---------- Dibujo ---------- */
+function drawCake() {
+  const { cx, top, rx, ry, cakeH } = geo;
+
+  // Plato
+  ctx.beginPath();
+  ctx.ellipse(cx, top + cakeH + ry * 0.22, rx * 1.28, ry * 1.32, 0, 0, Math.PI * 2);
+  let g = ctx.createLinearGradient(0, top + cakeH - ry, 0, top + cakeH + ry * 1.6);
+  g.addColorStop(0, 'rgba(241,217,181,.55)'); g.addColorStop(1, 'rgba(90,58,48,.55)');
+  ctx.fillStyle = g; ctx.fill();
+  ctx.strokeStyle = 'rgba(246,226,179,.35)'; ctx.lineWidth = 1; ctx.stroke();
+
+  // Cuerpo del pastel
+  ctx.beginPath();
+  ctx.moveTo(cx - rx, top);
+  ctx.lineTo(cx - rx, top + cakeH);
+  ctx.ellipse(cx, top + cakeH, rx, ry, 0, Math.PI, 0, true);
+  ctx.lineTo(cx + rx, top);
+  ctx.ellipse(cx, top, rx, ry, 0, 0, Math.PI, false);
+  ctx.closePath();
+  g = ctx.createLinearGradient(cx - rx, 0, cx + rx, 0);
+  g.addColorStop(0, '#6E3E4A'); g.addColorStop(0.3, '#C98F8E'); g.addColorStop(0.5, '#E6B9B2');
+  g.addColorStop(0.72, '#C48888'); g.addColorStop(1, '#5E3341');
+  ctx.fillStyle = g; ctx.fill();
+
+  // Cubierta superior de ganache
+  ctx.beginPath(); ctx.ellipse(cx, top, rx, ry, 0, 0, Math.PI * 2);
+  g = ctx.createRadialGradient(cx - rx * 0.3, top - ry * 0.4, 0, cx, top, rx * 1.05);
+  g.addColorStop(0, '#74396A'); g.addColorStop(1, '#3A1736');
+  ctx.fillStyle = g; ctx.fill();
+
+  // Escurrido
+  ctx.beginPath();
+  const steps = 90;
+  for (let i = 0; i <= steps; i++) {
+    const u = -1 + 2 * i / steps;
+    let d = 0.09;
+    for (const dr of drips) d = Math.max(d, 0.09 + dr.len * Math.exp(-Math.pow((u - dr.u) / dr.w, 2)));
+    const x = cx + u * rx;
+    const y = top + ry * Math.sqrt(Math.max(0, 1 - u * u)) + d * cakeH * Math.sqrt(Math.max(0.15, 1 - u * u));
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.lineTo(cx + rx, top);
+  ctx.ellipse(cx, top, rx, ry, 0, 0, Math.PI, false);
+  ctx.closePath();
+  g = ctx.createLinearGradient(cx - rx, 0, cx + rx, 0);
+  g.addColorStop(0, '#2E1029'); g.addColorStop(0.45, '#5C2A55'); g.addColorStop(0.55, '#6A3262'); g.addColorStop(1, '#2A0E26');
+  ctx.fillStyle = g; ctx.fill();
+
+  // Brillo de la cubierta
+  ctx.beginPath(); ctx.ellipse(cx - rx * 0.28, top - ry * 0.28, rx * 0.34, ry * 0.22, -0.08, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,235,245,.06)'; ctx.fill();
+
+  // Perlas doradas en la base
+  const pr = Math.max(2, rx * 0.013);
+  for (let i = 0; i <= 30; i++) {
+    const u = -0.97 + 1.94 * i / 30;
+    const px = cx + u * rx, py = top + cakeH + ry * Math.sqrt(1 - u * u) - pr * 1.6;
+    const pg = ctx.createRadialGradient(px - pr * 0.35, py - pr * 0.35, 0, px, py, pr);
+    pg.addColorStop(0, '#FFF3D8'); pg.addColorStop(1, '#A7803F');
+    ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI * 2); ctx.fillStyle = pg; ctx.fill();
+  }
+}
+
+function drawCandle(c, t) {
+  const { ch, cw } = geo;
+  const x = c.x, y = c.y, x0 = x - cw / 2, yTop = y - ch;
+  // Sombra en el pastel
+  ctx.beginPath(); ctx.ellipse(x + cw * 0.3, y + 1, cw * 0.9, cw * 0.28, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(20,6,18,.45)'; ctx.fill();
+  // Cuerpo
+  const g = ctx.createLinearGradient(x0, 0, x0 + cw, 0);
+  c.pal.forEach((col, k) => g.addColorStop(k / 4, col));
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x0, yTop, cw, ch); ctx.fillStyle = g; ctx.fill(); ctx.clip();
+  // Espiral dorada
+  ctx.strokeStyle = 'rgba(201,161,91,.82)'; ctx.lineWidth = cw * 0.26;
+  for (let yy = yTop - cw; yy < y + cw * 2; yy += cw * 1.15) {
+    ctx.beginPath(); ctx.moveTo(x0 - 2, yy); ctx.lineTo(x0 + cw + 2, yy - cw * 0.85); ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(255,241,210,.35)'; ctx.lineWidth = cw * 0.07;
+  for (let yy = yTop - cw; yy < y + cw * 2; yy += cw * 1.15) {
+    ctx.beginPath(); ctx.moveTo(x0 - 2, yy - cw * 0.1); ctx.lineTo(x0 + cw + 2, yy - cw * 0.95); ctx.stroke();
+  }
+  ctx.restore();
+  // Tapa de cera
+  ctx.beginPath(); ctx.ellipse(x, yTop, cw / 2, cw * 0.17, 0, 0, Math.PI * 2);
+  ctx.fillStyle = c.pal[2]; ctx.fill();
+  // Pabilo
+  const lean = (wind * 0.8 + c.puff) * cw * 0.25;
+  ctx.beginPath(); ctx.moveTo(x, yTop); ctx.quadraticCurveTo(x, yTop - cw * 0.5, x + lean, yTop - cw * 0.8);
+  ctx.strokeStyle = '#2A1A14'; ctx.lineWidth = Math.max(1.2, cw * 0.13); ctx.lineCap = 'round'; ctx.stroke();
+  if (c.ember > 0 && !c.lit) {
+    ctx.beginPath(); ctx.arc(x + lean, yTop - cw * 0.8, Math.max(1.4, cw * 0.11), 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,${110 + 60 * c.ember},40,${c.ember})`; ctx.fill();
+  }
+}
+
+function teardrop(x, y, w, h, dx) {
+  ctx.beginPath();
+  ctx.moveTo(x + dx, y - h);
+  ctx.bezierCurveTo(x + dx * 0.5 + w * 0.55, y - h * 0.55, x + w * 1.25, y + w * 0.15, x, y + w);
+  ctx.bezierCurveTo(x - w * 1.25, y + w * 0.15, x + dx * 0.5 - w * 0.55, y - h * 0.55, x + dx, y - h);
+  ctx.closePath();
+}
+
+function flameShape(c, t) {
+  const { ch, cw } = geo;
+  const k = reduce ? 0.35 : 1;
+  const fl = 1 + k * (0.07 * Math.sin(t * 8.1 + c.seed[0]) + 0.05 * Math.sin(t * 13.7 + c.seed[1]) + 0.03 * Math.sin(t * 21.3 + c.seed[2]));
+  const h = cw * 3.3 * c.s * fl * (1 - wind * 0.22);
+  const w = cw * 0.6 * c.s * (1 + wind * 0.15);
+  const dx = (wind * 1.1 + c.puff + k * 0.09 * Math.sin(t * 3.1 + c.seed[1])) * h * 0.5;
+  return { x: c.x, y: c.y - ch - cw * 0.55, h, w, dx };
+}
+
+function drawGlow(c, t) {
+  const f = flameShape(c, t);
+  const gx = f.x + f.dx * 0.3, gy = f.y - f.h * 0.35, r = geo.cw * 16 * c.s;
+  const gk = Math.min(1, Math.sqrt(7 / N));
+  const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, r);
+  g.addColorStop(0, `rgba(255,172,92,${0.26 * c.s * gk})`);
+  g.addColorStop(0.35, `rgba(255,120,60,${0.07 * c.s * gk})`);
+  g.addColorStop(1, 'rgba(255,100,50,0)');
+  ctx.fillStyle = g; ctx.fillRect(gx - r, gy - r, r * 2, r * 2);
+}
+
+function drawFlame(c, t) {
+  if (c.s < 0.01) return;
+  const f = flameShape(c, t);
+  // Llama exterior
+  teardrop(f.x, f.y, f.w, f.h, f.dx);
+  let g = ctx.createLinearGradient(0, f.y + f.w, 0, f.y - f.h);
+  g.addColorStop(0, 'rgba(80,100,255,.55)');
+  g.addColorStop(0.14, 'rgba(255,118,40,.92)');
+  g.addColorStop(0.5, 'rgba(255,176,72,.95)');
+  g.addColorStop(1, 'rgba(255,224,160,.15)');
+  ctx.shadowColor = 'rgba(255,150,60,.9)'; ctx.shadowBlur = geo.cw * 1.6;
+  ctx.fillStyle = g; ctx.fill();
+  ctx.shadowBlur = 0;
+  // Núcleo
+  teardrop(f.x, f.y - f.w * 0.15, f.w * 0.55, f.h * 0.62, f.dx * 0.6);
+  g = ctx.createRadialGradient(f.x, f.y - f.h * 0.15, 0, f.x, f.y - f.h * 0.15, f.h * 0.6);
+  g.addColorStop(0, 'rgba(255,252,240,1)'); g.addColorStop(1, 'rgba(255,232,170,.2)');
+  ctx.fillStyle = g; ctx.fill();
+  // Base azul
+  ctx.beginPath(); ctx.ellipse(f.x, f.y + f.w * 0.45, f.w * 0.55, f.w * 0.35, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(90,115,255,.35)'; ctx.fill();
+}
+
+function drawSmoke() {
+  for (const p of smoke) {
+    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+    g.addColorStop(0, `rgba(214,204,220,${p.a})`); g.addColorStop(1, 'rgba(214,204,220,0)');
+    ctx.fillStyle = g; ctx.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+  }
+}
+
+function drawLeaves(t) {
+  for (const l of leaves) {
+    ctx.save();
+    ctx.translate(l.x, l.y); ctx.rotate(l.rot);
+    ctx.scale(Math.cos(t * l.flip + l.ph), 1);
+    ctx.fillStyle = l.col; ctx.globalAlpha = 0.9;
+    ctx.fillRect(-l.w / 2, -l.h / 2, l.w, l.h);
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function draw(t) {
+  const { cx, top, ch } = geo;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = '#140A18'; ctx.fillRect(0, 0, W, H);
+  const gy = top - ch, R = Math.max(W, H) * 0.8;
+  const g = ctx.createRadialGradient(cx, gy, 0, cx, gy, R);
+  g.addColorStop(0, `rgba(122,62,92,${0.55 * light + 0.08})`);
+  g.addColorStop(0.42, `rgba(58,28,63,${0.5 * light + 0.12})`);
+  g.addColorStop(1, 'rgba(20,10,24,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  drawCake();
+  for (const c of order) drawCandle(c, t);
+
+  ctx.fillStyle = `rgba(16,8,20,${(1 - light) * 0.6})`; ctx.fillRect(0, 0, W, H);
+
+  ctx.globalCompositeOperation = 'lighter';
+  for (const c of order) if (c.s > 0.01) drawGlow(c, t);
+  ctx.globalCompositeOperation = 'source-over';
+  for (const c of order) drawFlame(c, t);
+  drawSmoke();
+  drawLeaves(t);
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  const t = now / 1000;
+  update(dt, t, now); draw(t);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- Interacción ---------- */
+cv.addEventListener('pointerdown', e => {
+  const { ch, cw } = geo;
+  let best = null, bd = Infinity;
+  for (const c of candles) {
+    if (!c.lit) continue;
+    const fx = c.x, fy = c.y - ch - cw * 2;
+    const d = Math.hypot(e.clientX - fx, e.clientY - fy);
+    const onBody = Math.abs(e.clientX - c.x) < cw * 1.5 && e.clientY > fy - cw * 3 && e.clientY < c.y;
+    if ((d < Math.max(38, cw * 4) || onBody) && d < bd) { bd = d; best = c; }
+  }
+  if (best) extinguish(best, e.clientX < best.x ? 1 : -1);
+});
+
+document.addEventListener('keydown', e => {
+  if ((e.key === ' ' || e.key === 'Enter') && e.target === document.body) {
+    const c = candles.find(c => c.lit); if (c) { e.preventDefault(); extinguish(c, 1); }
+  }
+});
+
+micBtn.addEventListener('click', () => { micOn ? stopMic() : startMic(); });
+songBtn.addEventListener('click', playSong);
+document.getElementById('relight').addEventListener('click', relightAll);
+function setCount(n) {
+  N = clamp(n, 1, 30);
+  countEl.textContent = `${N} ${N === 1 ? 'vela' : 'velas'}`;
+  placeCandles(true);
+  candles.forEach(c => { c.lit = false; c.s = 0; });
+  relightAll();
+}
+document.getElementById('less').addEventListener('click', () => setCount(N - 1));
+document.getElementById('more').addEventListener('click', () => setCount(N + 1));
+
+window.addEventListener('resize', resize);
+resize();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
