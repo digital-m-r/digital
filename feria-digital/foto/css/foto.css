@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+:root{
+  --azul:#3E8EFF; --morado:#B24BF3; --naranja:#FFA53E; --bueno:#35D488; --malo:#FF4757;
+  --texto:#EAF0FF; --texto-dim:#93A0C4; --panel-b:rgba(255,255,255,0.14);
+  --fondo-1:#0A0E27; --fondo-2:#1B0F3D;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html, body{
+  width:100%; height:100%; overflow:hidden;
+  font-family:'Rajdhani', sans-serif; color:var(--texto);
+  background:linear-gradient(160deg, var(--fondo-1), var(--fondo-2));
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+
+.pantalla{
+  position:absolute; inset:0; display:none;
+  flex-direction:column; align-items:center; justify-content:center;
+  padding:clamp(10px,2vh,28px);
+  height:100vh; height:100dvh;
+}
+.pantalla.activa{ display:flex; }
+
+h1,h2{ font-family:'Orbitron', sans-serif; text-align:center; }
+.titulo{ font-size:clamp(26px, min(5vw, 7vh), 64px); font-weight:900; }
+.titulo span{
+  background:linear-gradient(90deg,var(--azul),var(--morado),var(--naranja));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sub{ font-size:clamp(16px, min(2.2vw, 3vh), 28px); color:var(--texto-dim); margin:clamp(4px,1vh,12px) 0 clamp(14px,3vh,34px); text-align:center; }
+
+/* ----- grid de marcos ----- */
+.grid-marcos{
+  display:grid; grid-template-columns:repeat(var(--cols, 3), 1fr);
+  gap:clamp(10px,1.6vw,24px);
+  /* app.js calcula --cols y --factor según cuántos marcos haya, para que siempre quepan sin scroll */
+  width:min(94vw, calc((100vh - 220px) * var(--factor, 2.6667)));
+}
+.marco-card{
+  position:relative; aspect-ratio:16/9; cursor:pointer;
+  border:3px solid var(--panel-b); border-radius:18px; overflow:hidden;
+  background:
+    linear-gradient(45deg,#2a2f55 25%,transparent 25%,transparent 75%,#2a2f55 75%),
+    linear-gradient(45deg,#2a2f55 25%,#1d2142 25%,#1d2142 75%,#2a2f55 75%);
+  background-size:28px 28px; background-position:0 0, 14px 14px;
+  transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.marco-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+.marco-card:active{ transform:scale(0.97); border-color:var(--azul); box-shadow:0 0 28px rgba(62,142,255,.6); }
+@media (hover:hover){ .marco-card:hover{ transform:translateY(-4px); border-color:var(--azul); } }
+
+/* ----- visor (cámara y resultado) ----- */
+.visor{
+  position:relative; aspect-ratio:16/9;
+  width:min(96vw, calc((100vh - 120px) * 16 / 9));
+  border-radius:16px; overflow:hidden; background:#000;
+  box-shadow:0 10px 50px rgba(0,0,0,.55);
+}
+#video{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover;
+}
+#video.espejo{ transform:scaleX(-1); }
+#marco-overlay, #foto-resultado{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none;
+}
+.cuenta{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'Orbitron',sans-serif; font-weight:900; font-size:clamp(100px,24vh,260px);
+  color:#fff; text-shadow:0 0 50px var(--morado), 0 4px 20px rgba(0,0,0,.6);
+  pointer-events:none;
+}
+.flash{ position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; }
+.flash.go{ animation:flash .45s ease-out; }
+@keyframes flash{ 0%{opacity:.95} 100%{opacity:0} }
+
+.barra-inferior{
+  display:flex; gap:clamp(10px,2vw,22px); margin-top:clamp(10px,2vh,22px);
+  width:min(96vw, calc((100vh - 120px) * 16 / 9));
+}
+.btn{
+  font-family:'Orbitron',sans-serif; font-weight:800; letter-spacing:1px;
+  font-size:clamp(14px, min(1.9vw, 2.6vh), 22px);
+  padding:clamp(12px,2vh,20px) clamp(16px,3vw,34px);
+  border-radius:16px; border:none; cursor:pointer; color:#fff;
+  transition:transform .12s ease, opacity .12s ease;
+}
+.btn:active{ transform:scale(0.96); }
+.btn:disabled{ opacity:.4; }
+.btn-prim{ flex:1; background:linear-gradient(90deg,var(--azul),var(--morado)); box-shadow:0 8px 24px rgba(178,75,243,.35); }
+.btn-sec{ background:transparent; border:2px solid var(--panel-b); color:var(--texto-dim); }
+
+/* ----- pantalla QR ----- */
+.qr-layout{
+  display:flex; align-items:center; justify-content:center; gap:clamp(18px,4vw,60px);
+  width:min(96vw,1300px);
+}
+.qr-foto{
+  flex:1.3; aspect-ratio:16/9; border-radius:16px; overflow:hidden;
+  box-shadow:0 10px 50px rgba(0,0,0,.55); background:#000;
+}
+.qr-foto img{ width:100%; height:100%; object-fit:cover; display:block; }
+.qr-info{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; gap:clamp(8px,1.6vh,18px); }
+.qr-info h2{ font-size:clamp(22px, min(3.4vw, 5vh), 44px); }
+.qr-info p{ font-size:clamp(14px, min(1.7vw, 2.4vh), 22px); color:var(--texto-dim); font-weight:600; }
+.qr-caja{
+  background:#fff; border-radius:18px; padding:clamp(10px,1.6vh,18px);
+  width:clamp(160px, min(26vw, 40vh), 340px); aspect-ratio:1;
+  display:flex; align-items:center; justify-content:center;
+}
+.qr-caja svg{ width:100%; height:100%; display:block; }
+.qr-aviso{ font-size:clamp(11px,1.3vw,15px) !important; opacity:.8; }
+.qr-info .btn{ width:100%; flex:none; }
+
+/* ----- mensajes ----- */
+.mensaje-box{ max-width:min(90vw,640px); text-align:center; display:flex; flex-direction:column; gap:18px; align-items:center; }
+.mensaje-box h2{ font-size:clamp(22px,3.6vw,38px); }
+.mensaje-box p{ font-size:clamp(16px,2vw,22px); color:var(--texto-dim); font-weight:600; }
+.mensaje-box .btn{ width:min(100%,360px); flex:none; }
+
+/* En pantallas angostas (celular vertical) el QR va debajo de la foto */
+@media (max-aspect-ratio: 1/1){
+  .qr-layout{ flex-direction:column; }
+  .qr-foto{ width:100%; flex:none; }
+  .grid-marcos{ grid-template-columns:repeat(2, 1fr); width:94vw; }
+  .visor, .barra-inferior{ width:96vw; }
+}
+
+/* ----- nombre de cámara, botones secundarios y pantalla completa ----- */
+.cam-nombre{
+  position:absolute; top:12px; left:14px; z-index:3; pointer-events:none;
+  background:rgba(10,14,39,.7); color:var(--texto); border:1px solid var(--panel-b);
+  padding:6px 14px; border-radius:999px; font-weight:700;
+  font-size:clamp(11px,1.3vw,16px); max-width:80%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.barra-inferior .btn-sec{
+  white-space:nowrap;
+  padding:clamp(10px,1.6vh,18px) clamp(12px,1.8vw,24px);
+  font-size:clamp(12px, min(1.4vw, 2.2vh), 18px);
+}
+.btn-sec.activo{ border-color:var(--azul); color:var(--texto); }
+.btn-pantalla{
+  position:absolute; top:clamp(10px,2vh,24px); right:clamp(10px,2vw,28px);
+  width:clamp(40px,5vh,56px); height:clamp(40px,5vh,56px);
+  border-radius:12px; border:2px solid var(--panel-b); background:transparent;
+  color:var(--texto-dim); font-size:clamp(18px,3vh,28px); cursor:pointer;
+}
+.btn-pantalla:active{ transform:scale(0.94); }

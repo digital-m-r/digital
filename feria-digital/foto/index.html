@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Foto de recuerdo — Foro Digital 2026 BMM</title>
+<link rel="stylesheet" href="css/foto.css">
+</head>
+<body>
+
+<!-- ============ 1. ELEGIR MARCO ============ -->
+<section id="s-marcos" class="pantalla activa">
+  <button id="btn-pantalla" class="btn-pantalla" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+  <h1 class="titulo">Foro Digital <span>2026</span></h1>
+  <p class="sub">Elige tu marco y llévate tu foto de recuerdo</p>
+  <div id="grid-marcos" class="grid-marcos"></div>
+</section>
+
+<!-- ============ 2. CÁMARA ============ -->
+<section id="s-camara" class="pantalla">
+  <div class="visor" id="visor">
+    <video id="video" autoplay playsinline muted></video>
+    <img id="marco-overlay" alt="">
+    <div id="cam-nombre" class="cam-nombre"></div>
+    <div id="cuenta" class="cuenta"></div>
+    <div id="flash" class="flash"></div>
+  </div>
+  <div class="barra-inferior">
+    <button id="btn-cambiar-marco" class="btn btn-sec">← Marco</button>
+    <button id="btn-camara" class="btn btn-sec" style="display:none">🔄 Cámara</button>
+    <button id="btn-espejo" class="btn btn-sec">↔ Espejo: SÍ</button>
+    <button id="btn-foto" class="btn btn-prim">📸 TOMAR FOTO</button>
+  </div>
+</section>
+
+<!-- ============ 3. REVISAR ============ -->
+<section id="s-resultado" class="pantalla">
+  <div class="visor visor-resultado">
+    <img id="foto-resultado" alt="Tu foto">
+  </div>
+  <div class="barra-inferior">
+    <button id="btn-repetir" class="btn btn-sec">↺ Repetir</button>
+    <button id="btn-listo" class="btn btn-prim">✓ ¡LISTO!</button>
+  </div>
+</section>
+
+<!-- ============ 4. QR ============ -->
+<section id="s-qr" class="pantalla">
+  <div class="qr-layout">
+    <div class="qr-foto"><img id="foto-final" alt="Tu foto"></div>
+    <div class="qr-info">
+      <h2 id="qr-titulo">¡Quedaste genial!</h2>
+      <p id="qr-texto">Escanea el código con la cámara de tu celular para descargar tu foto.</p>
+      <div id="qr-caja" class="qr-caja"></div>
+      <p class="qr-aviso">Tu foto se guarda temporalmente solo para que puedas descargarla.</p>
+      <button id="btn-nueva" class="btn btn-prim">NUEVA FOTO</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ERROR / CARGANDO ============ -->
+<section id="s-mensaje" class="pantalla">
+  <div class="mensaje-box">
+    <h2 id="msg-titulo"></h2>
+    <p id="msg-texto"></p>
+    <button id="btn-msg" class="btn btn-prim">Reintentar</button>
+  </div>
+</section>
+
+<canvas id="lienzo" hidden></canvas>
+
+<script src="js/qrcode.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
