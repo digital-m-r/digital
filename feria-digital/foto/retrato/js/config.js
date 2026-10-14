@@ -58,7 +58,7 @@ export const CONFIG = {
   },
 
   // Parámetros del modo IA (dibujo lineal de Gemini)
-  LINEAL: { resolucion: 800, umbral: 150, minLargo: 5, simplificacion: 0.7, rellenoMin: 5 },
+  LINEAL: { resolucion: 1024, umbral: 150, minLargo: 5, simplificacion: 0.7, rellenoMin: 5 },
 
   ANIMACION: {
     minSegundos: 25,
