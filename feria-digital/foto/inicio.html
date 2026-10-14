@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Foro Digital & Innovación BMM 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="retrato/css/retrato.css">
+</head>
+<body>
+  <main class="selector">
+    <header>
+      <h1 id="titulo">Foro Digital & Innovación BMM 2026</h1>
+      <p>Elige cómo quieres llevarte tu recuerdo.</p>
+    </header>
+
+    <nav class="opciones">
+      <a class="opcion foto" id="link-foto" href="index.html">
+        <svg class="icono" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" aria-hidden="true">
+          <rect x="10" y="26" width="76" height="54" rx="10"/>
+          <path d="M34 26l6-10h16l6 10"/>
+          <circle cx="48" cy="53" r="15"/>
+        </svg>
+        <h2>Foto con marco</h2>
+        <p>Una foto al instante con los marcos de Mindy.</p>
+      </a>
+
+      <a class="opcion retrato" href="retrato/captura.html">
+        <svg class="icono" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 78c10-2 14-10 20-22s14-26 26-32"/>
+          <path d="M60 18l18 18-34 34H26V52z"/>
+          <path d="M54 24l18 18"/>
+        </svg>
+        <h2>Retrato dibujado</h2>
+        <p>Tu foto convertida en dibujo, trazo por trazo, en la pantalla grande.</p>
+      </a>
+    </nav>
+  </main>
+
+  <script type="module">
+    import { CONFIG } from "./retrato/js/config.js";
+    document.querySelector("#link-foto").href = CONFIG.PAGINA_FOTO_MARCO;
+    document.querySelector("#titulo").textContent = CONFIG.EVENTO_TITULO;
+  </script>
+</body>
+</html>
