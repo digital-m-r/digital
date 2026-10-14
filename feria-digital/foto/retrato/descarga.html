@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tu retrato · Foro Digital BMM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/retrato.css">
+</head>
+<body>
+  <main class="descarga">
+    <div id="cargando">
+      <svg class="trabajando" viewBox="0 0 120 60" aria-hidden="true">
+        <path d="M6 40 C 20 10, 34 10, 44 34 S 70 56, 80 26 S 104 8, 114 30"/>
+      </svg>
+      <p>Preparando tu retrato…</p>
+    </div>
+
+    <div id="listo" hidden>
+      <h1>Tu retrato</h1>
+      <img id="imagen" alt="Tu retrato dibujado">
+      <div class="hoja" id="repeticion" hidden></div>
+      <div class="acciones">
+        <a class="btn" id="btn-descargar" download="retrato-foro-bmm-2026.png">Descargar imagen</a>
+        <button class="btn secundario" id="btn-compartir" hidden>Compartir</button>
+        <button class="btn secundario" id="btn-ver">Ver cómo se dibujó</button>
+      </div>
+      <p style="margin-top:18px;color:var(--tenue);font-size:.9rem">En iPhone, si no se descarga, mantén presionada la imagen y elige «Guardar en Fotos».</p>
+    </div>
+
+    <div id="error" hidden>
+      <h2>No encontramos este retrato</h2>
+      <p id="txt-error">Es posible que el enlace esté incompleto o que el retrato ya se haya borrado.</p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { aPNG, crearSVG, animar } from "./js/dibujo.js";
+    import * as cola from "./js/cola.js";
+
+    const $ = (s) => document.querySelector(s);
+    const id = new URLSearchParams(location.search).get("id");
+
+    function fallar(msg) {
+      $("#cargando").hidden = true;
+      if (msg) $("#txt-error").textContent = msg;
+      $("#error").hidden = false;
+    }
+
+    try {
+      await cola.iniciar();
+      if (cola.modoActual() !== "firebase") throw new Error("La descarga no está configurada (falta Firebase en config.js).");
+      const r = await cola.obtener(id);
+      if (!r) { fallar(); }
+      else {
+        const blob = await aPNG(r, { nombre: r.nombre });
+        const url = URL.createObjectURL(blob);
+        $("#imagen").src = url;
+        $("#btn-descargar").href = url;
+
+        const archivo = new File([blob], "retrato-foro-bmm-2026.png", { type: "image/png" });
+        if (navigator.canShare?.({ files: [archivo] })) {
+          $("#btn-compartir").hidden = false;
+          $("#btn-compartir").addEventListener("click", () =>
+            navigator.share({ files: [archivo], title: "Mi retrato del Foro Digital BMM" }).catch(() => {}));
+        }
+
+        let anim = null;
+        $("#btn-ver").addEventListener("click", async () => {
+          anim?.cancelar();
+          const svg = crearSVG(r);
+          $("#repeticion").replaceChildren(svg);
+          $("#imagen").hidden = true;
+          $("#repeticion").hidden = false;
+          anim = animar(svg, { duracion: 12000 });
+          if (!(await anim.promesa)) return;
+          await new Promise((ok) => setTimeout(ok, 1200));
+          $("#repeticion").hidden = true;
+          $("#imagen").hidden = false;
+        });
+
+        $("#cargando").hidden = true;
+        $("#listo").hidden = false;
+      }
+    } catch (e) {
+      console.error(e);
+      fallar(e.message);
+    }
+  </script>
+</body>
+</html>

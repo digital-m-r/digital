@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Retrato dibujado · Laboratorio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/retrato.css">
+</head>
+<body>
+  <main class="lab">
+    <aside>
+      <h2>Laboratorio</h2>
+      <p style="font-size:.95rem;color:var(--tenue)">Sube fotos reales tomadas en el lugar del evento y ajusta hasta que te guste. Luego copia los valores a <b>config.js</b>.</p>
+      <label for="modo" style="display:block">Modo</label>
+      <select id="modo" style="font:inherit;padding:8px;border-radius:8px">
+        <option value="ia">Foto → IA (Gemini) → trazos</option>
+        <option value="lineal">Ya es dibujo lineal (imagen de Gemini)</option>
+        <option value="foto">Foto → estilo clásico (sin IA)</option>
+      </select>
+      <input type="file" id="archivo" accept="image/*">
+
+      <div id="ctrl-lineal" style="display:flex;flex-direction:column;gap:14px">
+        <label>Umbral de tinta <span id="v-umbral"></span></label>
+        <input type="range" id="umbral" min="80" max="220" step="5">
+        <label>Grosor mínimo de relleno <span id="v-rellenoMin"></span></label>
+        <input type="range" id="rellenoMin" min="3" max="10" step="0.5">
+      </div>
+      <div id="ctrl-foto" style="display:flex;flex-direction:column;gap:14px">
+
+      <label>Detalle <span id="v-detalle"></span></label>
+      <input type="range" id="detalle" min="0.06" max="0.45" step="0.01">
+      <label>Desenfoque <span id="v-pasadasDesenfoque"></span></label>
+      <input type="range" id="pasadasDesenfoque" min="0" max="4" step="1">
+      <label>Largo mínimo <span id="v-minLargo"></span></label>
+      <input type="range" id="minLargo" min="4" max="40" step="1">
+      <label>Simplificación <span id="v-simplificacion"></span></label>
+      <input type="range" id="simplificacion" min="0.4" max="3" step="0.1">
+      <label>Zona de sombra <span id="v-umbralSombra"></span></label>
+      <input type="range" id="umbralSombra" min="0.04" max="0.35" step="0.01">
+      <label>Espacio de sombra <span id="v-espacioSombra"></span></label>
+      <input type="range" id="espacioSombra" min="3" max="14" step="1">
+      <label><span>Sombras</span><input type="checkbox" id="sombras"></label>
+      <label><span>Sombra cruzada</span><input type="checkbox" id="sombraCruzada"></label>
+      <label><span>Quitar fondo (MediaPipe)</span><input type="checkbox" id="usarSegmentacion" checked></label>
+      </div>
+
+      <div class="acciones" style="justify-content:flex-start">
+        <button class="btn" id="btn-animar">Animar</button>
+      </div>
+      <pre id="stats">Sube una foto para empezar.</pre>
+      <pre id="json"></pre>
+    </aside>
+    <div class="hoja" id="hoja"></div>
+  </main>
+
+  <script type="module">
+    import { CONFIG } from "./js/config.js";
+    import { fotoARetrato, dibujoLinealARetrato } from "./js/motor.js";
+    import { generarDibujo, iaConfigurada } from "./js/ia.js";
+    import { crearSVG, animar } from "./js/dibujo.js";
+
+    const $ = (s) => document.querySelector(s);
+    const op = { ...CONFIG.RETRATO };
+    const lin = { ...CONFIG.LINEAL };
+    let dibujoIA = null; // caché: no volver a pagar la IA al mover controles
+    ["umbral", "rellenoMin"].forEach((k) => {
+      $("#" + k).value = lin[k]; $("#v-" + k).textContent = lin[k];
+      $("#" + k).addEventListener("input", (e) => { lin[k] = Number(e.target.value); $("#v-" + k).textContent = lin[k]; programar(); });
+    });
+    const modo = () => $("#modo").value;
+    const ajustarControles = () => {
+      $("#ctrl-foto").style.display = modo() === "foto" ? "flex" : "none";
+      $("#ctrl-lineal").style.display = modo() === "foto" ? "none" : "flex";
+    };
+    $("#modo").addEventListener("change", () => { dibujoIA = null; ajustarControles(); programar(); });
+    ajustarControles();
+    const rangos = ["detalle", "pasadasDesenfoque", "minLargo", "simplificacion", "umbralSombra", "espacioSombra"];
+    const casillas = ["sombras", "sombraCruzada"];
+    let imagen = null, retrato = null, anim = null, espera = 0;
+
+    rangos.forEach((k) => {
+      $("#" + k).value = op[k];
+      $("#v-" + k).textContent = op[k];
+      $("#" + k).addEventListener("input", (e) => {
+        op[k] = Number(e.target.value);
+        $("#v-" + k).textContent = op[k];
+        programar();
+      });
+    });
+    casillas.forEach((k) => {
+      $("#" + k).checked = op[k];
+      $("#" + k).addEventListener("change", (e) => { op[k] = e.target.checked; programar(); });
+    });
+    $("#usarSegmentacion").addEventListener("change", programar);
+
+    $("#archivo").addEventListener("change", (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const img = new Image();
+      img.onload = () => {
+        // Recorte cuadrado centrado, igual que la estación
+        dibujoIA = null;
+        if (modo() === "lineal") { imagen = img; procesar(); return; }
+        const lado = Math.min(img.width, img.height);
+        const c = document.createElement("canvas");
+        c.width = c.height = 720;
+        c.getContext("2d").drawImage(img, (img.width - lado) / 2, (img.height - lado) / 2, lado, lado, 0, 0, 720, 720);
+        imagen = c;
+        procesar();
+      };
+      img.src = URL.createObjectURL(f);
+    });
+
+    function programar() { clearTimeout(espera); espera = setTimeout(procesar, 250); }
+
+    async function procesar() {
+      if (!imagen) return;
+      anim?.cancelar();
+      $("#stats").textContent = "Procesando…";
+      try {
+        if (modo() === "foto") {
+          retrato = await fotoARetrato(imagen, { ...op, usarSegmentacion: $("#usarSegmentacion").checked });
+        } else if (modo() === "lineal") {
+          retrato = dibujoLinealARetrato(imagen, lin);
+        } else {
+          if (!iaConfigurada()) throw new Error("Falta URL_APPS_SCRIPT en config.js");
+          if (!dibujoIA) { $("#stats").textContent = "La IA está generando el dibujo…"; dibujoIA = await generarDibujo(imagen); }
+          retrato = dibujoLinealARetrato(dibujoIA, lin);
+        }
+      } catch (e) { $("#stats").textContent = "Error: " + e.message; return; }
+      $("#hoja").replaceChildren(crearSVG(retrato, { lapiz: false }));
+      const s = retrato.stats;
+      $("#stats").textContent =
+        `Trazos: ${s.contornos}\nSombras: ${s.sombras}\nTamaño: ${s.kb} KB (máx. ~680)\nTiempo: ${s.ms} ms\nFondo quitado: ${retrato.conMascara ? "sí" : "no (óvalo)"}`;
+      $("#json").textContent = modo() === "foto"
+        ? "RETRATO: " + JSON.stringify({ ...op }, null, 2)
+        : "LINEAL: " + JSON.stringify({ ...lin }, null, 2);
+    }
+
+    $("#btn-animar").addEventListener("click", () => {
+      if (!retrato) return;
+      anim?.cancelar();
+      const svg = crearSVG(retrato);
+      $("#hoja").replaceChildren(svg);
+      anim = animar(svg);
+    });
+  </script>
+</body>
+</html>

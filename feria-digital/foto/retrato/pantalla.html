@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Retrato dibujado · Pantalla</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/retrato.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>body { overflow: hidden; cursor: none; } .btn-completa { cursor: pointer; }</style>
+</head>
+<body>
+  <main class="escenario">
+    <div class="hoja" id="hoja"></div>
+
+    <aside class="panel">
+      <div class="evento" id="evento"></div>
+
+      <!-- En espera -->
+      <div id="estado-espera">
+        <h1>Tu retrato, dibujado en vivo</h1>
+        <p class="detalle">Pasa a la estación de foto y mira cómo aparece aquí, trazo por trazo.</p>
+      </div>
+
+      <!-- Dibujando -->
+      <div id="estado-dibujando" hidden>
+        <h1 id="txt-quien">Dibujando…</h1>
+        <div class="progreso"><span id="barra"></span></div>
+      </div>
+
+      <!-- Terminado -->
+      <div id="estado-listo" hidden>
+        <h1 id="txt-listo">¡Terminado!</h1>
+        <div class="qr-caja" id="qr-caja">
+          <div class="qr" id="qr"></div>
+          <p class="detalle" style="margin:0">Escanea con tu celular para descargar tu retrato.</p>
+        </div>
+        <p class="detalle" id="txt-sin-qr" hidden>La descarga necesita conexión a Firebase.</p>
+      </div>
+
+      <div class="fila" id="txt-fila"></div>
+    </aside>
+  </main>
+
+  <button class="btn btn-completa" id="btn-completa">Pantalla completa</button>
+
+  <script type="module">
+    import { CONFIG } from "./js/config.js";
+    import { crearSVG, animar, trazoDeEspera } from "./js/dibujo.js";
+    import * as cola from "./js/cola.js";
+
+    const $ = (s) => document.querySelector(s);
+    const hoja = $("#hoja");
+    const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+    $("#evento").textContent = `${CONFIG.EVENTO_TITULO}`;
+
+    let fila = [];
+    let ocupado = false;
+    let animEspera = null;
+    const procesados = new Set();
+
+    function estado(nombre) {
+      ["espera", "dibujando", "listo"].forEach((e) => ($("#estado-" + e).hidden = e !== nombre));
+    }
+
+    function actualizarFila() {
+      const n = fila.filter((x) => !procesados.has(x.id)).length;
+      $("#txt-fila").textContent = n ? `${n} ${n === 1 ? "retrato" : "retratos"} en la fila` : "";
+    }
+
+    // Pantalla de espera: un trazo decorativo que se dibuja en bucle
+    let genEspera = 0;
+    async function bucleEspera() {
+      const yo = ++genEspera;
+      estado("espera");
+      while (!ocupado && yo === genEspera) {
+        const svg = crearSVG(trazoDeEspera(), { grosor: 2.2 });
+        hoja.replaceChildren(svg);
+        animEspera = animar(svg, { duracion: 9000 });
+        const completo = await animEspera.promesa;
+        if (!completo || ocupado || yo !== genEspera) break;
+        await esperar(2500);
+      }
+    }
+
+    async function siguiente() {
+      if (ocupado) return;
+      const item = fila.find((x) => !procesados.has(x.id));
+      if (!item) return;
+      ocupado = true;
+      procesados.add(item.id);
+      animEspera?.cancelar();
+      actualizarFila();
+      await cola.marcar(item.id, "dibujando");
+
+      estado("dibujando");
+      $("#txt-quien").textContent = item.nombre ? `Dibujando a ${item.nombre}` : "Dibujando tu retrato";
+      const barra = $("#barra");
+      const svg = crearSVG(item);
+      hoja.replaceChildren(svg);
+      await animar(svg, { alProgreso: (t) => (barra.style.width = `${Math.round(t * 100)}%`) }).promesa;
+
+      await cola.marcar(item.id, "listo");
+      estado("listo");
+      $("#txt-listo").textContent = item.nombre ? `¡Listo, ${item.nombre}!` : "¡Terminado!";
+      const qr = $("#qr");
+      qr.replaceChildren();
+      const hayQR = cola.modoActual() === "firebase" && window.QRCode;
+      $("#qr-caja").hidden = !hayQR;
+      $("#txt-sin-qr").hidden = !!hayQR;
+      if (hayQR) {
+        new QRCode(qr, {
+          text: cola.urlDescarga(item.id),
+          width: 240, height: 240,
+          colorDark: "#0B2A6F", colorLight: "#FFFFFF",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+      await esperar(CONFIG.PANTALLA.segundosQR * 1000);
+
+      ocupado = false;
+      if (fila.some((x) => !procesados.has(x.id))) siguiente();
+      else bucleEspera();
+    }
+
+    cola.escucharPendientes((lista) => {
+      fila = lista;
+      actualizarFila();
+      siguiente();
+    });
+    bucleEspera();
+
+    // Pantalla completa y evitar que la pantalla se apague
+    let wakeLock = null;
+    async function mantenerEncendida() {
+      try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {}
+    }
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") mantenerEncendida();
+    });
+    $("#btn-completa").addEventListener("click", async () => {
+      try { await document.documentElement.requestFullscreen(); } catch {}
+      mantenerEncendida();
+      $("#btn-completa").hidden = true;
+    });
+    document.addEventListener("fullscreenchange", () => {
+      $("#btn-completa").hidden = !!document.fullscreenElement;
+    });
+  </script>
+</body>
+</html>

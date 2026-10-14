@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Retrato dibujado · Captura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/retrato.css">
+</head>
+<body>
+  <a class="volver" href="../inicio.html">← Inicio</a>
+
+  <main class="estacion">
+
+    <!-- 1. Bienvenida y consentimiento -->
+    <section class="paso" id="paso-inicio">
+      <h1>Tu retrato, dibujado en vivo</h1>
+      <p>Te tomamos una foto, la IA te convierte en caricatura y la pantalla grande la dibuja trazo por trazo. Al final escaneas un QR y te la llevas.</p>
+      <div class="campo">
+        <label for="nombre">¿Cómo te llamamos en pantalla? (opcional)</label>
+        <input id="nombre" type="text" maxlength="24" autocomplete="off" placeholder="Tu nombre">
+      </div>
+      <label class="consentimiento">
+        <input id="acepto" type="checkbox">
+        <span>Acepto que mi foto se envíe a la IA de Google (Gemini) para crear mi caricatura y que el dibujo se muestre en la pantalla del evento. No guardamos la foto; solo el dibujo, que se borra automáticamente después de 30 días.</span>
+      </label>
+      <button class="btn" id="btn-empezar" disabled>Tomar mi retrato</button>
+    </section>
+
+    <!-- 2. Cámara -->
+    <section class="paso" id="paso-camara" hidden>
+      <h2>Acomoda tu cara dentro del óvalo</h2>
+      <div class="visor">
+        <video id="video" playsinline muted></video>
+        <div class="guia"></div>
+        <div class="cuenta" id="cuenta" hidden></div>
+        <div class="flash" id="flash"></div>
+      </div>
+      <p>Mira a la cámara, sin lentes oscuros y con el cabello lejos de la cara.</p>
+      <button class="btn" id="btn-foto">Tomar foto</button>
+    </section>
+
+    <!-- 3. Procesando -->
+    <section class="paso" id="paso-procesando" hidden>
+      <svg class="trabajando" viewBox="0 0 120 60" aria-hidden="true">
+        <path d="M6 40 C 20 10, 34 10, 44 34 S 70 56, 80 26 S 104 8, 114 30"/>
+      </svg>
+      <h2 id="txt-procesando">Convirtiendo tu foto en trazos…</h2>
+      <p id="txt-procesando-sub">Esto toma unos segundos.</p>
+    </section>
+
+    <!-- 4. Vista previa -->
+    <section class="paso" id="paso-vista" hidden>
+      <h2>Así se va a dibujar</h2>
+      <p id="txt-estilo" hidden></p>
+      <div class="hoja vista" id="vista-svg"></div>
+      <div class="acciones">
+        <button class="btn secundario" id="btn-repetir">Repetir foto</button>
+        <button class="btn" id="btn-enviar">Enviar a la pantalla</button>
+      </div>
+    </section>
+
+    <!-- 5. Enviado -->
+    <section class="paso" id="paso-enviado" hidden>
+      <h1 id="txt-enviado">¡Listo!</h1>
+      <p id="txt-fila">Mira la pantalla grande.</p>
+      <button class="btn" id="btn-siguiente">Siguiente persona</button>
+    </section>
+
+    <!-- Error -->
+    <section class="paso" id="paso-error" hidden>
+      <h2>Algo no salió bien</h2>
+      <p class="aviso-error" id="txt-error"></p>
+      <button class="btn" id="btn-reintentar">Volver a empezar</button>
+    </section>
+  </main>
+
+  <script type="module">
+    import { CONFIG } from "./js/config.js";
+    import { iniciarCamara, capturarCuadrado, detenerCamara } from "./js/camara.js";
+    import { prepararSegmentacion } from "./js/segmentacion.js";
+    import { fotoARetrato, dibujoLinealARetrato } from "./js/motor.js";
+    import { iaConfigurada, generarDibujo } from "./js/ia.js";
+    import { crearSVG } from "./js/dibujo.js";
+    import * as cola from "./js/cola.js";
+
+    const $ = (s) => document.querySelector(s);
+    const PASOS = ["inicio", "camara", "procesando", "vista", "enviado", "error"];
+    const video = $("#video");
+    let retrato = null;
+    let temporizador = null;
+
+    const mostrar = (id) => PASOS.forEach((p) => ($("#paso-" + p).hidden = p !== id));
+    const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+    const ceder = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 40)));
+
+    // Precarga para que la primera foto no tarde
+    cola.iniciar();
+    prepararSegmentacion();
+
+    function error(msg) {
+      detenerCamara(video);
+      $("#txt-error").textContent = msg;
+      mostrar("error");
+    }
+
+    async function abrirCamara() {
+      mostrar("camara");
+      $("#btn-foto").disabled = false;
+      try {
+        await iniciarCamara(video);
+      } catch (e) {
+        error(e.name === "NotAllowedError"
+          ? "El navegador bloqueó la cámara. Permite el acceso en el ícono de la barra de direcciones y vuelve a empezar."
+          : e.message || "No se encontró una cámara conectada.");
+      }
+    }
+
+    function reiniciar() {
+      clearTimeout(temporizador);
+      detenerCamara(video);
+      retrato = null;
+      $("#nombre").value = "";
+      $("#acepto").checked = false;
+      $("#btn-empezar").disabled = true;
+      $("#btn-enviar").disabled = false;
+      mostrar("inicio");
+    }
+
+    $("#acepto").addEventListener("change", (e) => ($("#btn-empezar").disabled = !e.target.checked));
+    $("#btn-empezar").addEventListener("click", abrirCamara);
+    $("#btn-repetir").addEventListener("click", abrirCamara);
+    $("#btn-siguiente").addEventListener("click", reiniciar);
+    $("#btn-reintentar").addEventListener("click", reiniciar);
+
+    $("#btn-foto").addEventListener("click", async () => {
+      $("#btn-foto").disabled = true;
+      const cuenta = $("#cuenta");
+      cuenta.hidden = false;
+      for (let n = CONFIG.CAPTURA.cuentaRegresiva; n > 0; n--) {
+        cuenta.textContent = n;
+        await esperar(900);
+      }
+      cuenta.hidden = true;
+      const flash = $("#flash");
+      flash.classList.remove("activo"); void flash.offsetWidth; flash.classList.add("activo");
+
+      const foto = capturarCuadrado(video, 720);
+      detenerCamara(video);
+      mostrar("procesando");
+      await ceder();
+
+      $("#txt-estilo").hidden = true;
+      try {
+        if (iaConfigurada()) {
+          $("#txt-procesando").textContent = "La IA está creando tu caricatura…";
+          $("#txt-procesando-sub").textContent = "Toma entre 10 y 20 segundos.";
+          try {
+            const dibujo = await generarDibujo(foto);
+            retrato = dibujoLinealARetrato(dibujo);
+          } catch (e) {
+            // Plan B: si la IA falla, el evento no se detiene
+            console.warn("IA no disponible, se usa estilo clásico:", e.message);
+            $("#txt-estilo").textContent = "La IA no respondió, así que usamos el estilo clásico. Puedes repetir la foto para intentarlo de nuevo.";
+            $("#txt-estilo").hidden = false;
+            retrato = await fotoARetrato(foto);
+          }
+        } else {
+          $("#txt-procesando").textContent = "Convirtiendo tu foto en trazos…";
+          retrato = await fotoARetrato(foto);
+        }
+        console.log("Retrato generado", retrato.stats);
+        if (!retrato.trazos.length) throw new Error("No se detectaron líneas. Revisa la luz y vuelve a intentarlo.");
+        $("#vista-svg").replaceChildren(crearSVG(retrato, { lapiz: false }));
+        mostrar("vista");
+      } catch (e) {
+        error(e.message || "No se pudo procesar la foto.");
+      }
+    });
+
+    $("#btn-enviar").addEventListener("click", async () => {
+      $("#btn-enviar").disabled = true;
+      const nombre = $("#nombre").value.trim();
+      try {
+        const { lugar } = await cola.enviar(retrato, nombre);
+        $("#txt-enviado").textContent = nombre ? `¡Listo, ${nombre}!` : "¡Listo!";
+        $("#txt-fila").textContent =
+          lugar && lugar > 1
+            ? `Tu retrato está en la fila, lugar ${lugar}. Mira la pantalla grande.`
+            : "Mira la pantalla grande: tu retrato ya se está dibujando.";
+        mostrar("enviado");
+        temporizador = setTimeout(reiniciar, CONFIG.CAPTURA.segundosReinicio * 1000);
+      } catch (e) {
+        console.error(e);
+        $("#btn-enviar").disabled = false;
+        error("No se pudo enviar el retrato. Revisa la conexión a internet y vuelve a intentarlo.");
+      }
+    });
+  </script>
+</body>
+</html>
