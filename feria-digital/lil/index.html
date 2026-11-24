@@ -1,0 +1,580 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Coaching LIL en Línea</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* Layout: herramienta de piso pensada primero para celular — encabezado compacto con pestañas a todo lo ancho, tarjetas de pregunta con botones grandes, barra de score fija abajo; en tablet/PC se abre en rejilla */
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#14202b; --muted:#5b6875; --line:#d4dbe2;
+  --navy:#16324f; --navy-2:#24507c; --accent:#e0a100;
+  --ok:#1f8a4c; --ok-bg:#e3f4ea; --warn:#b77400; --warn-bg:#fdf1d8; --bad:#c23b32; --bad-bg:#fbe6e4;
+  --chip:#e6ecf2;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161d; --panel:#17212b; --ink:#e6edf3; --muted:#9aa8b5; --line:#2b3947;
+  --navy:#9cc3ea; --navy-2:#c3dcf4; --accent:#f2b928;
+  --ok:#4cc27e; --ok-bg:#163a26; --warn:#f0b54a; --warn-bg:#3b2d10; --bad:#f07a70; --bad-bg:#3d1b18;
+  --chip:#22303d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161d; --panel:#17212b; --ink:#e6edf3; --muted:#9aa8b5; --line:#2b3947;
+  --navy:#9cc3ea; --navy-2:#c3dcf4; --accent:#f2b928;
+  --ok:#4cc27e; --ok-bg:#163a26; --warn:#f0b54a; --warn-bg:#3b2d10; --bad:#f07a70; --bad-bg:#3d1b18;
+  --chip:#22303d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 32px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.top-in{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.brand{display:flex;flex-direction:column;line-height:1.05;margin-right:auto}
+.brand b{font-family:var(--f-display);font-size:24px;letter-spacing:.02em;color:var(--navy);text-transform:uppercase}
+.brand span{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+nav.tabs{display:flex;gap:6px}
+nav.tabs a{font-family:var(--f-display);font-size:18px;text-transform:uppercase;letter-spacing:.04em;text-decoration:none;color:var(--muted);padding:6px 14px;border-radius:8px;min-height:44px;display:flex;align-items:center;justify-content:center}
+nav.tabs a[aria-current="page"]{background:var(--navy);color:var(--panel)}
+.goal{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.goal .bar{width:90px;height:10px;background:var(--chip);border-radius:6px;overflow:hidden}
+.goal .bar i{display:block;height:100%;background:var(--accent);width:0}
+.goal b{font-family:var(--f-mono);color:var(--ink);font-size:15px}
+.status{font-size:13px;padding:8px 12px;border-radius:8px;margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.status.warn{background:var(--warn-bg);color:var(--warn)}
+.status.info{background:var(--chip);color:var(--muted)}
+h2{font-family:var(--f-display);font-size:28px;text-transform:uppercase;letter-spacing:.02em;margin:18px 0 4px;color:var(--navy);text-wrap:balance}
+h3{font-family:var(--f-display);font-size:20px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;color:var(--navy)}
+.sub{color:var(--muted);margin:0 0 12px;max-width:70ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.grid{display:grid;gap:12px}
+.g-form{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:0}
+input,select,textarea{font:inherit;font-size:17px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-height:46px;width:100%;text-transform:none;letter-spacing:0}
+textarea{min-height:76px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.role{font:inherit;font-weight:600;font-size:16px;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;min-height:50px;cursor:pointer}
+.role[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:var(--panel)}
+details.method{background:var(--chip);border-radius:10px;padding:8px 12px;margin:0 0 12px}
+details.method summary{cursor:pointer;font-weight:600;min-height:36px;display:flex;align-items:center;color:var(--navy-2)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 4px}
+.steps div{font-size:13px;color:var(--muted);min-width:0}
+.steps b{display:block;font-family:var(--f-display);font-size:17px;text-transform:uppercase;color:var(--ink);letter-spacing:.03em}
+.prev{margin-top:12px;border-left:4px solid var(--navy-2);background:var(--chip);border-radius:0 8px 8px 0;padding:10px 12px;font-size:14px}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;scroll-margin-top:120px}
+.q-head{display:flex;gap:12px;align-items:flex-start}
+.q-num{font-family:var(--f-display);font-size:21px;background:var(--navy);color:var(--panel);border-radius:8px;min-width:44px;height:38px;display:flex;align-items:center;justify-content:center;flex:none}
+.q-txt{font-size:17px;font-weight:600}
+.q-val{font-size:14px;color:var(--muted);margin-top:2px}
+.q-tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+details.guide{background:var(--bg);border-radius:8px;padding:6px 12px;font-size:14px}
+details.guide summary{cursor:pointer;font-weight:600;color:var(--navy-2);min-height:36px;display:flex;align-items:center}
+details.guide ul{margin:6px 0 4px;padding-left:20px}
+details.guide li+li{margin-top:4px}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.choice{font:inherit;font-weight:600;font-size:16px;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;min-height:58px;padding:6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
+.choice small{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(--muted);margin-top:3px}
+.choice .sm{display:none}
+.choice[data-v="Sí"][aria-pressed="true"]{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.choice[data-v="Requiere acompañamiento"][aria-pressed="true"]{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.choice[data-v="No"][aria-pressed="true"]{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.scorebar{position:sticky;bottom:0;z-index:4;margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:10px;align-items:center;box-shadow:0 -6px 18px rgba(0,0,0,.08)}
+.scorebar .big{font-family:var(--f-mono);font-size:26px;line-height:1}
+.scorebar .btns{display:flex;gap:8px;margin-left:auto}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+.btn{font:inherit;font-weight:600;font-size:16px;border:none;border-radius:10px;padding:12px 18px;min-height:48px;cursor:pointer;background:var(--chip);color:var(--ink)}
+.btn.primary{background:var(--navy);color:var(--panel)}
+.btn.danger{background:var(--bad-bg);color:var(--bad)}
+.btn.sm{min-height:40px;padding:8px 12px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.spacer{margin-left:auto}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:10px;font-weight:600;z-index:20;max-width:90vw;text-align:center}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi .n{font-family:var(--f-mono);font-size:28px;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qbars{display:grid;gap:10px}
+.qbar{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) 44px;gap:10px;align-items:center;font-size:14px}
+.qbar .track{height:16px;background:var(--chip);border-radius:6px;overflow:hidden;display:flex}
+.qbar .track i{display:block;height:100%}
+.qbar .v{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--c)}
+.cols2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px;border-bottom:1px solid var(--line)}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tscroll{overflow-x:auto}
+.empty{color:var(--muted);padding:16px;text-align:center;border:1px dashed var(--line);border-radius:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.weekpick{display:flex;gap:8px;align-items:center}
+.weekpick b{font-family:var(--f-mono);min-width:150px;text-align:center;font-size:14px}
+.small{font-size:13px;color:var(--muted)}
+.list{display:grid;gap:8px}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px;background:var(--panel);cursor:pointer;text-align:left;font:inherit;color:var(--ink);width:100%}
+.item .l1{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.item .l1 b{font-size:16px;margin-right:auto;min-width:0}
+.item .meta{font-size:13px;color:var(--muted)}
+.act{border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px}
+.act.done{opacity:.65}
+.act .txt{font-weight:600}
+.act.done .txt{text-decoration:line-through}
+.act .row{gap:8px}
+@media (max-width:640px){
+  .brand span{display:none}
+  nav.tabs{flex-basis:100%}
+  nav.tabs a{flex:1;font-size:17px;padding:6px 8px}
+  .steps{grid-template-columns:1fr 1fr}
+  .choice .lg{display:none} .choice .sm{display:inline}
+  .scorebar #answered{display:none}
+  .scorebar .btns{width:100%} .scorebar .btns .btn{flex:1}
+  .btn{padding:12px 14px}
+  h2{font-size:25px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<header class="top"><div class="top-in">
+  <div class="brand"><b>Coaching LIL</b><span>Limpieza · Inspección · Lubricación</span></div>
+  <div class="goal" title="Personas auditadas esta semana contra la meta"><div class="bar"><i id="goalFill"></i></div><b id="goalTxt">0/8</b></div>
+  <nav class="tabs">
+    <a href="#auditar" data-view="auditar">Auditar</a>
+    <a href="#semana" data-view="semana">Semana</a>
+    <a href="#historial" data-view="historial">Historial</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div id="statusBox"></div>
+
+  <!-- ============ AUDITAR ============ -->
+  <section id="v-auditar">
+    <h2 id="formTitle">Nueva visita</h2>
+    <p class="sub">Una visita = una persona. Elige su rol: la guía de cada pregunta cambia según lo que le toca a operador, Team Leader o técnico.</p>
+
+    <div class="roles" role="group" aria-label="Rol de la persona auditada">
+      <button type="button" class="role" data-role="Operador">Operador</button>
+      <button type="button" class="role" data-role="Team Leader">Team Leader</button>
+      <button type="button" class="role" data-role="Técnico">Técnico</button>
+    </div>
+
+    <details class="method">
+      <summary>Método: Observar → Preguntar → Retroalimentar → Acordar</summary>
+      <div class="steps">
+        <div><b>1 · Observar</b>Ve cómo trabaja su LIL sin interrumpir.</div>
+        <div><b>2 · Preguntar</b>Pide que te muestre y explique en la máquina.</div>
+        <div><b>3 · Retroalimentar</b>Primero lo que hizo bien, luego la brecha.</div>
+        <div><b>4 · Acordar</b>Una acción concreta y cuándo la revisas.</div>
+      </div>
+    </details>
+
+    <div class="card">
+      <div class="grid g-form">
+        <label class="f">Número de nómina<input id="nomina" inputmode="numeric" autocomplete="off"></label>
+        <label class="f">Nombre<input id="nombre" autocomplete="off"></label>
+        <label class="f">FIT<select id="fit"><option value="">—</option><option>FIT 1</option><option>FIT 2</option><option>FIT 3</option><option>FIT 4</option><option>FIT 5</option><option>FIT 6</option></select></label>
+        <label class="f">Línea / equipo<input id="linea" autocomplete="off"></label>
+        <label class="f">Fecha<input type="date" id="fecha"></label>
+        <label class="f">Turno<select id="turno"><option value="">—</option><option>1</option><option>2</option><option>3</option></select></label>
+        <label class="f">Owner / coach<input id="coach" autocomplete="off"></label>
+      </div>
+      <div id="prevBox"></div>
+    </div>
+
+    <div class="grid" id="qList" style="margin-top:12px"></div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>Cierre del coaching</h3>
+      <div class="grid g-form">
+        <label class="f">Oportunidad identificada<select id="oportunidad"><option value="">—</option><option>Capacitación</option><option>Estándar insuficiente</option><option>Sin herramientas</option><option>Disciplina</option><option>Actitud</option></select></label>
+        <label class="f">Fecha de seguimiento<input type="date" id="seguimiento"></label>
+      </div>
+      <div class="grid" style="margin-top:12px">
+        <label class="f">Comentarios / evidencia<textarea id="comentarios" placeholder="Qué viste, qué tarjeta levantó, qué punto no conocía…"></textarea></label>
+        <label class="f">Acción acordada con la persona<textarea id="accion" placeholder="Ej. Repasar la OPL de lubricación de la taponadora con su líder antes del viernes"></textarea></label>
+      </div>
+    </div>
+
+    <div class="scorebar">
+      <div><div class="small">Score (0–2)</div><span class="big" id="scoreTxt">—</span></div>
+      <span class="pill" id="clasifPill">Sin respuestas</span>
+      <span class="small" id="answered">0/6 contestadas</span>
+      <div class="btns">
+        <button class="btn" id="btnClear" type="button">Limpiar</button>
+        <button class="btn primary" id="btnSave" type="button">Guardar visita</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SEMANA ============ -->
+  <section id="v-semana" hidden>
+    <h2>Revisión del viernes</h2>
+    <div class="row" style="margin-bottom:12px">
+      <div class="weekpick"><button class="btn sm" id="wPrev" type="button" aria-label="Semana anterior">‹</button><b id="wLabel"></b><button class="btn sm" id="wNext" type="button" aria-label="Semana siguiente">›</button></div>
+      <label class="f" style="flex-direction:row;align-items:center;gap:8px">Meta<input type="number" id="goalInput" min="1" max="99" style="width:76px"></label>
+    </div>
+    <div class="kpis" id="wKpis"></div>
+    <div class="cols2" style="margin-top:12px">
+      <div class="card"><h3>Resultado por pregunta</h3><div class="qbars" id="wBars"></div>
+        <div class="legend"><span style="--c:var(--ok)">Sí</span><span style="--c:var(--warn)">Requiere acompañamiento</span><span style="--c:var(--bad)">No</span></div></div>
+      <div class="card"><h3>Por rol</h3><div id="wRole"></div><h3 style="margin-top:16px">Oportunidades</h3><div id="wOpp"></div><h3 style="margin-top:16px">Por FIT</h3><div id="wFit"></div></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h3>Personas con seguimiento</h3><p class="small" style="margin-top:-6px">Visitas de la semana que no quedaron en Competente. Toca una para abrirla.</p><div id="wFollow"></div></div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>Plan de acción del equipo CI</h3>
+      <p class="small" style="margin-top:-6px">Lo que acuerden el viernes con base en los resultados. Las acciones abiertas siguen apareciendo cada semana hasta cerrarse.</p>
+      <div class="grid g-form" id="actForm">
+        <label class="f">Hallazgo<input id="aHall" placeholder="Ej. Q5 baja en técnicos FIT 2"></label>
+        <label class="f">Acción<input id="aTxt" placeholder="Ej. Sesión de cierre de tarjetas con técnicos"></label>
+        <label class="f">Responsable<input id="aResp"></label>
+        <label class="f">Fecha compromiso<input type="date" id="aFecha"></label>
+      </div>
+      <div class="row" style="margin:10px 0 14px"><button class="btn primary" id="btnAct" type="button">Agregar acción</button></div>
+      <div class="list" id="actList"></div>
+    </div>
+
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="btnCopyWeek" type="button">Copiar filas para Excel</button>
+      <button class="btn primary" id="btnXlsWeek" type="button">Descargar Excel de la semana</button>
+    </div>
+  </section>
+
+  <!-- ============ HISTORIAL ============ -->
+  <section id="v-historial" hidden>
+    <h2>Historial</h2>
+    <div class="row" style="margin-bottom:12px">
+      <input id="search" placeholder="Buscar nómina, nombre, línea o rol" style="flex:1;min-width:0">
+    </div>
+    <div class="list" id="histList"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="btnCopyAll" type="button">Copiar todo para Excel</button>
+      <button class="btn primary" id="btnXlsAll" type="button">Descargar Excel completo</button>
+    </div>
+  </section>
+</main>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var ROLES=["Operador","Team Leader","Técnico"];
+var QUESTIONS=[
+ {t:"¿El empleado conoce los puntos y frecuencias de limpieza de su equipo?",v:"Identifica dónde, cuándo y cómo limpiar.",tag:"Limpieza",g:{
+  "Operador":["Pídele: “Muéstrame en tu checklist o mapa de LIL qué te toca limpiar hoy y cada cuánto.”","Busca que use el mapa visual de la máquina, no que lo recite de memoria.","Si no lo sabe y el estándar está en la máquina, la brecha es de capacitación o disciplina."],
+  "Team Leader":["Pregunta qué le toca a cada operador en el checklist y cuánto paro está planeado para LIL en el tablero BMOS.","Pide que te muestre el cumplimiento y la duración del LIL de ayer.","¿El tiempo planeado refleja la duración real de las tareas?"],
+  "Técnico":["Pregunta qué tareas de limpieza de su línea dependen de él (áreas de difícil acceso, tareas que no son del operador).","¿Conoce el checklist de LIL de la línea que apoya?","Pídele un punto donde la limpieza deja ver una condición mecánica."]}},
+ {t:"¿Realiza la limpieza conforme al estándar establecido?",v:"Ejecuta la actividad correctamente y de forma segura.",tag:"Limpieza",g:{
+  "Operador":["Observa sin interrumpir: herramienta correcta, método de la OPL, secuencia.","Seguridad primero: ¿puede explicar los puntos de pellizco y riesgos de su máquina?","¿Registra el tiempo real de LIL en el checklist?"],
+  "Team Leader":["¿Hace la verificación sorpresa semanal de LIL y registra lo que observa? Pide ver el registro.","¿Capacitó a sus operadores en la ejecución? Revisa la matriz de habilidades.","Pregunta qué hace cuando un operador no completa su LIL."],
+  "Técnico":["Cuando apoya a un operador en una tarea de LIL, ¿sigue la OPL y lo hace de forma segura?","¿Corrige al operador con el estándar, o con su propio método?","Pide que explique los riesgos (pellizco, energía, temperatura) del punto que está trabajando."]}},
+ {t:"¿Identifica condiciones anormales durante la limpieza?",v:"Detecta fugas, suciedad anormal, desgaste, daños, etc.",tag:"Limpieza",g:{
+  "Operador":["Pregunta: “¿Qué encontraste hoy diferente a lo normal?” Limpiar es inspeccionar.","¿Conoce las fuentes de contaminación y áreas de difícil acceso de su equipo?","Señala un punto con suciedad o desgaste y pide que te diga si es normal."],
+  "Team Leader":["¿Conoce la lista de fuentes de contaminación y áreas de difícil acceso de su línea?","Pregunta qué acciones hay abiertas para eliminarlas y quién las lleva.","¿Esa lista está accesible para los operadores?"],
+  "Técnico":["Pide un ejemplo reciente de una fuente de contaminación que haya ayudado a eliminar o contener.","¿Participa en el análisis de áreas de difícil acceso?","Pregunta qué falla podría causar la anomalía que tienes enfrente."]}},
+ {t:"¿Conoce los puntos y frecuencias de inspección de su equipo?",v:"Identifica los puntos críticos y qué condiciones revisar.",tag:"Inspección",g:{
+  "Operador":["Pregunta en un punto concreto: “¿Qué revisas aquí y cómo sabes que está bien?”","Busca que use los controles visuales (rangos, marcas, semáforos).","Compara su respuesta contra la condición básica del equipo."],
+  "Team Leader":["¿Actualiza el checklist con base en averías y análisis de causa raíz? Pide el último cambio que hizo.","¿Cuándo se revisó por última vez el plan completo? Debe revisarse al menos una vez al año.","Pregunta qué tarjetas repetidas se convirtieron en tarea de inspección."],
+  "Técnico":["Pide que explique qué condición básica protege cada punto de inspección.","¿Hay tareas de PM sencillas que podrían pasar al operador? (sin desmontar, sin herramienta especial, a menos de 2 m, frecuencia menor a 1 mes)","¿Existe duplicidad entre el plan de PM y el checklist de LIL?"]}},
+ {t:"¿Puede identificar y reportar anormalidades encontradas durante la inspección?",v:"Reconoce desviaciones y sabe cómo escalarlas.",tag:"Inspección",g:{
+  "Operador":["Pregunta: “Si encuentras algo, ¿qué haces?” Debe mencionar levantar tarjeta (azul; roja si es de seguridad).","Pide que te muestre las tarjetas abiertas de su máquina y la medida de control de una.","¿Sabe qué lleva la tarjeta? Área, quién y cuándo, tipo, descripción y contramedida."],
+  "Team Leader":["¿Asigna cada tarjeta nueva a un responsable? Pide ver la lista de tarjetas.","¿Revisa abiertas y cerradas cada semana y lleva la tendencia?","¿Las tarjetas de seguridad se cerraron en menos de 24 horas?"],
+  "Técnico":["Pide ver las tarjetas que tiene asignadas y cuánto llevan abiertas.","¿Cierra las tarjetas con la persona que las levantó?","¿Apoya a los operadores para que detecten defectos? Pide un ejemplo."]}},
+ {t:"¿Conoce y aplica los estándares de LIL de su equipo?",v:"Identifica puntos, tipo de lubricante, cantidad y frecuencia definidos.",tag:"Lubricación",g:{
+  "Operador":["Pide que te muestre un punto de lubricación: qué lubricante, cuánto y cada cuándo.","Revisa que el lubricante y la herramienta estén identificados y disponibles.","Si su equipo no tiene lubricación en el estándar, anótalo en comentarios."],
+  "Team Leader":["¿Verifica que el lubricante, la cantidad y la frecuencia estén en el estándar?","¿Hay lubricante y herramientas disponibles en la línea? Revisa el punto de resguardo.","Pregunta cómo confirma que la lubricación se hizo."],
+  "Técnico":["¿El estándar de lubricación del operador coincide con el plan de PM, sin duplicar tareas?","Pide que explique qué pasa si se lubrica de más o de menos en ese punto.","¿Los puntos de lubricación están identificados visualmente?"]}}
+];
+var OPTS=[["Sí",2,"Sí"],["Requiere acompañamiento",1,"Acompañar"],["No",0,"No"]];
+var COLS=["Fecha","Turno","Número de nómina","Nombre del operador","FIT","Línea / equipo"];
+for(var i=1;i<=6;i++){COLS.push("Q"+i+" – Pregunta","Q"+i+" – Qué debemos validar","Q"+i+" – Resultado");}
+COLS.push("Oportunidad identificada","Comentarios / evidencia","Coaching score (0–2)","Coaching effectiveness","Owner / coach","Rol","Acción acordada","Fecha de seguimiento");
+
+/* ---------- utilidades ---------- */
+function $(id){return document.getElementById(id);}
+function ls(k,v){try{if(v===undefined){return localStorage.getItem(k);}if(v===null){localStorage.removeItem(k);}else{localStorage.setItem(k,v);}}catch(e){return null;}}
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function pad(n){return n<10?"0"+n:""+n;}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function parseD(s){var p=(s||"").split("-");return new Date(+p[0],(+p[1]||1)-1,+p[2]||1);}
+var MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+function fmtD(s){if(!s)return "—";var d=parseD(s);return d.getDate()+" "+MES[d.getMonth()];}
+function monday(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
+function score(r){var s=0,n=0;(r||[]).forEach(function(v){OPTS.forEach(function(o){if(o[0]===v){s+=o[1];n++;}});});return n?s/n:null;}
+function clasif(s){if(s==null)return "";return s>=1.8?"Competente":(s>=1?"Requiere refuerzo":"Requiere acompañamiento");}
+function tone(c){return c==="Competente"?"ok":(c==="Requiere refuerzo"?"warn":(c?"bad":""));}
+function newId(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function toast(t){var x=$("toast");x.textContent=t;x.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(function(){x.hidden=true;},2800);}
+function armed(btn,label,armedLabel,fn){btn.addEventListener("click",function(ev){ev.stopPropagation();if(btn.dataset.armed){delete btn.dataset.armed;btn.textContent=label;fn();}else{btn.dataset.armed="1";btn.textContent=armedLabel;setTimeout(function(){if(btn.dataset.armed){delete btn.dataset.armed;btn.textContent=label;}},3500);}});}
+
+/* ---------- estado ---------- */
+var db=null,downloads=null,dbState="conectando",remote={},actions={},editingId=null,role="";
+var answers=["","","","","",""],notes=["","","","","",""];
+var weekStart=monday(new Date());
+function pending(){try{return JSON.parse(ls("lilPending")||"[]");}catch(e){return [];}}
+function setPending(a){ls("lilPending",a.length?JSON.stringify(a):null);}
+function allRecords(){
+  var map={};Object.keys(remote).forEach(function(k){map[k]=Object.assign({id:k},remote[k]);});
+  pending().forEach(function(p){map[p.id]=Object.assign({id:p.id,_pending:true},p.data);});
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return (b.fecha||"").localeCompare(a.fecha||"")||(b.creado||"").localeCompare(a.creado||"");});
+}
+function goal(){var g=parseInt(ls("lilGoal")||"8",10);return g>0?g:8;}
+
+/* ---------- formulario ---------- */
+function buildQuestions(){
+  QUESTIONS.forEach(function(q,i){
+    var c=el("div","q");c.id="q"+i;
+    var h=el("div","q-head");h.appendChild(el("div","q-num","Q"+(i+1)));
+    var tx=el("div");tx.style.minWidth="0";tx.appendChild(el("div","q-tag",q.tag));tx.appendChild(el("div","q-txt",q.t));tx.appendChild(el("div","q-val","Qué validar: "+q.v));h.appendChild(tx);c.appendChild(h);
+    var d=el("details","guide");var sm=el("summary");sm.id="gs"+i;d.appendChild(sm);var ul=el("ul");ul.id="gl"+i;d.appendChild(ul);c.appendChild(d);
+    var ch=el("div","choices");
+    OPTS.forEach(function(o){var b=el("button","choice");b.type="button";b.dataset.v=o[0];b.setAttribute("aria-pressed","false");b.setAttribute("aria-label",o[0]);
+      b.appendChild(el("span","lg",o[0]));b.appendChild(el("span","sm",o[2]));b.appendChild(el("small",null,"= "+o[1]));
+      b.addEventListener("click",function(){answers[i]=answers[i]===o[0]?"":o[0];paintQ(i);updateScore();saveDraft();
+        if(answers[i]&&i<5&&!answers[i+1]){var nx=$("q"+(i+1));if(nx)nx.scrollIntoView({behavior:"smooth",block:"start"});}});ch.appendChild(b);});
+    c.appendChild(ch);
+    var n=el("input");n.id="n"+i;n.placeholder="Nota rápida (opcional)";n.addEventListener("input",function(){notes[i]=n.value;saveDraft();});c.appendChild(n);
+    $("qList").appendChild(c);
+  });
+}
+function paintGuides(){var r=role||"Operador";QUESTIONS.forEach(function(q,i){$("gs"+i).textContent="Cómo hacer el coaching · "+r;var ul=$("gl"+i);ul.textContent="";q.g[r].forEach(function(s){ul.appendChild(el("li",null,s));});});}
+function paintRole(){document.querySelectorAll(".role").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.role===role?"true":"false");});paintGuides();}
+function paintQ(i){$("q"+i).querySelectorAll(".choice").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===answers[i]?"true":"false");});}
+function updateScore(){var s=score(answers),c=clasif(s);$("scoreTxt").textContent=s==null?"—":s.toFixed(2);
+  var p=$("clasifPill");p.textContent=c||"Sin respuestas";p.className="pill "+tone(c);$("answered").textContent=answers.filter(Boolean).length+"/6 contestadas";}
+var FIELDS=["fecha","turno","nomina","nombre","fit","linea","coach","oportunidad","seguimiento","comentarios","accion"];
+function readForm(){var o={rol:role};FIELDS.forEach(function(f){o[f]=$(f).value.trim();});o.r=answers.slice();o.notas=notes.slice();return o;}
+function fillForm(o){FIELDS.forEach(function(f){$(f).value=o[f]||"";});role=o.rol||"";answers=(o.r||["","","","","",""]).slice();notes=(o.notas||["","","","","",""]).slice();
+  for(var i=0;i<6;i++){paintQ(i);$("n"+i).value=notes[i]||"";}paintRole();updateScore();showPrev();}
+function resetForm(){editingId=null;fillForm({fecha:iso(new Date()),turno:ls("lilTurno")||"",coach:ls("lilCoach")||"",fit:ls("lilFit")||"",linea:ls("lilLinea")||""});
+  $("formTitle").textContent="Nueva visita";$("btnSave").textContent="Guardar visita";ls("lilDraft",null);}
+function saveDraft(){if(editingId)return;try{ls("lilDraft",JSON.stringify(readForm()));}catch(e){}}
+function showPrev(){
+  var box=$("prevBox");box.textContent="";var nom=$("nomina").value.trim();if(!nom)return;
+  var prev=allRecords().filter(function(r){return r.nomina===nom&&r.id!==editingId;});if(!prev.length)return;
+  var p=prev[0],d=el("div","prev"),t=el("div");t.appendChild(el("b",null,"Visita anterior ("+prev.length+" en total): "));
+  t.appendChild(document.createTextNode(fmtD(p.fecha)+" · "+(p.score!=null?Number(p.score).toFixed(2):"—")+" · "+(p.clasif||"")));d.appendChild(t);
+  if(p.accion)d.appendChild(el("div",null,"Acción acordada: "+p.accion));
+  var weak=[];(p.r||[]).forEach(function(v,i){if(v&&v!=="Sí")weak.push("Q"+(i+1));});if(weak.length)d.appendChild(el("div",null,"Revisa primero: "+weak.join(", ")));
+  box.appendChild(d);
+  if(!$("nombre").value&&p.nombre)$("nombre").value=p.nombre;
+  if(!role&&p.rol){role=p.rol;paintRole();}
+  if(!$("fit").value&&p.fit)$("fit").value=p.fit;
+  if(!$("linea").value&&p.linea)$("linea").value=p.linea;
+}
+function validate(o){if(!o.rol)return "Elige el rol de la persona.";if(!o.nomina)return "Falta el número de nómina.";if(!o.fecha)return "Falta la fecha.";
+  if(!o.r.some(Boolean))return "Contesta al menos una pregunta.";return "";}
+async function dbSet(path,id,data){try{await db.collection(path).doc(id).set(data);return true;}catch(e){
+  if(e&&e.code==="unavailable"){await new Promise(function(r){setTimeout(r,800+Math.random()*700);});try{await db.collection(path).doc(id).set(data);return true;}catch(e2){}}return false;}}
+async function save(){
+  var o=readForm(),err=validate(o);if(err){toast(err);return;}
+  var s=score(o.r);o.score=s==null?null:Math.round(s*100)/100;o.clasif=clasif(s);
+  var now=new Date().toISOString(),id=editingId||newId("v");var old=allRecords().find(function(r){return r.id===id;});
+  o.creado=(old&&old.creado)||now;o.actualizado=now;
+  ls("lilCoach",o.coach);ls("lilTurno",o.turno);ls("lilFit",o.fit);ls("lilLinea",o.linea);
+  $("btnSave").disabled=true;
+  var ok=db?await dbSet("visitas",id,o):false;
+  var pend=pending().filter(function(p){return p.id!==id;});if(ok)remote[id]=o;else pend.push({id:id,data:o});setPending(pend);
+  $("btnSave").disabled=false;
+  toast(ok?(editingId?"Visita actualizada":"Visita guardada"):"Guardada en este teléfono; se sincroniza al reconectar");
+  resetForm();renderAll();window.scrollTo({top:0,behavior:"smooth"});
+}
+async function syncPending(){
+  if(!db)return;var pend=pending();if(!pend.length)return;var left=[];
+  for(var i=0;i<pend.length;i++){if(await dbSet("visitas",pend[i].id,pend[i].data))remote[pend[i].id]=pend[i].data;else left.push(pend[i]);}
+  setPending(left);renderAll();if(pend.length>left.length)toast("Se sincronizaron "+(pend.length-left.length)+" visitas");
+}
+async function removeRec(id){
+  setPending(pending().filter(function(p){return p.id!==id;}));
+  if(remote[id]&&db){try{await db.collection("visitas").doc(id).delete();delete remote[id];}catch(e){toast("No se pudo eliminar; revisa la conexión");return;}}
+  if(editingId===id)resetForm();toast("Visita eliminada");renderAll();
+}
+
+/* ---------- conexión ---------- */
+function renderStatus(){
+  var box=$("statusBox");box.textContent="";var pend=pending().length;
+  if(dbState==="conectando")box.appendChild(el("div","status info","Conectando con el registro…"));
+  else if(dbState==="sin")box.appendChild(el("div","status warn","El registro no está disponible en esta vista. Las visitas se guardan solo en este dispositivo hasta que abras la página con tu sesión iniciada."));
+  else if(dbState==="lento")box.appendChild(el("div","status warn","Sin conexión con el registro; lo que ves puede no estar al día. Puedes seguir auditando."));
+  if(pend){var w=el("div","status warn");w.appendChild(el("span",null,pend+(pend===1?" visita guardada":" visitas guardadas")+" solo en este teléfono."));
+    if(db){var b=el("button","btn sm","Sincronizar");b.type="button";b.addEventListener("click",syncPending);w.appendChild(b);}box.appendChild(w);}
+}
+
+/* ---------- semana ---------- */
+function weekRange(ws){var e=new Date(ws);e.setDate(e.getDate()+6);return [iso(ws),iso(e)];}
+function weekRecs(){var r=weekRange(weekStart);return allRecords().filter(function(x){return x.fecha>=r[0]&&x.fecha<=r[1];});}
+function uniq(recs){var s={};recs.forEach(function(r){if(r.nomina)s[r.nomina]=1;});return Object.keys(s).length;}
+function renderGoal(){var r=weekRange(monday(new Date()));var n=uniq(allRecords().filter(function(x){return x.fecha>=r[0]&&x.fecha<=r[1];}));var g=goal();
+  $("goalTxt").textContent=n+"/"+g;$("goalFill").style.width=Math.min(100,n/g*100)+"%";}
+function kpi(n,l,extra){var d=el("div","card kpi");d.appendChild(el("div","n",n));d.appendChild(el("div","l",l));if(extra){extra.style.marginTop="6px";d.appendChild(extra);}return d;}
+function avgOf(recs){var sc=recs.map(function(r){return r.score;}).filter(function(x){return x!=null;});return sc.length?sc.reduce(function(a,b){return a+b;},0)/sc.length:null;}
+function visitItem(r,showAction){
+  var b=el("button","item");b.type="button";
+  var l1=el("div","l1");l1.appendChild(el("b",null,(r.nombre||"Sin nombre")+" · "+(r.nomina||"")));
+  l1.appendChild(el("span","pill "+tone(r.clasif),(r.score!=null?Number(r.score).toFixed(2)+" · ":"")+(r.clasif||"—")));
+  if(r._pending)l1.appendChild(el("span","pill warn","Sin sincronizar"));b.appendChild(l1);
+  b.appendChild(el("div","meta",[fmtD(r.fecha),r.rol,r.fit,r.linea,r.turno?"Turno "+r.turno:""].filter(Boolean).join(" · ")));
+  if(showAction){b.appendChild(el("div",null,"Acción: "+(r.accion||"—")));if(r.seguimiento)b.appendChild(el("div","meta","Seguimiento: "+fmtD(r.seguimiento)));}
+  b.addEventListener("click",function(){openEdit(r);});return b;
+}
+function countTable(box,recs,key,empty,withAvg){
+  box.textContent="";var m={};recs.forEach(function(r){var k=r[key];if(k){(m[k]=m[k]||[]).push(r);}});
+  var ks=Object.keys(m).sort(function(a,b){return m[b].length-m[a].length;});
+  if(!ks.length){box.appendChild(el("div","small",empty));return;}
+  var t=el("table");if(withAvg){var h=el("tr");["",
+    "Visitas","Promedio"].forEach(function(x){h.appendChild(el("th",null,x));});t.appendChild(h);}
+  ks.forEach(function(k){var tr=el("tr");tr.appendChild(el("td",null,k));tr.appendChild(el("td","num",String(m[k].length)));
+    if(withAvg){var a=avgOf(m[k]);var td=el("td");td.appendChild(el("span","pill "+tone(clasif(a)),a==null?"—":a.toFixed(2)));tr.appendChild(td);}t.appendChild(tr);});
+  box.appendChild(t);
+}
+function renderWeek(){
+  var e=new Date(weekStart);e.setDate(e.getDate()+4);
+  $("wLabel").textContent=fmtD(iso(weekStart))+" – "+fmtD(iso(e))+" "+e.getFullYear();
+  $("goalInput").value=goal();
+  var recs=weekRecs(),u=uniq(recs),g=goal(),avg=avgOf(recs),comp=recs.filter(function(r){return r.clasif==="Competente";}).length;
+  var K=$("wKpis");K.textContent="";
+  K.appendChild(kpi(u+" / "+g,"Personas vs meta",el("span","pill "+(u>=g?"ok":"warn"),u>=g?"Meta cumplida":"Faltan "+(g-u))));
+  K.appendChild(kpi(String(recs.length),"Visitas"));
+  K.appendChild(kpi(avg==null?"—":avg.toFixed(2),"Score promedio",avg==null?null:el("span","pill "+tone(clasif(avg)),clasif(avg))));
+  K.appendChild(kpi(recs.length?Math.round(comp/recs.length*100)+"%":"—","En Competente"));
+  var B=$("wBars");B.textContent="";
+  if(!recs.length)B.appendChild(el("div","empty","Sin visitas esta semana. Las barras aparecen con la primera visita guardada."));
+  else QUESTIONS.forEach(function(q,i){var c={"Sí":0,"Requiere acompañamiento":0,"No":0},n=0;
+    recs.forEach(function(r){var v=r.r&&r.r[i];if(c[v]!=null){c[v]++;n++;}});
+    var row=el("div","qbar");var lab=el("div",null,"Q"+(i+1)+" · "+q.tag);lab.title=q.t;row.appendChild(lab);
+    var tr=el("div","track");[["Sí","var(--ok)"],["Requiere acompañamiento","var(--warn)"],["No","var(--bad)"]].forEach(function(o){var s=el("i");s.style.width=(n?c[o[0]]/n*100:0)+"%";s.style.background=o[1];s.title=o[0]+": "+c[o[0]];tr.appendChild(s);});
+    row.appendChild(tr);row.appendChild(el("div","v",n?((c["Sí"]*2+c["Requiere acompañamiento"])/n).toFixed(2):"—"));B.appendChild(row);});
+  countTable($("wRole"),recs,"rol","Aún no hay visitas.",true);
+  countTable($("wOpp"),recs,"oportunidad","Aún no hay oportunidades registradas.",false);
+  countTable($("wFit"),recs,"fit","Aún no hay visitas por FIT.",true);
+  var F=$("wFollow");F.textContent="";var fl=recs.filter(function(r){return r.clasif&&r.clasif!=="Competente";});
+  if(!fl.length)F.appendChild(el("div","empty",recs.length?"Todas las visitas de la semana quedaron en Competente.":"Sin visitas esta semana."));
+  else{var l=el("div","list");fl.forEach(function(r){l.appendChild(visitItem(r,true));});F.appendChild(l);}
+  renderActions();
+}
+
+/* ---------- plan de acción CI ---------- */
+function renderActions(){
+  var box=$("actList");box.textContent="";
+  $("btnAct").disabled=!db;
+  if(!db){box.appendChild(el("div","empty","El plan de acción necesita conexión con el registro."));return;}
+  var r=weekRange(weekStart);
+  var list=Object.keys(actions).map(function(k){return Object.assign({id:k},actions[k]);})
+    .filter(function(a){return a.estatus!=="Cerrada"?a.semana<=r[1]:(a.semana>=r[0]&&a.semana<=r[1])||((a.cerrada||"")>=r[0]&&(a.cerrada||"")<=r[1]);})
+    .sort(function(a,b){return (a.estatus==="Cerrada")-(b.estatus==="Cerrada")||(a.fecha||"9").localeCompare(b.fecha||"9");});
+  if(!list.length){box.appendChild(el("div","empty","Sin acciones. Agrega la primera después de revisar los resultados."));return;}
+  var today=iso(new Date());
+  list.forEach(function(a){var d=el("div","act"+(a.estatus==="Cerrada"?" done":""));
+    if(a.hallazgo)d.appendChild(el("div","small",a.hallazgo));
+    d.appendChild(el("div","txt",a.texto));
+    var meta=el("div","row");meta.appendChild(el("span","small",(a.responsable||"Sin responsable")+" · compromiso "+fmtD(a.fecha)));
+    if(a.estatus!=="Cerrada"&&a.fecha&&a.fecha<today)meta.appendChild(el("span","pill bad","Vencida"));
+    else meta.appendChild(el("span","pill "+(a.estatus==="Cerrada"?"ok":""),a.estatus||"Abierta"));
+    var sp=el("span","spacer");meta.appendChild(sp);
+    var tg=el("button","btn sm",a.estatus==="Cerrada"?"Reabrir":"Cerrar");tg.type="button";
+    tg.addEventListener("click",async function(){var nd=Object.assign({},actions[a.id]);var closing=nd.estatus!=="Cerrada";nd.estatus=closing?"Cerrada":"Abierta";nd.cerrada=closing?today:"";
+      if(await dbSet("acciones",a.id,nd)){actions[a.id]=nd;renderActions();}else toast("No se pudo actualizar; revisa la conexión");});
+    meta.appendChild(tg);
+    var del=el("button","btn sm danger","Eliminar");del.type="button";
+    armed(del,"Eliminar","¿Confirmar?",async function(){try{await db.collection("acciones").doc(a.id).delete();delete actions[a.id];renderActions();}catch(e){toast("No se pudo eliminar");}});
+    meta.appendChild(del);d.appendChild(meta);box.appendChild(d);});
+}
+async function addAction(){
+  var t=$("aTxt").value.trim();if(!t){toast("Escribe la acción");return;}
+  var o={hallazgo:$("aHall").value.trim(),texto:t,responsable:$("aResp").value.trim(),fecha:$("aFecha").value,estatus:"Abierta",semana:iso(weekStart),creado:new Date().toISOString()};
+  var id=newId("a");$("btnAct").disabled=true;var ok=await dbSet("acciones",id,o);$("btnAct").disabled=false;
+  if(ok){actions[id]=o;["aHall","aTxt","aResp","aFecha"].forEach(function(f){$(f).value="";});toast("Acción agregada");renderActions();}
+  else toast("No se pudo guardar la acción; revisa la conexión");
+}
+
+/* ---------- historial ---------- */
+function renderHist(){
+  var q=$("search").value.trim().toLowerCase();
+  var recs=allRecords().filter(function(r){return !q||[r.nomina,r.nombre,r.linea,r.fit,r.rol].join(" ").toLowerCase().indexOf(q)>=0;});
+  var box=$("histList");box.textContent="";
+  if(!recs.length){box.appendChild(el("div","empty",q?"Ninguna visita coincide con la búsqueda.":"Aún no hay visitas. Captura la primera en Auditar."));return;}
+  recs.forEach(function(r){var wrap=el("div");wrap.style.display="grid";wrap.style.gap="6px";wrap.appendChild(visitItem(r,false));box.appendChild(wrap);});
+}
+function openEdit(r){editingId=r.id;fillForm(r);$("formTitle").textContent="Editar visita";$("btnSave").textContent="Guardar cambios";
+  var prev=$("prevBox");var del=el("button","btn danger sm","Eliminar esta visita");del.type="button";del.style.marginTop="12px";
+  armed(del,"Eliminar esta visita","Toca otra vez para eliminar",function(){removeRec(r.id);});prev.appendChild(del);
+  location.hash="auditar";window.scrollTo({top:0});}
+
+/* ---------- exportar ---------- */
+function rowsFor(recs){return recs.slice().sort(function(a,b){return (a.fecha||"").localeCompare(b.fecha||"");}).map(function(r){
+  var row=[r.fecha,r.turno?Number(r.turno):"",r.nomina,r.nombre,r.fit,r.linea];
+  QUESTIONS.forEach(function(q,i){row.push(q.t,q.v,(r.r&&r.r[i])||"");});
+  row.push(r.oportunidad||"",[r.comentarios].concat((r.notas||[]).map(function(n,i){return n?"Q"+(i+1)+": "+n:"";})).filter(Boolean).join(" | "),
+    r.score==null?"":r.score,r.clasif||"",r.coach||"",r.rol||"",r.accion||"",r.seguimiento||"");
+  return row;});}
+async function copyRows(recs){
+  if(!recs.length){toast("No hay visitas para copiar");return;}
+  var tsv=rowsFor(recs).map(function(r){return r.map(function(c){return String(c==null?"":c).replace(/[\t\r\n]+/g," ");}).join("\t");}).join("\n");
+  try{await navigator.clipboard.writeText(tsv);toast("Copiadas "+recs.length+" filas. Pégalas en la fila 5 de “Registro de visitas”");}
+  catch(e){var ta=el("textarea");ta.value=tsv;ta.style.position="fixed";ta.style.top="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Filas copiadas");}catch(e2){toast("No se pudo copiar en esta vista");}ta.remove();}
+}
+async function downloadXls(recs,name,withActions){
+  if(!recs.length){toast("No hay visitas para exportar");return;}
+  if(!window.XLSX){toast("No cargó el generador de Excel; usa Copiar filas");return;}
+  if(!downloads){toast("Descargas no disponibles aquí; usa Copiar filas");return;}
+  var wb=XLSX.utils.book_new();
+  var ws=XLSX.utils.aoa_to_sheet([COLS].concat(rowsFor(recs)));ws["!cols"]=COLS.map(function(c){return {wch:/Pregunta|validar|Comentarios|Acción/.test(c)?40:16};});
+  XLSX.utils.book_append_sheet(wb,ws,"Registro de visitas");
+  if(withActions){var acts=Object.keys(actions).map(function(k){return actions[k];});
+    if(acts.length){var wa=XLSX.utils.aoa_to_sheet([["Semana","Hallazgo","Acción","Responsable","Fecha compromiso","Estatus","Fecha de cierre"]].concat(acts.map(function(a){return [a.semana,a.hallazgo||"",a.texto,a.responsable||"",a.fecha||"",a.estatus||"",a.cerrada||""];})));
+      wa["!cols"]=[{wch:12},{wch:34},{wch:44},{wch:18},{wch:14},{wch:10},{wch:12}];XLSX.utils.book_append_sheet(wb,wa,"Plan de acción CI");}}
+  var buf=XLSX.write(wb,{type:"array",bookType:"xlsx"});
+  try{await downloads.save({filename:name,data:new Blob([buf])});toast("Excel listo");}
+  catch(e){if(e&&e.code!=="declined")toast("No se pudo descargar; usa Copiar filas");}
+}
+
+/* ---------- vistas ---------- */
+var VIEWS=["auditar","semana","historial"];
+function route(){var v=(location.hash||"").slice(1);if(VIEWS.indexOf(v)<0)v="auditar";
+  VIEWS.forEach(function(x){$("v-"+x).hidden=x!==v;});
+  document.querySelectorAll("nav.tabs a").forEach(function(a){if(a.dataset.view===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
+  renderAll();}
+function renderAll(){renderStatus();renderGoal();if(!$("v-semana").hidden)renderWeek();if(!$("v-historial").hidden)renderHist();}
+
+/* ---------- arranque ---------- */
+buildQuestions();
+var draft=null;try{draft=JSON.parse(ls("lilDraft")||"null");}catch(e){}
+resetForm();if(draft)fillForm(draft);
+document.querySelectorAll(".role").forEach(function(b){b.addEventListener("click",function(){role=b.dataset.role;paintRole();saveDraft();});});
+["fecha","turno","nombre","fit","linea","coach","oportunidad","seguimiento","comentarios","accion"].forEach(function(f){$(f).addEventListener("input",saveDraft);});
+$("nomina").addEventListener("input",function(){saveDraft();showPrev();});
+$("btnSave").addEventListener("click",save);
+armed($("btnClear"),"Limpiar","¿Borrar todo?",resetForm);
+$("wPrev").addEventListener("click",function(){weekStart.setDate(weekStart.getDate()-7);renderWeek();});
+$("wNext").addEventListener("click",function(){weekStart.setDate(weekStart.getDate()+7);renderWeek();});
+$("goalInput").addEventListener("change",function(){var g=parseInt(this.value,10);if(g>0){ls("lilGoal",String(g));renderAll();}});
+$("search").addEventListener("input",renderHist);
+$("btnAct").addEventListener("click",addAction);
+$("btnCopyWeek").addEventListener("click",function(){copyRows(weekRecs());});
+$("btnCopyAll").addEventListener("click",function(){copyRows(allRecords());});
+$("btnXlsWeek").addEventListener("click",function(){downloadXls(weekRecs(),"LIL_Coaching_semana_"+iso(weekStart)+".xlsx",true);});
+$("btnXlsAll").addEventListener("click",function(){downloadXls(allRecords(),"LIL_Coaching_historial_"+iso(new Date())+".xlsx",true);});
+window.addEventListener("hashchange",route);
+window.addEventListener("online",syncPending);
+route();
+
+if(window.claude&&window.claude.use){
+  window.claude.use("downloads").then(function(d){downloads=d;}).catch(function(){});
+  window.claude.use("db").then(function(d){
+    db=d;if(!db){dbState="sin";renderAll();return;}
+    var timer=setTimeout(function(){if(dbState==="conectando"){dbState="lento";renderAll();}},10000);
+    db.collection("visitas").onSnapshot(function(snap){
+      var m={};snap.docs.forEach(function(doc){m[doc.id]=doc.data();});remote=m;
+      if(!snap.metadata.fromCache){clearTimeout(timer);if(dbState!=="ok"){dbState="ok";syncPending();}}
+      renderAll();
+    },function(){clearTimeout(timer);dbState="lento";renderAll();});
+    db.collection("acciones").onSnapshot(function(snap){var m={};snap.docs.forEach(function(doc){m[doc.id]=doc.data();});actions=m;if(!$("v-semana").hidden)renderActions();},function(){});
+  }).catch(function(){dbState="sin";renderAll();});
+}else{dbState="sin";renderAll();}
+})();
+</script>
+
+</body></html>

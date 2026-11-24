@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auditoría BMOS</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+<style id="css">
+/* VOICE: herramienta de piso, clara y rápida, como tabla de auditoría con clip
+   IDEA: la hoja de auditoría BMOS: secuencia numerada del guion, Sí / No / N/A por punto
+   PICTURE: la propia checklist viva con cronómetro y barra de progreso
+   COLOUR and TYPE: azul Beiersdorf #0032A0 dominante, blanco, verde/rojo solo para cumple/no cumple; Barlow
+   LAYOUT: una columna móvil, barra superior con pestañas, barra inferior fija con progreso y + Hallazgo */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0b1022);--ink:light-dark(#111a33,#e8ecf8);--mut:light-dark(#5b6580,#9aa4c2);--line:light-dark(#dfe3ee,#232c4a);--card:light-dark(#f6f7fb,#121a33);--blue:#0032A0;--blue2:light-dark(#0032A0,#7f9dff);--ok:light-dark(#0f8a4a,#3fd08a);--okbg:light-dark(#e3f6ec,#0f3324);--no:light-dark(#c62828,#ff6b6b);--nobg:light-dark(#fde8e8,#3a1418);--na:light-dark(#6b7280,#9aa4c2);--nabg:light-dark(#eceef3,#222a44);--warn:light-dark(#9a5b00,#ffc35c)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip;padding-bottom:96px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid #ffb400;outline-offset:2px}
+header{background:var(--blue);color:#fff;position:sticky;top:0;z-index:20}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(4vw,14px) 4px;max-width:900px;margin:0 auto}
+.top h1{font:700 22px/1.1 "Barlow Semi Condensed",Barlow,sans-serif;margin:0}
+.top small{opacity:.8;font-size:14px}
+nav{display:flex;gap:4px;overflow-x:auto;padding:4px max(4vw,14px) 0;max-width:900px;margin:0 auto}
+nav a{flex:none;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px 10px 0 0;font-weight:600;opacity:.8;min-height:44px}
+nav a.on{background:var(--bg);color:var(--blue2);opacity:1}
+main{max-width:900px;margin:0 auto;padding:18px max(4vw,14px)}
+h2{font:700 30px/1.05 "Barlow Semi Condensed",Barlow,sans-serif;margin:4px 0 6px;text-wrap:balance}
+h3{font:700 19px/1.2 "Barlow Semi Condensed",Barlow,sans-serif;margin:0}
+.mut{color:var(--mut);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
+label.f{display:block;font-size:14px;color:var(--mut);font-weight:600}
+input[type=text],input[type=time],input[type=date],select,textarea{width:100%;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-height:44px;margin-top:4px}
+textarea{min-height:90px;resize:vertical}
+.btn{min-height:44px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;background:var(--blue);color:#fff}
+.btn.sec{background:transparent;color:var(--blue2);border:2px solid currentColor}
+.btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+.btn.red{background:var(--no);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.timer{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.clock{font:700 clamp(34px,9vw,48px)/1 "Barlow Semi Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.clock.late{color:var(--no)}
+.sec{margin:18px 0}
+.sech{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--blue2);padding-bottom:6px;margin-bottom:4px}
+.num{flex:none;width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700}
+.sech .cnt{margin-left:auto;font-size:14px;color:var(--mut);white-space:nowrap}
+.it{padding:10px 0;border-bottom:1px solid var(--line)}
+.it .q{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.it .t{flex:1 1 260px}
+.seg{display:flex;gap:6px;flex:none}
+.seg button{min-width:56px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-weight:700;color:var(--mut)}
+.seg button.c.on{background:var(--okbg);color:var(--ok);border-color:var(--ok)}
+.seg button.n.on{background:var(--nobg);color:var(--no);border-color:var(--no)}
+.seg button.na.on{background:var(--nabg);color:var(--ink);border-color:var(--na)}
+.it.no{background:linear-gradient(90deg,var(--nobg),transparent 70%)}
+.note{margin-top:6px}
+.note input{margin-top:0}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);z-index:20;box-shadow:0 -6px 18px rgba(0,0,0,.06)}
+.bar .in{max-width:900px;margin:0 auto;padding:8px max(4vw,14px);display:flex;gap:10px;align-items:center}
+.prog{flex:1}
+.prog .tr{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:4px}
+.prog .tr i{display:block;height:100%;background:var(--blue2)}
+.prog b{font-size:14px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap}
+.p-ok{background:var(--okbg);color:var(--ok)}.p-no{background:var(--nobg);color:var(--no)}.p-na{background:var(--nabg);color:var(--ink)}
+.find{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.find p{margin:0;flex:1}
+.x{background:none;border:0;color:var(--mut);min-width:44px;min-height:44px;font-size:20px}
+.big{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.big .card{margin:0;display:flex;flex-direction:column;gap:8px}
+.big .when{font:700 30px/1 "Barlow Semi Condensed",sans-serif;color:var(--blue2)}
+.score{font:700 40px/1 "Barlow Semi Condensed",sans-serif}
+.hist{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;margin:8px 0;background:var(--card);width:100%;text-align:left}
+.hist .s{font:700 24px/1 "Barlow Semi Condensed",sans-serif;width:64px;flex:none;text-align:right}
+.hist div{flex:1}
+pre.sum{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;font:15px/1.5 Barlow,sans-serif;max-height:55vh;overflow:auto}
+dialog{border:0;border-radius:16px;padding:0;width:min(640px,94vw);background:var(--bg);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(5,10,30,.55)}
+dialog .dh{background:var(--blue);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+dialog .db{padding:16px}
+.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#111a33;color:#fff;padding:10px 16px;border-radius:10px;z-index:50;font-weight:600;max-width:90vw}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-weight:600;color:var(--ink)}.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}.chip small{font-weight:500;opacity:.7;margin-left:4px}
+.role{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.empty{padding:30px 10px;text-align:center;color:var(--mut)}
+.tip{font-size:14px;color:var(--mut);margin-top:2px}
+@media(max-width:600px){h2{font-size:26px}.seg button{min-width:50px}}
+@media(prefers-reduced-motion:no-preference){.prog .tr i{transition:width .3s}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="application/json" id="st">{"cfg": {"auditor": "Mitzy Rosado", "fits": [{"name": "FIT 1", "lines": []}, {"name": "FIT 2", "lines": []}, {"name": "FIT 3", "lines": []}, {"name": "FIT 4", "lines": []}, {"name": "FIT 5", "lines": []}, {"name": "FIT 6", "lines": []}], "lines": ["Bottles 1", "Bottles 2", "Bottles 3", "Botellas 8", "Bottles 5", "Bottles 6", "Roll On", "Tubos 5", "Lipstick", "Blister 1", "Blister 2", "Manual", "Pago", "Tubes 1", "Tubes 2", "Tubes 3", "Tarros 1", "Latas 2", "Tarros 3", "Tarros 4", "Tubos 4", "Nueva Tarros 1", "New Lip 1"]}, "audits": []}</script>
+<script id="code">
+{
+const DEF={
+ fit:{name:'Junta de FIT',short:'FIT',where:'FIT',lead:'Team Leader',dur:30,
+  roles:['Team Leader','Ingeniero de procesos','Ingeniero de línea','Planeador','Representante de Calidad','Líder de Operación','Ingeniero de Manufactura','Representante de seguridad'],
+  secs:[
+   {id:'pre',n:'',t:'Arranque y gobierno de la junta',items:['Inicia a las 08:30 (puntual)','Se realiza frente al tablero del FIT','Pre-trabajo: caminata Gemba de las 08:00 por sus áreas (riesgos y requerimientos)','Pizarrón actualizado antes de la junta (acciones <24 h cerradas con paloma verde)','El Team Leader conduce y da la palabra a cada departamento','Se respeta el orden de la secuencia del guion']},
+   {id:'s1',n:1,t:'Seguridad',items:['Accidente / near miss / condición o comportamiento inseguro de ayer','Riesgos de seguridad que siguen abiertos de ayer','Riesgos para las próximas 24 h (recuadro llenado)','Aportaciones del recorrido de seguridad']},
+   {id:'s2',n:2,t:'Acciones <24 horas',items:['Revisión del cierre/cumplimiento de acciones del día anterior','Las acciones cerradas se borran al mencionarlas']},
+   {id:'s3',n:3,t:'Calidad',items:['Comparte resultado de RFT','No conformidades de materiales (con evidencia y/o plan)','Riesgos de calidad próximas 24 h (recuadro llenado)','Rojos de los tableros del FIT con su contramedida']},
+   {id:'s4',n:4,t:'Material loss',items:['Eventos que impactan el indicador: causa, riesgo y contramedida']},
+   {id:'s5',n:5,t:'Desempeño de líneas y plan 24 h',items:['Desempeño de ayer vs meta por línea, por prioridad','TOP 3 impactos con piezas o % de OAE perdido','Limpiezas y cambios de ayer (eventos, tiempo, desviaciones)','Meta y turnos planeados para hoy','Limpiezas y cambios programados hoy (eventos y tiempo)','Riesgos al plan de hoy: granel, materiales, gente, otros','Paros planeados de mantenimiento del día','Cumplimiento de tarjetas de anomalías y riesgos a trabajar hoy']},
+   {id:'s7',n:7,t:'Trials y primeras producciones',items:['Informa trials / primeras producciones y estatus de su preparación']},
+   {id:'s8',n:8,t:'Acciones >24 h (F&P / TES)',items:['Estatus de acciones >24 h con fecha de cierre hoy']},
+   {id:'s9',n:9,t:'Cierre del plan para hoy',items:['Resumen de las acciones <24 h acordadas','Total de piezas a fabricar hoy (plan total del FIT)','Reafirma el estatus de riesgo de seguridad para 24 h']},
+   {id:'s10',n:10,t:'Reconocimiento',items:['Reconoce una situación del FIT','Cierra con porra del área o palabra del día']}
+  ]},
+ sho:{name:'Entrega de turno uno a uno',short:'Entrega',where:'Línea',lead:'Líder saliente',dur:20,
+  roles:['Líder saliente','Líder entrante','Operadores de línea'],
+  secs:[
+   {id:'pre',n:'',t:'Arranque de la entrega',items:['Inicia a la hora (06:50 / 14:50 / 22:20)','Todo el personal de línea llega a tiempo','Se realiza en el tablero de línea','El líder saliente conduce y da la palabra','Se respeta el orden de la secuencia']},
+   {id:'a',n:1,t:'Seguridad',items:['Accidentes y near misses','Riesgos identificados y acciones de contención']},
+   {id:'b',n:1,t:'Calidad',items:['Defectivos del turno anterior generados en el área','Riesgos identificados y acciones de contención']},
+   {id:'c',n:1,t:'Material loss',items:['Errores de PT que causen destrucción o mermas por deficiencias del proceso','Restos de granel menores a 150 kg para llevar a CL','Restos de granel mayores a 150 kg para recircular']},
+   {id:'d',n:2,t:'Desempeño de turno',items:['Desempeño contra meta: día y turno','Fallas de proceso y averías']},
+   {id:'e',n:2,t:'Temas de seguimiento',items:['Estatus de materiales / granel','Riesgos','Temas no resueltos']},
+   {id:'z',n:'',t:'Objetivo de la entrega',items:['El líder entrante entiende las condiciones de las últimas 24 h (confirma o pregunta)']}
+  ]}
+};
+const SHIFTS=['06:50','14:50','22:20'];
+const S=JSON.parse(document.getElementById('st').textContent);
+S.cfg=S.cfg||{};S.cfg.fits=S.cfg.fits||[];S.cfg.lines=S.cfg.lines||[];S.audits=S.audits||[];
+let artifact=null,downloads=null,view='hoy',openId=null,canPublish=true;
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+// respaldo local por si la página no puede guardarse
+(ls.get('bmos_audits')||[]).forEach(a=>{if(!S.audits.some(b=>b.id===a.id))S.audits.push(a)});
+const drafts={fit:ls.get('bmos_draft_fit'),sho:ls.get('bmos_draft_sho')};
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const nowHM=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
+const toMin=h=>{if(!h||!/^\d{1,2}:\d{2}/.test(h))return null;const[a,b]=h.split(':');return +a*60+ +b};
+const fmtDate=s=>{const[y,m,d]=s.split('-');return d+'/'+m+'/'+y};
+const dayName=s=>['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(s+'T12:00').getDay()];
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+function newDraft(type){const h=new Date().getHours()*60+new Date().getMinutes();const sh=h>=21*60||h<6*60?'22:20':h>=14*60?'14:50':'06:50';return{id:Date.now().toString(36),type,date:today(),where:'',lead:'',lead2:'',shift:sh,start:'',end:'',ans:{},notes:{},roles:{},finds:[],lines:[]}}
+function saveDraft(t){if(drafts[t])ls.set('bmos_draft_'+t,drafts[t]);else ls.del('bmos_draft_'+t)}
+function allLines(){const s=new Set(S.cfg.lines);S.cfg.fits.forEach(f=>f.lines.forEach(l=>s.add(l)));return[...s]}
+function lbl(a){const w=DEF[a.type].where,v=a.where||'(sin nombre)';return v.toLowerCase().startsWith(w.toLowerCase())?v:w+' '+v}
+function fitOf(l){const f=S.cfg.fits.find(f=>f.lines.includes(l));return f?f.name:''}
+function targetStart(a){return a.type==='fit'?'08:30':a.shift}
+function keys(a){const out=[];DEF[a.type].secs.forEach(s=>s.items.forEach((it,i)=>out.push([s.id+'_'+i,s,it])));return out}
+function stats(a){let c=0,n=0,na=0,p=0;keys(a).forEach(([k])=>{const v=a.ans[k];v==='c'?c++:v==='n'?n++:v==='na'?na++:p++});const tot=c+n;return{c,n,na,p,all:c+n+na+p,pct:tot?Math.round(c/tot*100):null}}
+function timeInfo(a){const D=DEF[a.type],ts=toMin(targetStart(a)),s=toMin(a.start),e=toMin(a.end);let late=null,dur=null;if(s!=null&&ts!=null){late=s-ts;if(late<-600)late+=1440}if(s!=null&&e!=null){dur=e-s;if(dur<0)dur+=1440}return{late,dur,max:D.dur}}
+function autoFinds(a){const D=DEF[a.type],out=[],ti=timeInfo(a);
+ if(ti.late!=null&&ti.late>0&&a.ans.pre_0!=='n')out.push({sec:'Horario',txt:`Inició ${ti.late} min tarde (${a.start} vs ${targetStart(a)})`});
+ if(ti.dur!=null&&ti.dur>ti.max)out.push({sec:'Horario',txt:`Duró ${ti.dur} min (meta ${ti.max} min)`});
+ D.roles.forEach(r=>{if(a.roles[r]==='a')out.push({sec:'Asistencia',txt:'Ausente: '+r})});
+ keys(a).forEach(([k,s,it])=>{if(a.ans[k]==='n')out.push({sec:s.t,txt:'No se cubrió: '+it+(a.notes[k]?' — '+a.notes[k]:'')})});
+ return out}
+function summary(a){const D=DEF[a.type],st=stats(a),ti=timeInfo(a),af=autoFinds(a),mf=a.finds.filter(f=>f.kind!=='bp'),bp=a.finds.filter(f=>f.kind==='bp');
+ const L=[];L.push(`AUDITORÍA ${D.name.toUpperCase()} — ${lbl(a)}`);
+ if(a.type==='fit'&&a.lines&&a.lines.length)L.push(`Líneas revisadas: ${a.lines.join(', ')}`);
+ if(a.type==='sho'&&fitOf(a.where))L.push(`Pertenece a: ${fitOf(a.where)}`);
+ L.push(`Fecha: ${dayName(a.date)} ${fmtDate(a.date)}${a.type==='sho'?' · Entrega de '+a.shift:''} · Auditora: ${S.cfg.auditor||''}`);
+ if(a.type==='fit')L.push(`Team Leader: ${a.lead||'—'}`);else L.push(`Líder saliente: ${a.lead||'—'} → Líder entrante: ${a.lead2||'—'}`);
+ L.push(`Horario: inicio ${a.start||'—'} (meta ${targetStart(a)}${ti.late!=null?(ti.late>0?', +'+ti.late+' min':', a tiempo'):''}) · fin ${a.end||'—'}${ti.dur!=null?' · duración '+ti.dur+' min (meta '+ti.max+')':''}`);
+ L.push(`Cumplimiento del estándar: ${st.pct==null?'—':st.pct+'%'} (${st.c} de ${st.c+st.n} puntos aplicables${st.na?', '+st.na+' N/A':''})`);
+ const pres=D.roles.filter(r=>a.roles[r]==='p').length,app=D.roles.filter(r=>a.roles[r]==='p'||a.roles[r]==='a').length;
+ L.push(`Asistencia: ${pres} de ${app} roles evaluados presentes`);
+ const all=[...af,...mf];L.push('');L.push(`HALLAZGOS (${all.length}):`);
+ if(!all.length)L.push('Sin hallazgos.');all.forEach((f,i)=>L.push(`${i+1}. [${f.sec}] ${f.txt}`));
+ if(bp.length){L.push('');L.push('BUENAS PRÁCTICAS:');bp.forEach(f=>L.push(`• [${f.sec}] ${f.txt}`))}
+ if(st.p)L.push('',`Puntos sin evaluar: ${st.p}`);return L.join('\n')}
+function nFinds(a){return autoFinds(a).length+a.finds.filter(f=>f.kind!=='bp').length}
+
+// ---- guardar en la página ----
+function docHTML(){const json=JSON.stringify(S).replace(/</g,'\\u003c');
+ return '<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>Auditoría BMOS</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">\n<style id="css">'+document.getElementById('css').textContent+'</style>\n</head>\n<body>\n<div id="app"></div>\n<script type="application/json" id="st">'+json+'<\/script>\n<script id="code">'+document.getElementById('code').textContent+'<\/script>\n</body>\n</html>\n'}
+async function persist(msg){ls.set('bmos_audits',S.audits);
+ if(artifact&&canPublish){try{await artifact.publish(docHTML());ls.del('bmos_audits');toast(msg||'Guardado');return}catch(e){if(e&&/not_granted|not_writer/.test(String(e.code||e.message||e)))canPublish=false;toast('Guardado en este navegador (no se pudo guardar en la página)');return}}
+ toast('Guardado en este navegador')}
+
+// ---- vistas ----
+const app=document.getElementById('app');
+function shell(inner,bar){const tabs=[['hoy','Hoy'],['fit','Junta FIT'],['entrega','Entrega de turno'],['historial','Historial'],['ajustes','Ajustes']];
+ app.innerHTML=`<header><div class="top"><div><h1>Auditoría BMOS</h1><small>${esc(S.cfg.auditor||'')} · ${dayName(today())} ${fmtDate(today())}</small></div></div><nav>${tabs.map(([h,t])=>`<a href="#${h}" class="${view===h?'on':''}">${t}</a>`).join('')}</nav></header><main>${inner}</main>${bar||''}`}
+function vHoy(){const t=today(),done=S.audits.filter(a=>a.date===t);
+ const card=(type,href,when,desc)=>{const d=drafts[type],dn=done.filter(a=>a.type===type);
+  return `<div class="card"><span class="mut">${DEF[type].name}</span><div class="when">${when}</div><p class="mut" style="margin:0">${desc}</p>
+  ${dn.map(a=>`<div class="row"><span class="pill p-ok">Completada</span> ${esc(lbl(a))} · ${stats(a).pct??'—'}% · ${nFinds(a)} hallazgos</div>`).join('')}
+  ${d?`<div class="row"><span class="pill p-na">En curso</span> ${esc(d.where||'sin nombre')} · ${stats(d).c+stats(d).n+stats(d).na}/${stats(d).all} puntos</div>`:''}
+  <a class="btn" style="text-align:center;text-decoration:none;margin-top:auto" href="#${href}">${d?'Continuar auditoría':dn.length?'Otra auditoría':'Empezar auditoría'}</a></div>`};
+ const sums=done.map(summary).join('\n\n— — —\n\n');
+ return `<h2>Mis auditorías de hoy</h2><p class="mut">Abre la auditoría al llegar a la junta, inicia el cronómetro y marca cada punto en el orden del guion.</p>
+ <div class="big">${card('fit','fit','08:30 – 09:00','Frente al tablero del FIT · conduce el Team Leader · meta 30 min')}${card('sho','entrega','06:50 · 14:50 · 22:20','En el tablero de línea · conduce el líder saliente · meta 20 min')}</div>
+ <div class="card"><div class="row" style="justify-content:space-between"><h3>Resumen para mi jefe</h3>${done.length?'<button class="btn" data-act="copyday">Copiar resumen del día</button>':''}</div>
+ ${done.length?`<pre class="sum">${esc(sums)}</pre>`:'<p class="empty">Cuando finalices una auditoría, aquí aparecerá el resumen listo para copiar y mandar.</p>'}</div>`}
+function vAudit(type){const a=drafts[type];const D=DEF[type];
+ if(!a)return shell(`<h2>${D.name}</h2><p class="mut">${type==='fit'?'Junta de 08:30 a 09:00 frente al tablero de cada FIT. Responsable: Team Leader.':'Entrega líder-líder en el tablero de línea a las 06:50, 14:50 o 22:20. Responsable: líder saliente.'}</p><div class="card"><p>Se evaluarán ${keys({type}).length} puntos del guion, la asistencia de ${D.roles.length} roles y el horario.</p><button class="btn" data-act="new" data-t="${type}">Nueva auditoría de ${D.short}</button></div>`);
+ const st=stats(a),ti=timeInfo(a),opts=type==='fit'?S.cfg.fits.map(f=>f.name):allLines();
+  let h=`<h2>${D.name}</h2>
+ <div class="card"><div class="timer"><div><div class="mut" id="meta">Meta: inicio ${targetStart(a)} · máx. ${D.dur} min</div><div class="clock ${ti.late>0?'late':''}" id="clock">${a.start?'--:--':'00:00'}</div></div>
+ <div class="row">${a.start?'':'<button class="btn" data-act="start">Iniciar junta</button>'}${a.start&&!a.end?'<button class="btn sec" data-act="end">Terminar junta</button>':''}</div></div>
+ <div class="grid" style="margin-top:12px">
+ ${type==='fit'?`<label class="f">FIT<select data-f="where"><option value="">Elige el FIT…</option>${opts.map(o=>`<option ${a.where===o?'selected':''}>${esc(o)}</option>`).join('')}</select></label>`:`<label class="f">Línea<select data-f="where"><option value="">Elige la línea…</option>${opts.map(o=>`<option value="${esc(o)}" ${a.where===o?'selected':''}>${esc(o)}${fitOf(o)?' · '+esc(fitOf(o)):''}</option>`).join('')}</select></label>`}
+ ${type==='sho'?`<label class="f">Entrega de las<select data-f="shift">${SHIFTS.map(s=>`<option ${a.shift===s?'selected':''}>${s}</option>`).join('')}</select></label>`:''}
+ <label class="f">${D.lead}<input type="text" data-f="lead" value="${esc(a.lead)}"></label>
+ ${type==='sho'?`<label class="f">Líder entrante<input type="text" data-f="lead2" value="${esc(a.lead2)}"></label>`:''}
+ <label class="f">Fecha<input type="date" data-f="date" value="${esc(a.date)}"></label>
+ <label class="f">Hora de inicio<input type="time" data-f="start" value="${esc(a.start)}"></label>
+ <label class="f">Hora de fin<input type="time" data-f="end" value="${esc(a.end)}"></label></div>
+ ${type==='fit'&&a.where?`<div style="margin-top:14px"><b>Líneas de ${esc(a.where)}</b><div class="tip">Toca las líneas que se revisan en este FIT. Al finalizar quedan guardadas para la próxima vez.</div><div class="chips">${allLines().map((l,i)=>{const on=(a.lines||[]).includes(l),o=fitOf(l);return `<button class="chip ${on?'on':''}" data-act="line" data-i="${i}" aria-pressed="${on}">${esc(l)}${!on&&o&&o!==a.where?`<small>${esc(o)}</small>`:''}</button>`}).join('')}</div></div>`:''}</div>
+ <div class="card"><h3>Asistencia</h3>${D.roles.map((r,i)=>{const v=a.roles[r];return `<div class="role"><span>${r}</span><div class="seg">${[['p','c','Está'],['a','n','Faltó'],['na','na','N/A']].map(([val,cl,tx])=>`<button class="${cl} ${v===val?'on':''}" data-act="role" data-r="${i}" data-v="${val}">${tx}</button>`).join('')}</div></div>`}).join('')}</div>`;
+ D.secs.forEach(s=>{const ks=s.items.map((_,i)=>s.id+'_'+i),dn=ks.filter(k=>a.ans[k]).length;
+  h+=`<section class="sec"><div class="sech">${s.n!==''?`<span class="num">${s.n}</span>`:''}<h3>${s.t}</h3><span class="cnt">${dn}/${ks.length}</span></div>
+  ${s.items.map((it,i)=>{const k=s.id+'_'+i,v=a.ans[k];return `<div class="it ${v==='n'?'no':''}"><div class="q"><span class="t">${it}</span><div class="seg">${[['c','Sí'],['n','No'],['na','N/A']].map(([val,tx])=>`<button class="${val} ${v===val?'on':''}" data-act="ans" data-k="${k}" data-v="${val}" aria-pressed="${v===val}">${tx}</button>`).join('')}</div></div>
+  ${v==='n'?`<div class="note"><input type="text" data-note="${k}" value="${esc(a.notes[k]||'')}" placeholder="¿Qué pasó? (opcional, aparece en el hallazgo)"></div>`:''}</div>`}).join('')}</section>`});
+ const fl=[...autoFinds(a).map(f=>({...f,auto:1})),...a.finds.map((f,i)=>({...f,i}))];
+ h+=`<div class="card"><div class="row" style="justify-content:space-between"><h3>Hallazgos y observaciones (${fl.length})</h3><button class="btn sec" data-act="addf">+ Agregar</button></div>
+ ${fl.length?fl.map(f=>`<div class="find"><span class="pill ${f.kind==='bp'?'p-ok':'p-no'}">${f.kind==='bp'?'Buena práctica':f.auto?'Auto':'Hallazgo'}</span><p><b>${esc(f.sec)}:</b> ${esc(f.txt)}</p>${f.auto?'':`<button class="x" data-act="delf" data-i="${f.i}" aria-label="Quitar">×</button>`}</div>`).join(''):'<p class="mut">Los puntos marcados en "No", las ausencias y los retrasos se agregan solos. Usa "+ Agregar" para algo que viste fuera del checklist.</p>'}</div>
+ <div class="row" style="justify-content:space-between;margin-top:18px"><button class="btn ghost" data-act="discard">Descartar borrador</button><button class="btn" data-act="finish">Finalizar y guardar</button></div>`;
+ const tot=st.all,dn=st.c+st.n+st.na;
+ shell(h,`<div class="bar"><div class="in"><div class="prog"><b>${dn}/${tot} puntos · ${nFinds(a)} hallazgos${st.pct!=null?' · '+st.pct+'%':''}</b><div class="tr"><i style="width:${tot?dn/tot*100:0}%"></i></div></div><button class="btn" data-act="addf">+ Hallazgo</button></div></div>`);
+ tick()}
+function vHist(){const list=[...S.audits].sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start));
+ const by={};list.forEach(a=>(by[a.date]=by[a.date]||[]).push(a));
+ const tot=list.length,avg=tot?Math.round(list.reduce((s,a)=>s+(stats(a).pct||0),0)/tot):null;
+ return `<h2>Historial</h2><div class="grid"><div class="card"><div class="mut">Auditorías</div><div class="score">${tot}</div></div><div class="card"><div class="mut">Cumplimiento promedio</div><div class="score">${avg==null?'—':avg+'%'}</div></div><div class="card"><div class="mut">Hallazgos totales</div><div class="score">${list.reduce((s,a)=>s+nFinds(a),0)}</div></div></div>
+ ${tot?`<div class="row" style="margin:6px 0 4px"><button class="btn sec" data-act="csv">Descargar hallazgos (CSV para Excel)</button></div>`:''}
+ ${Object.keys(by).map(d=>`<h3 style="margin-top:18px">${dayName(d)} ${fmtDate(d)}</h3>${by[d].map(a=>{const p=stats(a).pct;return `<button class="hist" data-act="open" data-id="${esc(a.id)}"><span class="s" style="color:${p==null?'inherit':p>=90?'var(--ok)':p>=75?'var(--warn)':'var(--no)'}">${p==null?'—':p+'%'}</span><div><b>${DEF[a.type].name}</b><br><span class="mut">${esc(lbl(a))}${a.type==='sho'?' · '+a.shift:''} · ${nFinds(a)} hallazgos</span></div></button>`}).join('')}`).join('')||'<p class="empty">Aún no hay auditorías guardadas.</p>'}`}
+function vAjustes(){return `<h2>Ajustes</h2><div class="card"><label class="f">Nombre de la auditora<input type="text" id="aud" value="${esc(S.cfg.auditor||'')}"></label></div>
+ <div class="card"><h3>Mis FITs y sus líneas</h3><p class="mut">Captúralos una vez; aparecerán como opciones al auditar. Separa las líneas con comas.</p><div id="fits">${S.cfg.fits.map(f=>fitRow(f.name,f.lines.join(', '))).join('')}</div><button class="btn sec" data-act="addfit">+ Agregar FIT</button></div>
+ <div class="card"><label class="f">Todas las líneas (separadas por comas)<input type="text" id="olines" value="${esc(S.cfg.lines.join(', '))}"></label></div>
+ <button class="btn" data-act="savecfg">Guardar ajustes</button>`}
+const fitRow=(n,l)=>`<div class="grid fitrow" style="grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;align-items:end;margin-bottom:8px"><label class="f">FIT<input type="text" class="fn" value="${esc(n)}"></label><label class="f">Líneas<input type="text" class="fl" value="${esc(l)}"></label><button class="x" data-act="delfit" aria-label="Quitar FIT">×</button></div>`;
+function render(){const y=scrollY;view=(location.hash||'#hoy').slice(1);if(!['hoy','fit','entrega','historial','ajustes'].includes(view))view='hoy';
+ if(view==='fit')vAudit('fit');else if(view==='entrega')vAudit('sho');else shell(view==='hoy'?vHoy():view==='historial'?vHist():vAjustes());scrollTo(0,y)}
+let clockT=null;function tick(){clearInterval(clockT);const run=()=>{const el=document.getElementById('clock');const t=view==='fit'?'fit':'sho',a=drafts[t];if(!el||!a||!a.start){clearInterval(clockT);return}
+ const s=toMin(a.start),e=a.end?toMin(a.end):null,d=new Date();let m=(e??d.getHours()*60+d.getMinutes())-s;if(m<0)m+=1440;const sec=e==null?d.getSeconds():0;el.textContent=pad(m)+':'+pad(sec);el.classList.toggle('late',m>=DEF[t].dur)};run();clockT=setInterval(run,1000)}
+function curType(){return view==='fit'?'fit':'sho'}
+
+// ---- diálogos ----
+function dialog(title,body,onOk,okTxt){const d=document.createElement('dialog');d.innerHTML=`<div class="dh"><h3>${title}</h3><button class="x" style="color:#fff" data-x>×</button></div><div class="db">${body}<div class="row" style="justify-content:flex-end;margin-top:14px">${onOk?`<button class="btn ghost" data-x>Cancelar</button><button class="btn" data-ok>${okTxt||'Guardar'}</button>`:''}</div></div>`;
+ document.body.appendChild(d);d.addEventListener('close',()=>d.remove());d.addEventListener('click',e=>{if(e.target.closest('[data-x]'))d.close();if(e.target.closest('[data-ok]')&&onOk(d)!==false)d.close()});d.showModal();return d}
+function addFind(){const a=drafts[curType()];const secs=['General','Horario','Asistencia',...DEF[a.type].secs.map(s=>s.t)];
+ const d=dialog('Nuevo hallazgo',`<label class="f">Tipo<select id="fk"><option value="h">Hallazgo (algo a mejorar)</option><option value="bp">Buena práctica</option></select></label><label class="f" style="margin-top:10px">Tema<select id="fs">${secs.map(s=>`<option>${esc(s)}</option>`).join('')}</select></label><label class="f" style="margin-top:10px">¿Qué observaste?<textarea id="ft" placeholder="Ej. El recuadro de riesgos de calidad 24 h estaba vacío"></textarea></label>`,dd=>{const t=dd.querySelector('#ft').value.trim();if(!t){dd.querySelector('#ft').focus();return false}a.finds.push({kind:dd.querySelector('#fk').value,sec:dd.querySelector('#fs').value,txt:t});saveDraft(a.type);render()});
+ setTimeout(()=>d.querySelector('#ft').focus(),50)}
+function openAudit(id){const a=S.audits.find(x=>x.id===id);if(!a)return;const d=dialog(DEF[a.type].name,`<pre class="sum">${esc(summary(a))}</pre><div class="row" style="justify-content:space-between;margin-top:10px"><button class="btn ghost" data-del>Eliminar</button><button class="btn" data-cp>Copiar resumen</button></div>`);
+ d.addEventListener('click',e=>{if(e.target.closest('[data-cp]'))copy(summary(a));if(e.target.closest('[data-del]')){const b=e.target.closest('[data-del]');if(b.dataset.sure){S.audits=S.audits.filter(x=>x.id!==id);d.close();persist('Auditoría eliminada');render()}else{b.dataset.sure=1;b.textContent='Toca otra vez para eliminar';b.className='btn red'}}})}
+async function copy(t){try{await navigator.clipboard.writeText(t);toast('Copiado. Pégalo en Teams, correo o WhatsApp')}catch(e){dialog('Copia el texto',`<p class="mut">Selecciona y copia:</p><textarea style="min-height:240px">${esc(t)}</textarea>`)}}
+function csv(){const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const rows=[['Fecha','Tipo','FIT/Línea','Turno','Conduce','Inicio','Fin','Cumplimiento %','Tipo de registro','Tema','Detalle']];
+ S.audits.forEach(a=>{const base=[fmtDate(a.date),DEF[a.type].name,a.where,a.type==='sho'?a.shift:'',a.lead,a.start,a.end,stats(a).pct??''];const f=[...autoFinds(a).map(x=>['Hallazgo',x.sec,x.txt]),...a.finds.map(x=>[x.kind==='bp'?'Buena práctica':'Hallazgo',x.sec,x.txt])];(f.length?f:[['Sin hallazgos','','']]).forEach(r=>rows.push([...base,...r]))});
+ return '﻿'+rows.map(r=>r.map(q).join(',')).join('\r\n')}
+
+// ---- eventos ----
+app.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const act=b.dataset.act;
+ if(act==='new'){drafts[b.dataset.t]=newDraft(b.dataset.t);saveDraft(b.dataset.t);render();return}
+ if(act==='copyday'){copy(S.audits.filter(a=>a.date===today()).map(summary).join('\n\n— — —\n\n'));return}
+ if(act==='open'){openAudit(b.dataset.id);return}
+ if(act==='csv'){const data=csv(),fn='hallazgos_bmos_'+today()+'.csv';if(downloads){try{await downloads.save({filename:fn,data:new Blob([data],{type:'text/csv'})});return}catch(err){}}copy(data);return}
+ if(act==='addfit'){document.getElementById('fits').insertAdjacentHTML('beforeend',fitRow('',''));return}
+ if(act==='delfit'){b.closest('.fitrow').remove();return}
+ if(act==='savecfg'){S.cfg.auditor=document.getElementById('aud').value.trim();S.cfg.fits=[...document.querySelectorAll('.fitrow')].map(r=>({name:r.querySelector('.fn').value.trim(),lines:r.querySelector('.fl').value.split(',').map(s=>s.trim()).filter(Boolean)})).filter(f=>f.name);S.cfg.lines=document.getElementById('olines').value.split(',').map(s=>s.trim()).filter(Boolean);await persist('Ajustes guardados');render();return}
+ const t=curType(),a=drafts[t];if(!a)return;
+ if(act==='start'){a.start=nowHM();if(!a.ans.pre_0){const l=timeInfo(a).late;a.ans.pre_0=l>0?'n':'c';if(l>0)a.notes.pre_0='inició '+l+' min tarde ('+a.start+' vs '+targetStart(a)+')'}}
+ else if(act==='end'){a.end=nowHM()}
+ else if(act==='ans'){a.ans[b.dataset.k]=a.ans[b.dataset.k]===b.dataset.v?undefined:b.dataset.v;if(!a.ans[b.dataset.k])delete a.ans[b.dataset.k]}
+ else if(act==='role'){const r=DEF[t].roles[+b.dataset.r];a.roles[r]=a.roles[r]===b.dataset.v?undefined:b.dataset.v;if(!a.roles[r])delete a.roles[r]}
+ else if(act==='line'){const l=allLines()[+b.dataset.i];a.lines=a.lines||[];a.lines=a.lines.includes(l)?a.lines.filter(x=>x!==l):[...a.lines,l]}
+ else if(act==='addf'){addFind();return}
+ else if(act==='delf'){a.finds.splice(+b.dataset.i,1)}
+ else if(act==='discard'){if(b.dataset.sure){drafts[t]=null;saveDraft(t);render();return}b.dataset.sure=1;b.textContent='Toca otra vez para descartar';b.className='btn red';return}
+ else if(act==='finish'){const st=stats(a);if(!a.where.trim()){toast('Elige el '+DEF[t].where+' auditado');document.querySelector('[data-f=where]').focus();return}
+  if(st.p&&!b.dataset.sure){b.dataset.sure=1;b.textContent=`Faltan ${st.p} puntos. Toca otra vez para guardar así`;return}
+  if(!a.end)a.end=a.start?nowHM():'';
+  if(t==='fit'){let c=S.cfg.fits.find(f=>f.name===a.where);if(!c){c={name:a.where,lines:[]};S.cfg.fits.push(c)}if(a.lines&&a.lines.length){S.cfg.fits.forEach(f=>{if(f!==c)f.lines=f.lines.filter(l=>!a.lines.includes(l))});c.lines=[...a.lines]}}
+  if(t==='sho'&&!allLines().includes(a.where))S.cfg.lines.push(a.where);
+  S.audits=S.audits.filter(x=>x.id!==a.id);S.audits.push(a);drafts[t]=null;saveDraft(t);location.hash='#hoy';render();await persist('Auditoría guardada');return}
+ saveDraft(t);render()});
+app.addEventListener('input',e=>{const el=e.target,t=curType(),a=drafts[t];if(!a||!(el.dataset.f||el.dataset.note))return;
+ if(el.dataset.note)a.notes[el.dataset.note]=el.value;else a[el.dataset.f]=el.value;saveDraft(t);
+ if(['start','end','shift'].includes(el.dataset.f)){const m=document.getElementById('meta');if(m)m.textContent='Meta: inicio '+targetStart(a)+' · máx. '+DEF[t].dur+' min';tick()}});
+app.addEventListener('change',e=>{const f=e.target.dataset.f;if(f==='where'&&view==='fit'){const a=drafts.fit;if(a){const c=S.cfg.fits.find(x=>x.name===a.where);a.lines=c?[...c.lines]:[];saveDraft('fit')}}if(f==='shift'||f==='where')render()});
+addEventListener('hashchange',()=>{scrollTo(0,0);render()});
+render();
+if(window.claude&&claude.use){claude.use('artifact').then(x=>{artifact=x}).catch(()=>{});claude.use('downloads').then(x=>{downloads=x}).catch(()=>{})}
+}
+</script>
+</body>
+</html>
